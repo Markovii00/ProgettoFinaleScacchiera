@@ -5,20 +5,17 @@
  * 
  */
 
-#ifndef CHESSMAN_HPP
-#define CHESSMAN_HPP
+#ifndef CHESSMAN_H
+#define CHESSMAN_H
 
-#include "board.hpp"
+#include "board.h"
 
 class chessman
 {
 protected:
     char piece;
-    short col, row;
 
 public:
-    chessman();
-
     virtual void move(board& b) = 0;
 
     chessman(const chessman& other) = delete;
