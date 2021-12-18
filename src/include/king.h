@@ -9,8 +9,8 @@ class king : public chessman
     bool first_move;
 
     public :
-    king();
-    void move(board& b) override;
+    king(char type);
+    void move(board& b, short mov_col, short mov_row) override;
     void castling();
 };
 #endif

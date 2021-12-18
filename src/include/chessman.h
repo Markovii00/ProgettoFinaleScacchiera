@@ -14,9 +14,11 @@ class chessman
 {
     protected:
     char piece;
+    short row, col;
 
     public:
-    virtual void move(board& b) = 0;
+    chessman();
+    virtual void move(board& b, short mov_col, short mov_row) = 0;
 
     chessman(const chessman& other) = delete;
 	chessman& operator=(const chessman& other) = delete;
