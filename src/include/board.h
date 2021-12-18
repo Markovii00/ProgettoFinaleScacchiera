@@ -34,7 +34,7 @@ class board
     //returns true is game is ended
     bool isEnded();
     //returns true if game is against a human opponent
-    bool isVsUser(std:string input);
+    bool isVsUser(string input);
     //returns true if the selected column is empty and contained in the board
     bool destIsValid(short col, short row);
     //returns true if the king is in a safe position
@@ -56,7 +56,7 @@ class board
     //prints current board to terminal (cout)
     void printBoard();
     //prints current board to file 
-    void printToLog()
+    void printToLog();
 };
 
 #endif
