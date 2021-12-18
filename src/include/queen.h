@@ -6,8 +6,8 @@
 class queen : public chessman
 {
     public :
-    queen();
-    void move(board& b) override;
+    queen(char type);
+    void move(board& b, short mov_col, short mov_row) override;
 
 };
 #endif

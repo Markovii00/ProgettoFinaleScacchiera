@@ -9,8 +9,8 @@ class rook : public chessman
     bool first_move;
 
     public :
-    rook();
-    void move(board& b) override;
+    rook(char type, short col, short row);
+    void move(board& b, short mov_col, short mov_row) override;
 
 };
 #endif

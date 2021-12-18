@@ -10,8 +10,8 @@ class pawn : public chessman
     bool promotion;
 
     public :
-    pawn();
-    void move(board& b) override;
+    pawn(char type, short col, short row);
+    void move(board& b, short mov_col, short mov_row) override;
     bool enPassant() const;
 
 };
