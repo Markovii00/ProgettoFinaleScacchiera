@@ -5,10 +5,14 @@
 
 class pawn : public chessman
 {
-    private :
+    private : 
+    bool first_move;
+    bool promotion;
 
     public :
+    pawn();
     void move(board& b) override;
+    bool enPassant() const;
 
 };
 #endif

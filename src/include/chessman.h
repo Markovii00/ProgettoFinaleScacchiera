@@ -12,10 +12,10 @@
 
 class chessman
 {
-protected:
+    protected:
     char piece;
 
-public:
+    public:
     virtual void move(board& b) = 0;
 
     chessman(const chessman& other) = delete;
