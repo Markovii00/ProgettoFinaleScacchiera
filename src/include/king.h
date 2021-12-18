@@ -6,9 +6,11 @@
 class king : public chessman
 {
     private :
+    bool first_move;
 
     public :
+    king();
     void move(board& b) override;
-
+    void castling();
 };
 #endif

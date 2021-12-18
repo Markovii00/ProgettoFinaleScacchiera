@@ -6,8 +6,10 @@
 class rook : public chessman
 {
     private :
+    bool first_move;
 
     public :
+    rook();
     void move(board& b) override;
 
 };

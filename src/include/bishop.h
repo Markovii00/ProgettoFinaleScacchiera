@@ -5,12 +5,10 @@
 
 class bishop : public chessman
 {
-    private :
-
     public :
+    bishop();
     void move(board& b) override;
-
 };
-#endif
 
 #endif
+

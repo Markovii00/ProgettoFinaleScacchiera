@@ -5,9 +5,8 @@
 
 class knight : public chessman
 {
-    private:
-    
     public:
+    knight();
     void move(board& b) override;
 
 };
