@@ -8,7 +8,6 @@
 #ifndef BOARD_H_
 #define BOARD_H_
 
-#include <vector>
 #include <iostream>
 
 #include "src/include/chessman.h"
