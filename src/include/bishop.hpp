@@ -1,13 +1,14 @@
 #ifndef CHESSMAN_HPP
 #define CHESSMAN_HPP
 
-class chessman
+
+class bishop
 {
 private:
     /* data */
 public:
-    chessman(/* args */);
-    ~chessman();
+    bishop(/* args */);
+    ~bishop();
 };
 
 
