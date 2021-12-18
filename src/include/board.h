@@ -5,19 +5,19 @@
 *
 */
 
-#ifndef BOARD_HPP
-#define BOARD_HPP
+#ifndef BOARD_H_
+#define BOARD_H_
 
 #include <vector>
 #include <iostream>
 
-#include "src/include/chessman.hpp"
-#include "src/include/bishop.hpp"
-#include "src/include/king.hpp"
-#include "src/include/queen.hpp"
-#include "src/include/knight.hpp"
-#include "src/include/pawn.hpp"
-#include "src/include/rook.hpp"
+#include "src/include/chessman.h"
+#include "src/include/bishop.h"
+#include "src/include/king.h"
+#include "src/include/queen.h"
+#include "src/include/knight.h"
+#include "src/include/pawn.h"
+#include "src/include/rook.h"
 
 
 class board
@@ -25,6 +25,7 @@ class board
     private:
     chessman chessboard[8][8];
     bool isWhiteTurn = true;
+    sting
 
 
     public: 
@@ -41,10 +42,6 @@ class board
     
     void changeTurn();
     void endGame();
-
-
-    
-
 };
 
 #endif
