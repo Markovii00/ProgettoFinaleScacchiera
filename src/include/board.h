@@ -30,6 +30,7 @@ class board
 
     public: 
     board();
+    ~board();
 
     //returns true is game is ended
     bool isEnded();
@@ -38,7 +39,7 @@ class board
     //returns true if the selected column is empty and contained in the board
     bool destIsValid(short col, short row);
     //returns true if the king is in a safe position
-    bool safeKing();
+    bool safeKing(char pieceColor);
     //returns true if the source position is valid
     bool sourceIsValid(short col, short row);
     
