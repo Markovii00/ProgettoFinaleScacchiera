@@ -63,23 +63,59 @@ board::~board(){
     }  
 }
 
-bool board::safeKing(char pieceColor)
+bool board::kingNotSafe(char pieceIdentity)
 {
-    short cKingCol;
-    short cKingRow;
+    short targetKingCol;
+    short targetKingRow;
+    bool isBlack = true;   //variable used to identify chesspiece color
     for (unsigned short cCol = 0; cCol < 8; cCol++)
     {
-        for (unsigned short cRow = 0; cRow < cRow; cRow++)
+        for (unsigned short cRow = 0; cRow < 8; ++cRow)
         {
-            if(chessboard[cCol][cRow]!=0)
+            if(chessboard[cCol][cRow]!=0&&chessboard[cCol][cRow]->getColor()==isBlack&&chessboard[cCol][cRow]->getChar()=='K')
             {
-                //if(getColor(chessboard[cCol][cRow]))
+                targetKingCol=cCol;
+                targetKingRow=cRow;  //found the selected king coordinates to verify if next move is safe
             }
         }
-        
     }
-    
+    //scan all opponent's pieces to see if there is a legal move to take the king
+    for (unsigned short cCol = 0; cCol < 8; cCol++)
+    {
+        for (unsigned short cRow = 0; cRow < 8; ++cRow)
+        {
+            if(chessboard[cCol][cRow]!=0&&chessboard[cCol][cRow]->getColor()!=isBlack&&chessboard[cCol][cRow]->isLegalMove())
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
+void board::executeMove(short fromCol, short fromRow, short toCol, short toRow)
+{
+    chessboard[toCol][toRow] = chessboard[fromCol][fromRow];
+    eliminatePiece(fromCol, fromRow);
+}
+
+void board::eliminatePiece(short col, short row)
+{
+    chessboard[col][row] = 0;
+}
+
+void board::changeTurn()
+{
+    isWhiteTurn = !isWhiteTurn;
+}
+
+bool board::isTargetValid(short col, short row)
+{
+    if(col>0&&col<9&&row>0&&row<9)
+    {
+        return true;
+    }
+    return false;
 }
 
 char getColor(char request)
