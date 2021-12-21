@@ -10,13 +10,13 @@
 
 #include <iostream>
 
-#include "src/include/chessman.h"
-#include "src/include/bishop.h"
-#include "src/include/king.h"
-#include "src/include/queen.h"
-#include "src/include/knight.h"
-#include "src/include/pawn.h"
-#include "src/include/rook.h"
+#include "include/chessman.h"
+#include "include/bishop.h"
+#include "include/king.h"
+#include "include/queen.h"
+#include "include/knight.h"
+#include "include/pawn.h"
+#include "include/rook.h"
 
 
 class board
