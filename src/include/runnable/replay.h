@@ -7,7 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <regex>
-#include "exceptions/NoMatchFound.hpp"
+//#include "exceptions/NoMatchFound.hpp"
 
 std::string get_log_number(std::fstream& file) {
 
@@ -23,7 +23,7 @@ std::string get_log_number(std::fstream& file) {
         }
     }
 
-    throw NoMatchFound("No match found for \"id\" parameter standard regex: [0-9]{6}");
+    //throw NoMatchFound("No match found for \"id\" parameter standard regex: [0-9]{6}");
 }
 
 std::string get_player(std::fstream& file, int player_num) {
@@ -40,7 +40,7 @@ std::string get_player(std::fstream& file, int player_num) {
         }
     }
 
-    throw NoMatchFound("No match found for \"player "+ std::to_string(player_num) +"\" parameter standard regex: \"(.*?)\".");
+    //throw NoMatchFound("No match found for \"player "+ std::to_string(player_num) +"\" parameter standard regex: \"(.*?)\".");
 }
 
 

@@ -3,6 +3,7 @@
 //
 
 #include "include/runnable/replay.h"
+#include "include/log/logtoolkit.hpp"
 #include <iostream>
 #include <fstream>
 #include <regex>
@@ -29,6 +30,8 @@ int main(int argc, char *argv[]) {
     cout << "Numero del file log: " << play_id << "\n";
     cout << "Nome del player 1: " << player_1_name << "\n";
     cout << "Nome del player 2: " << player_2_name << "\n";
+
+    cout << create_log_name();
 
 }
 

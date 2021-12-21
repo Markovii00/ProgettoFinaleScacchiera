@@ -1,0 +1,17 @@
+//
+// Created by Tommaso Gabrieli on 21/12/21.
+//
+
+#ifndef PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_PLAYER_HPP
+#define PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_PLAYER_HPP
+
+struct player {
+    string name;
+
+
+
+};
+
+
+
+#endif //PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_PLAYER_HPP
