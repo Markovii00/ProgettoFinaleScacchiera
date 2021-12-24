@@ -1,3 +1,9 @@
+/**
+ * @file rook.h
+ * @author Alessandro Viespoli - 2009659 (alessandro.viespoli@studentiunipd.it)
+ * 
+ */
+
 #ifndef ROOK_H
 #define ROOK_H
 
@@ -10,6 +16,7 @@ class rook : public chessman
 
     public :
     rook(char type, short col, short row);
+    ~rook();
     void move(board& b, short mov_col, short mov_row) override;
 
 };

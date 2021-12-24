@@ -13,11 +13,16 @@
 
 board::board()
 {
+<<<<<<< HEAD
     for (unsigned short cRow = 0; cRow < 8; ++cRow)
     {
+=======
+>>>>>>> 5f1aa08ecfb7ba9a5437d9db35c742d87bbb2d6c
         for (unsigned short cCol = 0; cCol < 8; ++cCol)
+    {
+        for (unsigned short cRow = 0; cRow < 8; ++cRow)
         {
-            chessboard[cCol][cRow]=0;
+            chessboard[cRow][cCol]=0;
         }
     }
      
@@ -35,6 +40,7 @@ board::board()
     chessboard[6][7] = new knight('C', 6, 7);
     chessboard[7][7] = new rook('T', 7, 7);
 
+<<<<<<< HEAD
     //allocating all white pawns and pieces
 
     for (unsigned short cCol = 0; cCol < 8; cCol++)
@@ -49,15 +55,44 @@ board::board()
     chessboard[5][1] = new bishop('a', 5, 1);
     chessboard[6][1] = new knight('c', 6, 1);
     chessboard[7][1] = new rook('t', 7, 1);
+=======
+     for (unsigned short cCol = 0; cCol < 8; ++cCol)
+     {
+         chessboard[6][cCol] = new pawn('P', cCol, 6);
+     }
+     chessboard[7][0] = new rook('T', 0, 7);
+     chessboard[7][1] = new knight('C', 1, 7);
+     chessboard[7][2] = new bishop('A', 2, 7);
+     chessboard[7][3] = new queen('D');
+     chessboard[7][4] = new king('R');
+     chessboard[7][5] = new bishop('A', 5, 7);
+     chessboard[7][6] = new knight('C', 6, 7);
+     chessboard[7][7] = new rook('T', 7, 7);
+
+     //allocating all white pawns and pieces
+
+     for (unsigned short cCol = 0; cCol < 8; cCol++)
+     {
+         chessboard[1][cCol] = new pawn('p', cCol, 1);
+     }
+     chessboard[1][0] = new rook('t', 0, 1);
+     chessboard[1][1] = new knight('c', 1, 1);
+     chessboard[1][2] = new bishop('a', 2, 1);
+     chessboard[1][3] = new queen('d');
+     chessboard[1][4] = new king('r');
+     chessboard[1][5] = new bishop('a', 5, 1);
+     chessboard[1][6] = new knight('c', 6, 1);
+     chessboard[1][7] = new rook('t', 7, 1);
+>>>>>>> 5f1aa08ecfb7ba9a5437d9db35c742d87bbb2d6c
 }
 
 board::~board(){
-    for (unsigned short cRow = 0; cRow < 8; ++cRow)
+    for (unsigned short cCol = 0; cCol < 8; ++cCol)
     {
-        for (unsigned short cCol = 0; cCol < 8; ++cCol)
+        for (unsigned short cRow = 0; cRow < 8; ++cRow)
         {
-            delete chessboard[cCol][cRow];
-            chessboard[cCol][cRow] = 0;
+            delete chessboard[cRow][cCol];
+            chessboard[cRow][cCol] = 0;
         }
     }  
 }
@@ -67,11 +102,11 @@ bool board::kingNotSafe(char pieceIdentity)
     short targetKingCol;
     short targetKingRow;
     bool isBlack = true;   //variable used to identify chesspiece color
-    for (unsigned short cCol = 0; cCol < 8; cCol++)
+    for (unsigned short cRow = 0; cRow < 8; cRow++)
     {
-        for (unsigned short cRow = 0; cRow < 8; ++cRow)
+        for (unsigned short cCol = 0; cCol < 8; ++cCol)
         {
-            if(chessboard[cCol][cRow]!=0&&chessboard[cCol][cRow]->getColor()==isBlack&&chessboard[cCol][cRow]->getChar()=='K')
+            if(chessboard[cRow][cCol]!=0&&chessboard[cRow][cCol]->getColor()==isBlack&&chessboard[cRow][cCol]->getChar()=='K')
             {
                 targetKingCol=cCol;
                 targetKingRow=cRow;  //found the selected king coordinates to verify if next move is safe
@@ -79,11 +114,11 @@ bool board::kingNotSafe(char pieceIdentity)
         }
     }
     //scan all opponent's pieces to see if there is a legal move to take the king
-    for (unsigned short cCol = 0; cCol < 8; cCol++)
+    for (unsigned short cRow = 0; cRow < 8; cRow++)
     {
-        for (unsigned short cRow = 0; cRow < 8; ++cRow)
+        for (unsigned short cCol = 0; cCol < 8; ++cCol)
         {
-            if(chessboard[cCol][cRow]!=0&&chessboard[cCol][cRow]->getColor()!=isBlack&&chessboard[cCol][cRow]->isLegalMove())
+            if(chessboard[cRow][cCol]!=0&&chessboard[cRow][cCol]->getColor()!=isBlack&&chessboard[cRow][cCol]->isLegalMove())
             {
                 return true;
             }
@@ -94,13 +129,13 @@ bool board::kingNotSafe(char pieceIdentity)
 
 void board::executeMove(short fromCol, short fromRow, short toCol, short toRow)
 {
-    chessboard[toCol][toRow] = chessboard[fromCol][fromRow];
-    eliminatePiece(fromCol, fromRow);
+    chessboard[toRow][toCol] = chessboard[fromRow][fromCol];
+    eliminatePiece(fromRow, fromCol);
 }
 
-void board::eliminatePiece(short col, short row)
+void board::eliminatePiece(short row, short col)
 {
-    chessboard[col][row] = 0;
+    chessboard[row][col] = 0;
 }
 
 void board::changeTurn()
@@ -108,9 +143,9 @@ void board::changeTurn()
     isWhiteTurn = !isWhiteTurn;
 }
 
-bool board::isTargetValid(short col, short row)
+bool board::isTargetValid(short row, short col)
 {
-    if(col>0&&col<9&&row>0&&row<9)
+    if(row>0&&row<9&&col>0&&col<9)
     {
         return true;
     }
