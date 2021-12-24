@@ -25,6 +25,7 @@ class board
     bool isWhiteTurn;
     int maxMoves;
     chessman* chessboard[8][8];
+    bool getColor(char request);
     //bool isInDanger = false;
 
 
@@ -38,9 +39,9 @@ class board
     //returns true if game is against a human opponent, input from main function: 0 = against human, 1 = pc vs pc
     bool isVsUser(int input);
     //returns true if the selected column is empty and contained in the board
-    bool isTargetValid(short col, short row);
+    bool acceptableMove(short fromRow, short fromCol, short toRow, short toCol);
     //returns true if the king is in a safe position
-    bool kingNotSafe(char pieceIdentity);
+    bool kingInCheck(bool requestColor);
     
     //changes the active player
     void changeTurn();
