@@ -9,14 +9,7 @@
 #define BOARD_H_
 
 #include <iostream>
-
-#include "include/chessman.h"
-#include "include/bishop.h"
-#include "include/king.h"
-#include "include/queen.h"
-#include "include/knight.h"
-#include "include/pawn.h"
-#include "include/rook.h"
+#include "chessman.h"
 
 
 class board
@@ -24,7 +17,7 @@ class board
     private:
     bool isWhiteTurn;
     int maxMoves;
-    chessman* chessboard[8][8];
+    struct chessman* chessboard[8][8];
     bool getColor(char request);
     //bool isInDanger = false;
 

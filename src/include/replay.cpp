@@ -2,10 +2,11 @@
 // Created by Tomma on 12/18/2021.
 //
 
-#include "include/runnable/replay.h"
-#include "include/log/logtoolkit.hpp"
+#include "runnable/replay.h"
+#include "chessman.h"
+#include "match/player.hpp"
+#include "match/match.hpp"
 #include <iostream>
-#include <fstream>
 #include <regex>
 
 using namespace std;
@@ -28,10 +29,16 @@ int main(int argc, char *argv[]) {
 
     cout << "Dati della partita \n";
     cout << "Numero del file log: " << play_id << "\n";
-    cout << "Nome del player 1: " << player_1_name << "\n";
-    cout << "Nome del player 2: " << player_2_name << "\n";
 
-    cout << create_log_name();
+    player p1{player_1_name, true};
+    player p2{player_2_name, false};
+
+    board b;
+
+    match m{p1, p2, b};
+
+    cout << p1.get_name();
+    cout << p2.get_name();
 
 }
 

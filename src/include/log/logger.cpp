@@ -3,17 +3,29 @@
 //
 
 #include "logger.hpp"
-#include <iostream>
-#include <fstream>
-#include "logtoolkit.hpp"
 
-
-logger::logger(int debug_level=NORMAL) : debug_level(debug_level) {};
-
-bool logger::log(std::string who, std::string _msg) {
-    std::string string_build{"[" + get_hour_time() + "] - " + who + " - " + _msg + "\n"};
-    log_stream << string_build;
+logger::logger(int debug_level) : debug_level(debug_level) {
 };
 
+bool logger::log(const std::string& who, const std::string& _msg) {
+    std::string string_build{"[" + get_hour_time() + "] - " + who + " - " + _msg + "\n"};
+    try {
+        log_stream << string_build;
+    } catch (std::exception& e) {
+        return false;
+    }
+    return true;
+}
 
+bool logger::debug(const std::string& _msg) {
+    if(debug_level != DEBUG) return false;
+
+    std::string string_build{"[" + get_hour_time() + "] - DEBUG - " + _msg + "\n"};
+    try {
+        log_stream << string_build;
+    } catch (std::exception& e) {
+        return false;
+    }
+    return true;
+}
 

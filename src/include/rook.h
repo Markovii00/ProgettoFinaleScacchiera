@@ -15,9 +15,20 @@ class rook : public chessman
     bool first_move;
 
     public :
-    rook(char type, short col, short row);
+    rook(char p, short col, short row, char type, short _c, short _r);
     ~rook();
     void move(board& b, short mov_col, short mov_row) override;
 
 };
+
+rook::rook(char p, short col, short row, char type, short _c, short _r) : chessman(p, col, row) {
+    piece = type;
+    row = _r;
+    col = _c;
+    first_move = false;
+}
+
+void rook::move(board& b, short mov_col, short mov_row) {
+
+}
 #endif

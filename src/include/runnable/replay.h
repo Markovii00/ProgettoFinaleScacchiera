@@ -7,7 +7,6 @@
 #include <iostream>
 #include <fstream>
 #include <regex>
-//#include "exceptions/NoMatchFound.hpp"
 
 std::string get_log_number(std::fstream& file) {
 
