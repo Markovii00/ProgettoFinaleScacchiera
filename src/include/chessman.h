@@ -5,7 +5,6 @@
 #ifndef CHESSMAN_H
 #define CHESSMAN_H
 
-#include "board.h"
 
 class chessman
 {

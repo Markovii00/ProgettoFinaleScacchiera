@@ -15,6 +15,7 @@
 #include <bishop.h>
 #include <queen.h>
 #include <king.h>
+#include "board.h"
 
 board::board()
 {
