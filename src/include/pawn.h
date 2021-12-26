@@ -1,7 +1,5 @@
 /**
- * @file pawn.h
  * @author Alessandro Viespoli - 2009659 (alessandro.viespoli@studentiunipd.it)
- * 
  */
 
 #ifndef PAWN_H
@@ -13,13 +11,23 @@ class pawn : public chessman
 {
     private : 
     bool first_move;
-    bool promotion;
+    bool isWhite;
 
     public :
-    pawn(char type, short col, short row);
+    pawn(char type);
     ~pawn();
-    void move(board& b, short mov_col, short mov_row) override;
-    bool enPassant() const;
 
+    //Return true whether destination is legal for the pawn's set of moves
+    bool isLegalMove(unsigned short _startCol, unsigned short _startRow, unsigned short _destiCol, unsigned short _destiRow) override;
+
+    //true if the piece has moved
+    bool hasMoved(void) const;
+
+    //true if the pawn is white
+    bool is_White(void) const;
+
+    //If the piece makes a move, remember to change the parameter first_move
+    void setMoved(void);
 };
+
 #endif

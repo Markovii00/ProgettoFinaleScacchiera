@@ -1,21 +1,21 @@
 /**
- * @file knight.h
  * @author Alessandro Viespoli - 2009659 (alessandro.viespoli@studentiunipd.it)
- * 
  */
 
 #ifndef KNIGHT_H
 #define KNIGHT_H
 
 #include "chessman.h"
+#include <cmath>
 
 class knight : public chessman
 {
     public:
-    knight(char type, short col, short row);
+    knight(char type);
     ~knight();
-    void move(board& b, short mov_col, short mov_row) override;
 
+    //Return true whether destination is legal for the knight's set of moves
+    bool isLegalMove(unsigned short _startCol, unsigned short _startRow, unsigned short _destiCol, unsigned short _destiRow) override;
 };
 
 

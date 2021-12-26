@@ -1,7 +1,5 @@
 /**
- * @file bishop.h
  * @author Alessandro Viespoli - 2009659 (alessandro.viespoli@studentiunipd.it)
- * 
  */
 
 #ifndef BISHOP_H
@@ -12,10 +10,11 @@
 class bishop : public chessman
 {
     public :
-    bishop(char type, short col, short row);
+    bishop(char type);
     ~bishop();
-    void move(board& b, short mov_col, short mov_row) override;
-    bool isLegalMove(short mov_col, short mov_row) override;
+
+    //Return true whether destination is legal for the bishop's set of moves
+    bool isLegalMove(unsigned short _startCol, unsigned short _startRow, unsigned short _destiCol, unsigned short _destiRow) override;
 };
 
 #endif

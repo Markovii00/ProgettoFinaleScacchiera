@@ -1,8 +1,5 @@
 /**
- * @file chessman.h
  * @author Alessandro Viespoli - 2009659 (alessandro.viespoli@studentiunipd.it)
- * @brief 
- * 
  */
 
 #ifndef CHESSMAN_H
@@ -14,22 +11,18 @@ class chessman
 {
     protected:
     char piece;
-    short row, col;
 
     public:
-    chessman(char p, short col, short row);
+    chessman(char p);
     ~chessman();
-    
-    virtual void move(board& b, short mov_col, short mov_row) = 0;
-    virtual bool isLegalMove(short mov_col, short mov_row) = 0;
 
-    short getRow() const;
-    short getCol() const;
+    //check if the move can be done by a specific chessman
+    virtual bool isLegalMove(unsigned short _startCol, unsigned short _startRow, unsigned short _destiCol, unsigned short _destiRow) = 0;
+
     char getChar() const;
 
-    chessman(const chessman& other) = delete;
-	chessman& operator=(const chessman& other) = delete;
+    chessman(const chessman &other) = delete;
+    chessman &operator=(const chessman &other) = delete;
 };
-
 
 #endif
