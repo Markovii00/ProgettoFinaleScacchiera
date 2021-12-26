@@ -18,6 +18,8 @@ class chessman
 
     public:
     chessman(char p, short col, short row);
+    ~chessman();
+    
     virtual void move(board& b, short mov_col, short mov_row) = 0;
     virtual bool isLegalMove(short mov_col, short mov_row) = 0;
 

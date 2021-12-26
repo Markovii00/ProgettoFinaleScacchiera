@@ -18,6 +18,7 @@ class rook : public chessman
     rook(char type, short col, short row);
     ~rook();
     void move(board& b, short mov_col, short mov_row) override;
+    bool isLegalMove(short mov_col, short mov_row) override;
 
 };
 #endif
