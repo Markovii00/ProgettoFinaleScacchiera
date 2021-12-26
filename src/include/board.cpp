@@ -139,4 +139,17 @@ bool getColor(char request)
     if(request >='A' && request <= 'Z') return true;
     else return false;
 }
+
+void board::promotion()
+{
+    for (unsigned short cCol = 0; cCol < 8; ++cCol)
+    {   
+        char idB = (*(chessboard[0][cCol])).getChar();
+        char idW = (*(chessboard[7][cCol])).getChar();
+        if(idB=='P'||idW=='p')
+        {
+            cout << "La "
+        }
+    } 
+}
 #endif

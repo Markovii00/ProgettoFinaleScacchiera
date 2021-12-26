@@ -35,6 +35,8 @@ class board
     bool acceptableMove(short fromRow, short fromCol, short toRow, short toCol);
     //returns true if the king is in a safe position
     bool kingInCheck(bool requestColor);
+    //return true if there is a clear way to the destination
+    bool clearPath(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow) const;
     
     //changes the active player
     void changeTurn();
@@ -51,6 +53,7 @@ class board
     void printBoard();
     //prints current board to file 
     void printToLog();
+    void promotion();
 };
 
 #endif
