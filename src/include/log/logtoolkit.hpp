@@ -6,14 +6,14 @@
 #define PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_LOGTOOLKIT_HPP
 
 #include <iostream>
-#include <ctime>
 #include <chrono>
+#include <random>
 
-int unix_time() {
+inline int unix_time() {
     return time(NULL);
 }
 
-std::string get_hour_time() {
+inline std::string get_hour_time() {
     const auto rawtime = (const time_t)unix_time();
 
     struct tm * dt;
@@ -28,7 +28,7 @@ std::string get_hour_time() {
     return stdBuffer;
 }
 
-std::string get_date() {
+inline std::string get_date() {
     const auto rawtime = (const time_t)unix_time();
 
     struct tm * dt;
@@ -43,7 +43,7 @@ std::string get_date() {
     return stdBuffer;
 }
 
-std::string create_log_name() {
+inline std::string create_log_name() {
     const auto rawtime = (const time_t)unix_time();
 
     struct tm * dt;
@@ -56,6 +56,26 @@ std::string create_log_name() {
     sprintf(buffer,"%s", timestr);
     std::string stdBuffer(buffer);
     return stdBuffer;
+}
+
+inline std::ofstream create_file() {
+    std::ofstream test;
+    test.open(create_log_name());
+    return test;
+}
+
+inline std::string generate_log_id() {
+    std::string s; //six spaces
+    std::random_device rd;
+    std::mt19937 engine(rd());
+    std::uniform_int_distribution<int> dist(0, 9);
+
+    for (int i = 0; i < 6; ++i) {
+        s += std::to_string(dist(engine));
+    }
+
+    return s;
+
 }
 
 

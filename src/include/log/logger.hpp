@@ -5,7 +5,6 @@
 #ifndef PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_LOGGER_HPP
 #define PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_LOGGER_HPP
 
-#include <iostream>
 #include <fstream>
 #include "logtoolkit.hpp"
 
@@ -13,15 +12,16 @@ const int DEBUG = 0;
 const int NORMAL = 1;
 
 class logger {
-    const std::fstream& log_stream(create_log_name());
+    std::ofstream log_stream = create_file();
     const int debug_level;
 
 public:
-    logger(int debug_level);
+    explicit logger(int debug_level = NORMAL);
 
-    bool log(std::string who = "console", std::string _msg = "Null log");
+    bool log(const std::string& who = "console", const std::string& _msg = "Null log");
 
 
+    bool debug(const std::string& message);
 };
 
 
