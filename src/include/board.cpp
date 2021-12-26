@@ -161,7 +161,7 @@ bool board::move(unsigned short fromCol, unsigned short fromRow, unsigned short 
                 }
             }
         }
-            else while(fromCol != kingCol && fromRow != kingRow)
+        else while(fromCol != kingCol && fromRow != kingRow)
             {
                 std::cout<<"Il re è sotto scacco! Muovilo per non perdere la partita! inserendo nuovamente riga e colonna";
                 std::cin >> fromRow;
@@ -172,7 +172,7 @@ bool board::move(unsigned short fromCol, unsigned short fromRow, unsigned short 
         {
             executeMove(fromRow,fromCol,toRow,toCol);
             if((toRow==0||toRow==7)&&(chessboard[toRow][toCol]->getChar()=='p'||chessboard[toRow][toCol]->getChar()=='P'))
-                promotion();
+                promotion(toRow, toCol);
         }
 }
 void board::executeMove(short fromRow, short fromCol, short toRow, short toCol)
@@ -195,9 +195,9 @@ void board::changeTurn()
 
 bool board::acceptableMove(short fromRow, short fromCol, short toRow, short toCol)
 {
-    char fromId = (*(chessboard[fromRow][fromCol])).getChar();
+    char fromId = chessboard[fromRow][fromCol]->getChar();
     bool fromIsBlack = isBlack(fromId);
-    char toId = (*(chessboard[toRow][toCol])).getChar();
+    char toId = chessboard[toRow][toCol]->getChar();
     bool toIsBlack = isBlack(toId);
     if (toRow > 0 && toRow < 9 && toCol > 0 && toCol < 9)
     {
@@ -231,45 +231,34 @@ bool board::clearPath(unsigned short fromCol, unsigned short fromRow, unsigned s
     return true;
 }
 
-void board::promotion()
+void board::promotion(short pawnCol, short pawnRow)
 {
-    for (unsigned short cCol = 0; cCol < 8; ++cCol)
+    char newPiece;
+    char id = chessboard[pawnRow][pawnCol]->getChar();
+    bool isPawnBlack = isBlack(id);
+    std::cout << "La pedina in posizione " << pawnRow+1 << pawnCol+1 << " può essere promossa, inserire il tipo di pedina desiderato";
+    std::cin >> newPiece;
+    while(newPiece=='p'||newPiece=='P'||newPiece=='r'||newPiece=='R')
     {
-        char newPiece;
-        char idB = (*(chessboard[0][cCol])).getChar();
-        char idW = (*(chessboard[7][cCol])).getChar();
-        if (idB == 'P')
-        {
-            std::cout << "La pedina in posizione " << 1 << cCol+1 << " può essere promossa, inserire il tipo di pedina desiderato";
-            std::cin >> newPiece;
-            while(newPiece=='p'||newPiece=='P'||newPiece=='r'||newPiece=='R')
-            {
-                std::cout << "Pedina richiesta non valida";
-                std::cin >> newPiece;
-            }
-            delete chessboard[0][cCol];
-            if(newPiece=='d'||newPiece=='D') chessboard[0][cCol] = new queen('D');
-            else if(newPiece=='a'||newPiece=='A')chessboard[0][cCol]=new bishop('A');
-            else if(newPiece=='c'||newPiece=='C')chessboard[0][cCol]=new knight('C');
-            else if(newPiece=='t'||newPiece=='T')chessboard[0][cCol]=new rook('T');
-        }
-        else if (idW == 'P')
-        {
-            std::cout << "La pedina in posizione " << 8 << cCol+1 << " può essere promossa, inserire il tipo di pedina desiderato";
-            std::cin >> newPiece;
-            while(newPiece=='p'||newPiece=='P'||newPiece=='r'||newPiece=='R'){
-                std::cout << "Pedina richiesta non valida";
-                std::cin >> newPiece;
-            }
-            delete chessboard[7][cCol];
-            if(newPiece=='d'||newPiece=='D') chessboard[7][cCol] = new queen('d');
-            else if(newPiece=='a'||newPiece=='A')chessboard[7][cCol]=new bishop('a');
-            else if(newPiece=='c'||newPiece=='C')chessboard[7][cCol]=new knight('c');
-            else if(newPiece=='t'||newPiece=='T')chessboard[7][cCol]=new rook('t');
-
-            //implementazione ok, non ottimale. Fare il check solo se un pedone va nell'ultima riga
-            //if(accettabile,legale,pedone,riga interessata){promozione}
-        }
+        std::cout << "Pedina richiesta non valida";
+        std::cin >> newPiece;
     }
+    delete chessboard[pawnRow][pawnCol];
+    if (isPawnBlack == true)
+    {   
+        if(newPiece=='d'||newPiece=='D') chessboard[pawnCol][pawnRow] = new queen('D');
+        else if(newPiece=='a'||newPiece=='A')chessboard[pawnCol][pawnRow]=new bishop('A');
+        else if(newPiece=='c'||newPiece=='C')chessboard[pawnCol][pawnRow]=new knight('C');
+        else if(newPiece=='t'||newPiece=='T')chessboard[pawnCol][pawnRow]=new rook('T');
+    }
+    else if (isPawnBlack == false)
+    {
+        if(newPiece=='d'||newPiece=='D') chessboard[pawnCol][pawnRow] = new queen('d');
+        else if(newPiece=='a'||newPiece=='A')chessboard[pawnCol][pawnRow]=new bishop('a');
+        else if(newPiece=='c'||newPiece=='C')chessboard[pawnCol][pawnRow]=new knight('c');
+        else if(newPiece=='t'||newPiece=='T')chessboard[pawnCol][pawnRow]=new rook('t');
+    }
+    //implementazione ok, non ottimale. Fare il check solo se un pedone va nell'ultima riga
+    //if(accettabile,legale,pedone,riga interessata){promozione}
 }
 #endif

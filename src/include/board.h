@@ -52,7 +52,7 @@ class board
     void printBoard();
     //prints current board to file 
     void printToLog();
-    void promotion();
+    void promotion(short pawnCol, short pawnRow);
 };
 
 #endif
