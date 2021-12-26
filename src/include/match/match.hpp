@@ -12,7 +12,7 @@ struct match {
     player& player_2;
     board& board;
     int round = 1;
-    bool who = false;
+    bool who = true;
 
 public:
     match(player& player_1, player& player_2, class board& board) : player_1(player_1), player_2(player_2), board(board) {};

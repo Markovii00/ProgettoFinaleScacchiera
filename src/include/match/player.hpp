@@ -9,8 +9,8 @@
 #include "../chessman.h"
 #include <list>
 
-const std::string player_1_set{"PTCADR"};
-const std::string player_2_set{"ptcadr"};
+const std::string player_1_set{"ptcadr"};
+const std::string player_2_set{"PTCADR"};
 
 struct player {
 private:
