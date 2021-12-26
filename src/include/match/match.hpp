@@ -20,6 +20,7 @@ public:
     ~match() {
          player_2.~player();
          player_1.~player();
+         board.~board();
     };
 
     player& get_player(int num) {
