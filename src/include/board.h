@@ -10,7 +10,6 @@
 
 #include <iostream>
 #include "chessman.h"
-#include "../chessman.cpp"
 
 
 class board
@@ -18,8 +17,8 @@ class board
     private:
     bool isWhiteTurn;
     int maxMoves;
-    chessman* chessboard[8][8];
-    bool getColor(char request);
+    struct chessman* chessboard[8][8];
+    bool isBlack(char request);
     //bool isInDanger = false;
 
 
@@ -27,7 +26,7 @@ class board
     board();
     ~board();
 
-
+    bool findKing();
     //returns true is game is ended
     bool isEnded();
     //returns true if game is against a human opponent, input from main function: 0 = against human, 1 = pc vs pc
@@ -36,15 +35,14 @@ class board
     bool acceptableMove(short fromRow, short fromCol, short toRow, short toCol);
     //returns true if the king is in a safe position
     bool kingInCheck(bool requestColor);
+    bool board::kingInCheck(short col, short row, bool requestColor);
     //return true if there is a clear way to the destination
-    bool clearPath(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow) const;
-    
+    bool clearPath(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow);
+    bool move(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow);
     //changes the active player
     void changeTurn();
     //applies the move to the board
     void executeMove(short fromCol, short fromRow, short toCol, short toRow);
-    //eliminates a piece in the given square
-    void eliminatePiece(short col, short row);
     //quits and executes post-game code
     void endGame();
     //throws needed exceptions

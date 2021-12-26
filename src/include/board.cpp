@@ -1,9 +1,9 @@
 /**
-*@file board.cpp
-*@author  Francesco Colla - 2007968 (francesco.colla.2@studenti.unipd.it)
-*@brief
-*
-**/
+ *@file board.cpp
+ *@author  Francesco Colla - 2007968 (francesco.colla.2@studenti.unipd.it)
+ *@brief
+ *
+ **/
 
 #ifndef BOARD_CPP
 #define BOARD_CPP
@@ -15,7 +15,7 @@
 #include <bishop.h>
 #include <queen.h>
 #include <king.h>
-#include "board.h"
+#include <board.h>
 
 board::board()
 {
@@ -23,50 +23,70 @@ board::board()
     {
         for (unsigned short cRow = 0; cRow < 8; ++cRow)
         {
-            chessboard[cRow][cCol]=0;
+            chessboard[cRow][cCol] = 0;
         }
     }
-     
-     //allocating all white pawns and pieces
 
+    // allocating all white pawns and pieces
     for (unsigned short cCol = 0; cCol < 8; ++cCol)
     {
-        chessboard[6][cCol] = new pawn('p', cCol, 6);
+        chessboard[6][cCol] = new pawn('p');
     }
-    chessboard[7][0] = new rook(0, 0, 0, 't', 0, 7);
-    chessboard[7][1] = new knight('c', 1, 7);
-    chessboard[7][2] = new bishop('a', 2, 7);
+    chessboard[7][0] = new rook('t');
+    chessboard[7][1] = new knight('c');
+    chessboard[7][2] = new bishop('a');
     chessboard[7][3] = new queen('d');
     chessboard[7][4] = new king('r');
-    chessboard[7][5] = new bishop('a', 5, 7);
-    chessboard[7][6] = new knight('c', 6, 7);
-    chessboard[7][7] = new rook(0, 0, 0, 't', 7, 7);
+    chessboard[7][5] = new bishop('a');
+    chessboard[7][6] = new knight('c');
+    chessboard[7][7] = new rook('t');
 
-    //allocating all black pawns and pieces
-
+    // allocating all black pawns and pieces
     for (unsigned short cCol = 0; cCol < 8; cCol++)
     {
-        chessboard[1][cCol] = new pawn('P', cCol, 1);
+        chessboard[1][cCol] = new pawn('P');
     }
-    chessboard[0][0] = new rook(0, 0, 0, 'T', 0, 1);
-    chessboard[0][1] = new knight('C', 1, 1);
-    chessboard[0][2] = new bishop('A', 2, 1);
+    chessboard[0][0] = new rook('T');
+    chessboard[0][1] = new knight('C');
+    chessboard[0][2] = new bishop('A');
     chessboard[0][3] = new queen('D');
     chessboard[0][4] = new king('R');
-    chessboard[0][5] = new bishop('A', 5, 1);
-    chessboard[0][6] = new knight('C', 6, 1);
-    chessboard[0][7] = new rook(0, 0, 0, 'T', 7, 1);
+    chessboard[0][5] = new bishop('A');
+    chessboard[0][6] = new knight('C');
+    chessboard[0][7] = new rook('T');
 }
 
-board::~board(){
+board::~board()
+{
     for (unsigned short cCol = 0; cCol < 8; ++cCol)
     {
-        for (auto & cRow : chessboard)
+        for (auto &cRow : chessboard)
         {
             delete cRow[cCol];
             cRow[cCol] = nullptr;
         }
-    }  
+    }
+}
+
+bool board::kingInCheck(short col, short row, bool requestColor)
+{
+    for (auto &cRow : chessboard)
+    {
+        for (auto &cCol : cRow)
+        {
+            short counterRow = 0;
+            short counterCol = 0;
+            char id = (*cCol).getChar();
+            bool cycleColor = isBlack(id);
+            if (id != 0 && cycleColor != requestColor && (*cCol).isLegalMove(counterCol, counterRow, col, row)&&clearPath(counterCol,counterRow,col,row))
+            {
+                return true;
+            }
+            counterRow++;
+            counterCol++;
+        }
+    }
+    return false;
 }
 
 bool board::kingInCheck(bool requestColor)
@@ -77,42 +97,96 @@ bool board::kingInCheck(bool requestColor)
     {
         for (unsigned short cCol = 0; cCol < 8; ++cCol)
         {
-            char id = (*(chessboard[cRow][cCol])).getChar();
-            bool cycleColor = getColor(id);
-            if(id == 'r') id = 'R';
-            if(id != 0 && cycleColor == requestColor && id == 'R')
+            char id = chessboard[cRow][cCol]->getChar();
+            bool cycleColor = isBlack(id);
+            if (id == 'r')
+                id = 'R';
+            if (id != 0 && cycleColor == requestColor && id == 'R')
             {
-                targetKingCol=cCol;
-                targetKingRow=cRow;  //found the selected king coordinates to verify if next move is safe
+                targetKingCol = cCol;
+                targetKingRow = cRow; // found the selected king coordinates to verify if next move is safe
             }
         }
     }
-    //scan all opponent's pieces to see if there is a legal move to take the king
-    for (auto & cRow : chessboard)
+    // scan all opponent's pieces to see if there is a legal move to take the king
+    for (auto &cRow : chessboard)
     {
-        for (auto & cCol : cRow)
+        for (auto &cCol : cRow)
         {
+            short counterRow = 0;
+            short counterCol = 0;
             char id = (*cCol).getChar();
-            bool cycleColor = getColor(id);
-            if(id !=0 && cycleColor != requestColor && (*cCol).isLegalMove(targetKingCol, targetKingRow))
+            bool cycleColor = isBlack(id);
+            if (id != 0 && cycleColor != requestColor && (*cCol).isLegalMove(counterCol, counterRow, targetKingCol, targetKingRow)&&clearPath(counterCol,counterRow,targetKingCol,targetKingRow))
             {
                 return true;
             }
+            counterRow++;
+            counterCol++;
         }
     }
     return false;
 }
 
+bool board::move(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow)//controllare complessità
+{
+    char fromPieceId = chessboard[fromRow][fromCol]->getChar();
+    bool fromPieceColor = isBlack(fromPieceId);
+    if(kingInCheck(fromPieceColor))
+    {
+    short kingCol;
+    short kingRow;
+    for (unsigned short cRow = 0; cRow < 8; cRow++)
+    {
+        for (unsigned short cCol = 0; cCol < 8; ++cCol)
+        {
+                char id = chessboard[cRow][cCol]->getChar();
+                bool cycleColor = isBlack(id);
+                if (id == 'r')
+                    id = 'R';
+                if (id != 0 && cycleColor == fromPieceColor && id == 'R')
+                {
+                    kingCol = cCol;
+                    kingRow = cRow; // found the selected king coordinates to verify if next move is safe
+                }
+        }
+    }
+        if(kingInCheck(kingCol-1,kingRow+1,fromPieceColor)&&kingInCheck(kingCol,kingRow+1,fromPieceColor)&&kingInCheck(kingCol+1,kingRow+1,fromPieceColor))
+        {
+            if(kingInCheck(kingCol-1,kingRow,fromPieceColor)&&kingInCheck(kingCol+1,kingRow,fromPieceColor))
+            {
+                if(kingInCheck(kingCol-1,kingRow-1,fromPieceColor)&&kingInCheck(kingCol,kingRow-1,fromPieceColor)&&kingInCheck(kingCol+1,kingRow-1,fromPieceColor))
+                {
+                    isEnded();
+                }
+            }
+        }
+            else while(fromCol != kingCol && fromRow != kingRow)
+            {
+                std::cout<<"Il re è sotto scacco! Muovilo per non perdere la partita! inserendo nuovamente riga e colonna";
+                std::cin >> fromRow;
+                std::cin >> fromCol;
+            }
+        }
+        if(clearPath(fromCol,fromRow,toCol,toRow))
+        {
+            executeMove(fromRow,fromCol,toRow,toCol);
+            if((toRow==0||toRow==7)&&(chessboard[toRow][toCol]->getChar()=='p'||chessboard[toRow][toCol]->getChar()=='P'))
+                promotion();
+        }
+}
 void board::executeMove(short fromRow, short fromCol, short toRow, short toCol)
 {
+    if(chessboard[toRow][toCol]->getChar()!=0)
+    {
+        delete chessboard[toRow][toCol];
+    }
+    else
     chessboard[toRow][toCol] = chessboard[fromRow][fromCol];
-    eliminatePiece(fromRow, fromCol);
+    delete chessboard[fromRow][fromCol];
+    chessboard[fromRow][fromCol] = nullptr;
 }
 
-void board::eliminatePiece(short row, short col)
-{
-    chessboard[row][col] = nullptr;
-}
 
 void board::changeTurn()
 {
@@ -122,12 +196,12 @@ void board::changeTurn()
 bool board::acceptableMove(short fromRow, short fromCol, short toRow, short toCol)
 {
     char fromId = (*(chessboard[fromRow][fromCol])).getChar();
-    bool fromIsBlack = getColor(fromId);
+    bool fromIsBlack = isBlack(fromId);
     char toId = (*(chessboard[toRow][toCol])).getChar();
-    bool toIsBlack = getColor(toId);
-    if(toRow>0&&toRow<9&&toCol>0&&toCol<9)
+    bool toIsBlack = isBlack(toId);
+    if (toRow > 0 && toRow < 9 && toCol > 0 && toCol < 9)
     {
-        if(chessboard[toRow][toCol] == nullptr && fromIsBlack != toIsBlack)
+        if (chessboard[toRow][toCol] == nullptr && fromIsBlack != toIsBlack)
         {
             return true;
         }
@@ -135,22 +209,67 @@ bool board::acceptableMove(short fromRow, short fromCol, short toRow, short toCo
     return false;
 }
 
-bool getColor(char request)
+bool board::isBlack(char request)
 {
-    if(request >='A' && request <= 'Z') return true;
-    else return false;
+    if (request >= 'A' && request <= 'Z')
+        return true;
+    else
+        return false;
+}
+
+bool board::isEnded()
+{
+    return true;
+}
+
+bool board::clearPath(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow)
+{
+    if(chessboard[fromRow][fromCol]->isLegalMove(fromCol,fromRow,toCol,fromRow)||acceptableMove(fromRow,fromCol,toRow,toCol))
+    {
+        
+    }
+    return true;
 }
 
 void board::promotion()
 {
     for (unsigned short cCol = 0; cCol < 8; ++cCol)
-    {   
+    {
+        char newPiece;
         char idB = (*(chessboard[0][cCol])).getChar();
         char idW = (*(chessboard[7][cCol])).getChar();
-        if(idB=='P'||idW=='p')
+        if (idB == 'P')
         {
-            cout << "La "
+            std::cout << "La pedina in posizione " << 1 << cCol+1 << " può essere promossa, inserire il tipo di pedina desiderato";
+            std::cin >> newPiece;
+            while(newPiece=='p'||newPiece=='P'||newPiece=='r'||newPiece=='R')
+            {
+                std::cout << "Pedina richiesta non valida";
+                std::cin >> newPiece;
+            }
+            delete chessboard[0][cCol];
+            if(newPiece=='d'||newPiece=='D') chessboard[0][cCol] = new queen('D');
+            else if(newPiece=='a'||newPiece=='A')chessboard[0][cCol]=new bishop('A');
+            else if(newPiece=='c'||newPiece=='C')chessboard[0][cCol]=new knight('C');
+            else if(newPiece=='t'||newPiece=='T')chessboard[0][cCol]=new rook('T');
         }
-    } 
+        else if (idW == 'P')
+        {
+            std::cout << "La pedina in posizione " << 8 << cCol+1 << " può essere promossa, inserire il tipo di pedina desiderato";
+            std::cin >> newPiece;
+            while(newPiece=='p'||newPiece=='P'||newPiece=='r'||newPiece=='R'){
+                std::cout << "Pedina richiesta non valida";
+                std::cin >> newPiece;
+            }
+            delete chessboard[7][cCol];
+            if(newPiece=='d'||newPiece=='D') chessboard[7][cCol] = new queen('d');
+            else if(newPiece=='a'||newPiece=='A')chessboard[7][cCol]=new bishop('a');
+            else if(newPiece=='c'||newPiece=='C')chessboard[7][cCol]=new knight('c');
+            else if(newPiece=='t'||newPiece=='T')chessboard[7][cCol]=new rook('t');
+
+            //implementazione ok, non ottimale. Fare il check solo se un pedone va nell'ultima riga
+            //if(accettabile,legale,pedone,riga interessata){promozione}
+        }
+    }
 }
 #endif
