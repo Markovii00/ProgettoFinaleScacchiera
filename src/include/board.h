@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include "chessman.h"
+#include "../chessman.cpp"
 
 
 class board
@@ -17,7 +18,7 @@ class board
     private:
     bool isWhiteTurn;
     int maxMoves;
-    struct chessman* chessboard[8][8];
+    chessman* chessboard[8][8];
     bool getColor(char request);
     //bool isInDanger = false;
 
