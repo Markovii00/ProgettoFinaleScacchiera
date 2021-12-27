@@ -5,8 +5,8 @@
 *
 */
 
-#ifndef BOARD_H_
-#define BOARD_H_
+#ifndef BOARD_H
+#define BOARD_H
 
 #include <iostream>
 #include "chessman.h"
