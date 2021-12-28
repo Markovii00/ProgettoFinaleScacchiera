@@ -1,3 +1,5 @@
+#ifndef BOARD_CPP
+#define BOARD_CPP
 /**
  *@file board.cpp
  *@author  Francesco Colla - 2007968 (francesco.colla.2@studenti.unipd.it)
@@ -169,10 +171,6 @@ bool board::move(unsigned short fromCol, unsigned short fromRow, unsigned short 
                 std::cin >> fromRow;
                 std::cin >> fromCol;
             }
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
-<<<<<<< HEAD
         }
         if(clearPath(fromCol,fromRow,toCol,toRow))
         {
@@ -181,24 +179,6 @@ bool board::move(unsigned short fromCol, unsigned short fromRow, unsigned short 
             executeMove(fromRow,fromCol,toRow,toCol);
         }
         return true;
-=======
-=======
->>>>>>> 82c7141c0dbc7819739f402375358befb6bf8502
->>>>>>> Stashed changes
-    }
-    if (clearPath(fromCol, fromRow, toCol, toRow))
-    {
-        executeMove(fromRow, fromCol, toRow, toCol);
-        if ((toRow == 0 || toRow == 7) && (chessboard[toRow][toCol]->getChar() == 'p' || chessboard[toRow][toCol]->getChar() == 'P'))
-            promotion(toRow, toCol);
-    }
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
->>>>>>> 82c7141c0dbc7819739f402375358befb6bf8502
-=======
->>>>>>> 82c7141c0dbc7819739f402375358befb6bf8502
->>>>>>> Stashed changes
 }
 void board::executeMove(short fromRow, short fromCol, short toRow, short toCol)
 {
@@ -213,10 +193,6 @@ void board::executeMove(short fromRow, short fromCol, short toRow, short toCol)
     chessboard[fromRow][fromCol] = nullptr;
 }
 
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
-<<<<<<< HEAD
 bool board::movePawn(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow)
 {
     if(toRow==0||toRow==7)
@@ -226,11 +202,6 @@ bool board::movePawn(unsigned short fromCol, unsigned short fromRow, unsigned sh
     return true;
 }
 
-=======
->>>>>>> 82c7141c0dbc7819739f402375358befb6bf8502
-=======
->>>>>>> 82c7141c0dbc7819739f402375358befb6bf8502
->>>>>>> Stashed changes
 void board::changeTurn()
 {
     isWhiteTurn = !isWhiteTurn;
@@ -267,19 +238,7 @@ bool board::isEnded()
 
 bool board::clearPath(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow)
 {
-<<<<<<< Updated upstream
-    if (chessboard[fromRow][fromCol]->isLegalMove(fromCol, fromRow, toCol, fromRow) || acceptableMove(fromRow, fromCol, toRow, toCol))
-=======
-<<<<<<< HEAD
-<<<<<<< HEAD
     while(fromCol!=toCol&&fromCol!=toCol)
-=======
-    if (chessboard[fromRow][fromCol]->isLegalMove(fromCol, fromRow, toCol, fromRow) || acceptableMove(fromRow, fromCol, toRow, toCol))
->>>>>>> 82c7141c0dbc7819739f402375358befb6bf8502
-=======
-    if (chessboard[fromRow][fromCol]->isLegalMove(fromCol, fromRow, toCol, fromRow) || acceptableMove(fromRow, fromCol, toRow, toCol))
->>>>>>> 82c7141c0dbc7819739f402375358befb6bf8502
->>>>>>> Stashed changes
     {
     }
     return true;
@@ -323,10 +282,6 @@ void board::promotion(unsigned short pawnCol,unsigned short pawnRow)
     //implementazione ok, non ottimale. Fare il check solo se un pedone va nell'ultima riga
     //if(accettabile,legale,pedone,riga interessata){promozione}
 }
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 void board::printBoard()
 {
@@ -343,8 +298,3 @@ void board::printBoard()
     std::cout<<'\n'<<'\n'<<"  ABCDEFGH";
 }
 #endif
-=======
->>>>>>> 82c7141c0dbc7819739f402375358befb6bf8502
-=======
->>>>>>> 82c7141c0dbc7819739f402375358befb6bf8502
->>>>>>> Stashed changes
