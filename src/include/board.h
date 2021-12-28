@@ -12,6 +12,7 @@
 #include "chessman.h"
 
 
+
 class board
 {
     private:
@@ -39,6 +40,7 @@ class board
     //return true if there is a clear way to the destination
     bool clearPath(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow);
     bool move(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow);
+    bool movePawn(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow);
     //changes the active player
     void changeTurn();
     //applies the move to the board
@@ -47,12 +49,12 @@ class board
     void endGame();
     //throws needed exceptions
     void handleExceptions();
-
+    
     //prints current board to terminal (cout)
     void printBoard();
     //prints current board to file 
     void printToLog();
-    void promotion(short pawnCol, short pawnRow);
+    void promotion(unsigned short pawnCol,unsigned short pawnRow);
 };
 
 #endif

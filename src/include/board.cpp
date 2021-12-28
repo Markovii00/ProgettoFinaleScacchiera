@@ -7,13 +7,13 @@
 
 
 #include <iostream>
-#include <pawn.h>
-#include <rook.h>
-#include <knight.h>
-#include <bishop.h>
-#include <queen.h>
-#include <king.h>
-#include <board.h>
+#include "pawn.h"
+#include "rook.h"
+#include "knight.h"
+#include "bishop.h"
+#include "queen.h"
+#include "king.h"
+#include "board.h"
 
 board::board()
 {
@@ -56,12 +56,15 @@ board::board()
 
 board::~board()
 {
+    unsigned short iRow = 0;
     for (unsigned short cCol = 0; cCol < 8; ++cCol)
     {
         for (auto &cRow : chessboard)
-        {
+        {   
+            chessboard[iRow][cCol]->~chessman();
             delete cRow[cCol];
             cRow[cCol] = nullptr;
+            iRow++;
         }
     }
 }
@@ -166,6 +169,22 @@ bool board::move(unsigned short fromCol, unsigned short fromRow, unsigned short 
                 std::cin >> fromRow;
                 std::cin >> fromCol;
             }
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+        }
+        if(clearPath(fromCol,fromRow,toCol,toRow))
+        {
+            if(fromPieceId == 'p'|| fromPieceId =='P') movePawn(fromCol,fromRow,toCol,toRow);
+            else
+            executeMove(fromRow,fromCol,toRow,toCol);
+        }
+        return true;
+=======
+=======
+>>>>>>> 82c7141c0dbc7819739f402375358befb6bf8502
+>>>>>>> Stashed changes
     }
     if (clearPath(fromCol, fromRow, toCol, toRow))
     {
@@ -173,11 +192,19 @@ bool board::move(unsigned short fromCol, unsigned short fromRow, unsigned short 
         if ((toRow == 0 || toRow == 7) && (chessboard[toRow][toCol]->getChar() == 'p' || chessboard[toRow][toCol]->getChar() == 'P'))
             promotion(toRow, toCol);
     }
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+>>>>>>> 82c7141c0dbc7819739f402375358befb6bf8502
+=======
+>>>>>>> 82c7141c0dbc7819739f402375358befb6bf8502
+>>>>>>> Stashed changes
 }
 void board::executeMove(short fromRow, short fromCol, short toRow, short toCol)
 {
     if (chessboard[toRow][toCol]->getChar() != 0)
     {
+        chessboard[toRow][toCol]->~chessman();
         delete chessboard[toRow][toCol];
     }
     else
@@ -186,6 +213,24 @@ void board::executeMove(short fromRow, short fromCol, short toRow, short toCol)
     chessboard[fromRow][fromCol] = nullptr;
 }
 
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+bool board::movePawn(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow)
+{
+    if(toRow==0||toRow==7)
+    {
+        promotion(toCol, toRow);
+    }
+    return true;
+}
+
+=======
+>>>>>>> 82c7141c0dbc7819739f402375358befb6bf8502
+=======
+>>>>>>> 82c7141c0dbc7819739f402375358befb6bf8502
+>>>>>>> Stashed changes
 void board::changeTurn()
 {
     isWhiteTurn = !isWhiteTurn;
@@ -222,13 +267,25 @@ bool board::isEnded()
 
 bool board::clearPath(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow)
 {
+<<<<<<< Updated upstream
     if (chessboard[fromRow][fromCol]->isLegalMove(fromCol, fromRow, toCol, fromRow) || acceptableMove(fromRow, fromCol, toRow, toCol))
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+    while(fromCol!=toCol&&fromCol!=toCol)
+=======
+    if (chessboard[fromRow][fromCol]->isLegalMove(fromCol, fromRow, toCol, fromRow) || acceptableMove(fromRow, fromCol, toRow, toCol))
+>>>>>>> 82c7141c0dbc7819739f402375358befb6bf8502
+=======
+    if (chessboard[fromRow][fromCol]->isLegalMove(fromCol, fromRow, toCol, fromRow) || acceptableMove(fromRow, fromCol, toRow, toCol))
+>>>>>>> 82c7141c0dbc7819739f402375358befb6bf8502
+>>>>>>> Stashed changes
     {
     }
     return true;
 }
 
-void board::promotion(short pawnCol, short pawnRow)
+void board::promotion(unsigned short pawnCol,unsigned short pawnRow)
 {
     char newPiece;
     char id = chessboard[pawnRow][pawnCol]->getChar();
@@ -266,3 +323,28 @@ void board::promotion(short pawnCol, short pawnRow)
     //implementazione ok, non ottimale. Fare il check solo se un pedone va nell'ultima riga
     //if(accettabile,legale,pedone,riga interessata){promozione}
 }
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+void board::printBoard()
+{
+    unsigned short row = 0;
+    unsigned short col = 0;
+    char colLetter = 'A';
+    for (auto &cRow : chessboard)
+    {   std::cout << 8-row << "  "; 
+        for (auto &cCol : cRow)
+        {
+            std::cout << chessboard[col][row]->getChar();
+        }
+    }
+    std::cout<<'\n'<<'\n'<<"  ABCDEFGH";
+}
+#endif
+=======
+>>>>>>> 82c7141c0dbc7819739f402375358befb6bf8502
+=======
+>>>>>>> 82c7141c0dbc7819739f402375358befb6bf8502
+>>>>>>> Stashed changes
