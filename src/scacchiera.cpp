@@ -20,7 +20,7 @@ void playerGame()
     cout << "Enter a username : ";
     cin >> username;
     player p1(username, false);
-    player computer(computer, true);
+    player pc(computer, true);
     //match sus(p1, computer, b); //da fuck
 
     int starter = rand() % 1;
