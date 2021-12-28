@@ -5,7 +5,7 @@
 #ifndef PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_MATCH_HPP
 #define PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_MATCH_HPP
 
-#include "board.h"
+#include "../board.h"
 
 struct match {
     player& player_1;

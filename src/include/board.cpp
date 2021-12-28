@@ -135,10 +135,10 @@ bool board::move(unsigned short fromCol, unsigned short fromRow, unsigned short 
 {
     char fromPieceId = chessboard[fromRow][fromCol]->getChar();
     bool fromPieceColor = isBlack(fromPieceId);
+    short kingCol;
+    short kingRow;
     if (kingInCheck(fromPieceColor))
     {
-        short kingCol;
-        short kingRow;
         for (unsigned short cRow = 0; cRow < 8; cRow++)
         {
             for (unsigned short cCol = 0; cCol < 8; ++cCol)
@@ -176,6 +176,7 @@ bool board::move(unsigned short fromCol, unsigned short fromRow, unsigned short 
         {
             if(fromPieceId == 'p'|| fromPieceId =='P') movePawn(fromCol,fromRow,toCol,toRow);
             else
+            if(kingCol==fromCol&&kingRow==kingCol)
             executeMove(fromRow,fromCol,toRow,toCol);
         }
         return true;
@@ -240,6 +241,7 @@ bool board::clearPath(unsigned short fromCol, unsigned short fromRow, unsigned s
 {
     while(fromCol!=toCol&&fromCol!=toCol)
     {
+        
     }
     return true;
 }
@@ -281,6 +283,12 @@ void board::promotion(unsigned short pawnCol,unsigned short pawnRow)
     }
     //implementazione ok, non ottimale. Fare il check solo se un pedone va nell'ultima riga
     //if(accettabile,legale,pedone,riga interessata){promozione}
+}
+
+bool casteling(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow)
+{
+    //se fromCol c'è il re && re.hasMoved()==false && toRow == fromRow && toCol == fromCol - 2 (o + 2) && clearpath() && chessboard[toRow][toCOl]->getchar() == t&&torre.hasmoved==false
+    //spostare il re a sinistra o destra di 2 e la torre si muove o di col + 3 o col - 2;
 }
 
 void board::printBoard()

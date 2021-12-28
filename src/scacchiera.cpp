@@ -2,9 +2,9 @@
  * @author Alessandro Viespoli - 2009659 (alessandro.viespoli@studentiunipd.it)
  */ 
 
-#include <include/board.h>
-#include <include/match/player.hpp>
-#include <include/match/match.hpp>
+#include "include/board.h"
+#include "include/match/player.hpp"
+#include "include/match/match.hpp"
 #include <iostream>
 #include <chrono>
 #include <thread>
