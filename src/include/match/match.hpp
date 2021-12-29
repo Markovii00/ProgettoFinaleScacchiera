@@ -7,24 +7,42 @@
 
 #include "../board.h"
 
-struct match {
+class match {
     player& player_1;
     player& player_2;
-    board& board;
-    int round = 1;
-    bool who = true;
+    board& b;
+    int round = 0;
 
 public:
-    match(player& player_1, player& player_2, class board& board) : player_1(player_1), player_2(player_2), board(board) {};
+    match(player& player_1, player& player_2, board& b) : player_1(player_1), player_2(player_2), b(b) {};
 
     ~match() {
          player_2.~player();
          player_1.~player();
-         board.~board();
     };
 
     player& get_player(int num) {
         return (num == 1 ? player_1 : player_2);
+    }
+
+    board& get_board() {
+        return b;
+    }
+
+    int get_round() const {
+        return round;
+    }
+
+    player& get_player_turn() {
+        return (whose_turn() ? player_1 : player_2);
+    }
+
+    bool whose_turn() const {
+        return (round%2 ==0);
+    }
+
+    void next_round() {
+        ++round;
     }
 };
 

@@ -55,7 +55,7 @@ class board
     //prints current board to file 
     void printToLog();
     void promotion(unsigned short pawnCol,unsigned short pawnRow);
-    bool casteling(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow);
+    bool castling(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow);
 };
 
 #endif
