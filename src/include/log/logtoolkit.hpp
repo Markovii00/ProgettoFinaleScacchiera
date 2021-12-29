@@ -75,7 +75,6 @@ inline std::string generate_log_id() {
     }
 
     return s;
-
 }
 
 

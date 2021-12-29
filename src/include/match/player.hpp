@@ -12,14 +12,14 @@
 const std::string player_1_set{"ptcadr"};
 const std::string player_2_set{"PTCADR"};
 
-struct player {
+class player {
 private:
     std::string& name;
     std::list<std::string> moves;
-    bool is_main;
+    bool maiusc;
 
 public:
-    explicit player(std::string& name, bool is_main = false) : name(name), is_main(is_main) {};
+    explicit player(std::string& name, bool maiusc_set = false) : name(name), maiusc(maiusc_set) {};
 
     ~player() {
         moves.clear();
@@ -34,11 +34,16 @@ public:
         return moves;
     }
 
+    //duplicato in board.h, ricordarsi di cancellare uno dei due
     bool is_in_set(const char* chess_str_representation) const {
-        if(is_main)
+        if (!maiusc)
             return player_1_set.find(chess_str_representation);
         else
             return player_2_set.find(chess_str_representation);
+    }
+
+    void add_move(std::string* move) {
+        moves.push_back(*move);
     }
 };
 

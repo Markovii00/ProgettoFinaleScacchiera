@@ -35,7 +35,7 @@ class board
     bool acceptableMove(short fromRow, short fromCol, short toRow, short toCol);
     //returns true if the king is in a safe position
     bool kingInCheck(bool requestColor);
-    bool board::kingInCheck(short col, short row, bool requestColor);
+    bool kingInCheck(short col, short row, bool requestColor);
     //return true if there is a clear way to the destination
     bool clearPath(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow);
     bool move(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow);

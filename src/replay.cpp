@@ -3,7 +3,7 @@
 //
 
 #include "runnable/replay.h"
-#include "chessman.h"
+#include "include/board.h"
 #include "match/player.hpp"
 #include "match/match.hpp"
 #include <iostream>
@@ -27,18 +27,21 @@ int main(int argc, char *argv[]) {
     string player_1_name = get_player(log_file, 1);
     string player_2_name = get_player(log_file, 2);
 
+    board b;
+
     cout << "Dati della partita \n";
     cout << "Numero del file log: " << play_id << "\n";
+    cout << "Player 1: " << player_1_name << "\n";
+    cout << "Player 2: " << player_2_name << "\n";
 
     player p1{player_1_name, true};
     player p2{player_2_name, false};
 
-    board b;
-
-    match m{p1, p2, b};
-
     cout << p1.get_name();
     cout << p2.get_name();
 
+    match m(p1, p2, b);
+
+    return 0;
 }
 
