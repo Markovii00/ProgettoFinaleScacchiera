@@ -5,29 +5,40 @@
 #include "include/board.h"
 #include "include/match/player.hpp"
 #include "include/match/match.hpp"
+#include "include/log/logger.hpp"
 #include <iostream>
 #include <chrono>
 #include <thread>
 
 using namespace std; 
+string const console = "console";
 
 void playerGame() 
 {
-    
     board b();
+    logger logger;
+    logger.log(console, "Welcome");
+    logger.log(console, "Starting new log session");
+    //continuo del log
+
     string username;
     string computer{"computer"};
     cout << "Enter a username : ";
     cin >> username;
+
     player p1(username, false);
     player pc(computer, true);
-    //match sus(p1, computer, b); //da fuck
+    match sus(p1, computer, b); 
+    logger.log(console, "Initializing player 1 " + username);
+    logger.log(console, "Initializing player 2 " + computer);
 
     int starter = rand() % 1;
     cout << starter;
+    p1 p2 int b
     //problems with board.h
 
 
+}
     
     
     
