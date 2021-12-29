@@ -5,7 +5,6 @@
 #ifndef CHESSMAN_H
 #define CHESSMAN_H
 
-
 class chessman
 {
     protected:
