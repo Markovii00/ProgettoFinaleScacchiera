@@ -285,10 +285,11 @@ void board::promotion(unsigned short pawnCol,unsigned short pawnRow)
     //if(accettabile,legale,pedone,riga interessata){promozione}
 }
 
-bool casteling(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow)
+bool castling(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow)
 {
     //se fromCol c'è il re && re.hasMoved()==false && toRow == fromRow && toCol == fromCol - 2 (o + 2) && clearpath() && chessboard[toRow][toCOl]->getchar() == t&&torre.hasmoved==false
     //spostare il re a sinistra o destra di 2 e la torre si muove o di col + 3 o col - 2;
+    return false;
 }
 
 void board::printBoard()
