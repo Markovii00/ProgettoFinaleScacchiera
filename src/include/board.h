@@ -56,6 +56,8 @@ class board
     void printToLog();
     void promotion(unsigned short pawnCol,unsigned short pawnRow);
     bool castling(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow);
+    //returns 0 if tile is empty, otherwise returns piece id
+    char getName(unsigned short row, unsigned short col);
 };
 
 #endif

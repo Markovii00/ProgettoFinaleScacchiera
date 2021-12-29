@@ -23,7 +23,7 @@ board::board()
     {
         for (unsigned short cRow = 0; cRow < 8; ++cRow)
         {
-            chessboard[cRow][cCol] = 0;
+            chessboard[cRow][cCol] = nullptr;
         }
     }
 
@@ -133,6 +133,7 @@ bool board::kingInCheck(bool requestColor)
 
 bool board::move(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow) //controllare complessità
 {
+    if(!acceptableMove(fromRow,fromCol,toRow,toCol)) return false;
     char fromPieceId = chessboard[fromRow][fromCol]->getChar();
     bool fromPieceColor = isBlack(fromPieceId);
     short kingCol;
@@ -176,7 +177,7 @@ bool board::move(unsigned short fromCol, unsigned short fromRow, unsigned short 
         {
             if(fromPieceId == 'p'|| fromPieceId =='P') movePawn(fromCol,fromRow,toCol,toRow);
             else
-            if(kingCol==fromCol&&kingRow==kingCol)
+            if(kingCol==fromCol&&kingRow==kingCol && ((king*)chessboard[kingCol][kingRow])->hasMoved())
             executeMove(fromRow,fromCol,toRow,toCol);
         }
         return true;
@@ -210,18 +211,25 @@ void board::changeTurn()
 
 bool board::acceptableMove(short fromRow, short fromCol, short toRow, short toCol)
 {
-    char fromId = chessboard[fromRow][fromCol]->getChar();
+    char fromId = getName(fromRow,fromCol);
+    if(fromId == 0) return false;
     bool fromIsBlack = isBlack(fromId);
-    char toId = chessboard[toRow][toCol]->getChar();
+    char toId = getName(toRow,toCol);
     bool toIsBlack = isBlack(toId);
     if (toRow > 0 && toRow < 9 && toCol > 0 && toCol < 9)
     {
-        if (chessboard[toRow][toCol] == nullptr && fromIsBlack != toIsBlack)
+        if (chessboard[toRow][toCol] == 0 || fromIsBlack != toIsBlack)
         {
             return true;
         }
     }
     return false;
+}
+
+char board::getName(unsigned short row, unsigned short col)
+{
+    if(chessboard[row][col] == nullptr) return 0;
+    return chessboard[row][col]->getChar();
 }
 
 bool board::isBlack(char request)
@@ -239,11 +247,8 @@ bool board::isEnded()
 
 bool board::clearPath(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow)
 {
-    while(fromCol!=toCol&&fromCol!=toCol)
-    {
-        
-    }
-    return true;
+    if()
+    return false;
 }
 
 void board::promotion(unsigned short pawnCol,unsigned short pawnRow)
