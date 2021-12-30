@@ -16,11 +16,28 @@ class logger {
     const int debug_level;
 
 public:
+
+    /*
+     * Costruttore, debug level normale o debug, utile solo per markovii
+     */
     explicit logger(int debug_level = NORMAL);
 
+    /*
+     * Inserisce una nuova riga nel file di log
+     *
+     *      who rappresenta il contenuto tra i trattini --
+     *      console nel caso di creazione eventi partita
+     *
+     *      SOLO ED ESCLUSIVAMENTE PER LE AZIONI DEI GIOCATORI USARE IL NOME DEI GIOCATORI!!!!!!
+     *      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     *      !!!!                     BASARSI SUL FILE LOG DI ESEMPIO                        !!!!
+     *      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     */
     bool log(const std::string& who = "console", const std::string& _msg = "Null log");
 
-
+    /*
+     * per markovii
+     */
     bool debug(const std::string& message);
 };
 

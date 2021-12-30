@@ -8,6 +8,7 @@
 #include "match/match.hpp"
 #include <iostream>
 #include <regex>
+#include <list>
 
 using namespace std;
 
@@ -33,14 +34,34 @@ int main(int argc, char *argv[]) {
     cout << "Numero del file log: " << play_id << "\n";
     cout << "Player 1: " << player_1_name << "\n";
     cout << "Player 2: " << player_2_name << "\n";
+    cout << "\n";
+    cout << "\n";
 
     player p1{player_1_name, true};
     player p2{player_2_name, false};
-
-    cout << p1.get_name();
-    cout << p2.get_name();
-
     match m(p1, p2, b);
+
+    list<string> p1_moves;
+    list<string> p2_moves;
+    get_player_moves(log_file, p1, p1_moves);
+    get_player_moves(log_file, p2, p2_moves);
+
+    p1.import_moves(p1_moves);
+    p2.import_moves(p2_moves);
+
+    cout << "Player 1 moves\n";
+    int i = 0;
+    for (auto & a : p1.get_moves()) {
+        cout << "Mossa " << ++i <<": " << a << "\n";
+    }
+
+    cout << "\n";
+    cout << "\n";
+    cout << "Player 2 moves\n";
+    i = 0;
+    for (auto & a : p2.get_moves()) {
+        cout << "Mossa " << ++i <<": " << a << "\n";
+    }
 
     return 0;
 }

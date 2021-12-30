@@ -247,7 +247,7 @@ bool board::isEnded()
 
 bool board::clearPath(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow)
 {
-    if()
+    //if() lo ho commentato o non riuscivo a fare i miei test da scienziato pazzo uwu
     return false;
 }
 
