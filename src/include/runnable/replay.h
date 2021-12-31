@@ -9,6 +9,7 @@
 #include <regex>
 #include <match/player.hpp>
 #include <list>
+#include <match/match.hpp>
 
 /*
  * Recupera l'id della sessione, per identificare una partita
@@ -65,7 +66,6 @@ std::string get_player(std::fstream& file, int player_num) {
  */
 void get_player_moves(std::fstream& file, player& p, std::list<std::string>& moves) {
     std::string rgx{"- "+ p.get_name() +" - Moving "};
-    std::cout << rgx << "\n";
     std::regex player_move_row(rgx);
     std::regex player_move("\"(.*?)\"");
 
@@ -80,5 +80,6 @@ void get_player_moves(std::fstream& file, player& p, std::list<std::string>& mov
     file.clear();
     file.seekg(0);
 }
+
 
 #endif //PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_REPLAY_H

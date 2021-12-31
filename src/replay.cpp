@@ -9,6 +9,7 @@
 #include <iostream>
 #include <regex>
 #include <list>
+#include <graphic/graphic.h>
 
 using namespace std;
 
@@ -62,6 +63,8 @@ int main(int argc, char *argv[]) {
     for (auto & a : p2.get_moves()) {
         cout << "Mossa " << ++i <<": " << a << "\n";
     }
+
+    cout << scan_variable(m);
 
     return 0;
 }

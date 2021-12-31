@@ -62,11 +62,14 @@ board::~board()
     for (unsigned short cCol = 0; cCol < 8; ++cCol)
     {
         for (auto &cRow : chessboard)
-        {   
-            chessboard[iRow][cCol]->~chessman();
-            delete cRow[cCol];
-            cRow[cCol] = nullptr;
-            iRow++;
+        {
+            //Questo if serve ad evitare il segfault nel caso il chessman sia null.
+            if (chessboard[iRow][cCol] not_eq nullptr) {
+                chessboard[iRow][cCol]->chessman::~chessman();
+                delete cRow[cCol];
+                cRow[cCol] = nullptr;
+                iRow++;
+            }
         }
     }
 }
@@ -299,16 +302,42 @@ bool castling(unsigned short fromCol, unsigned short fromRow, unsigned short toC
 
 void board::printBoard()
 {
-    unsigned short row = 0;
-    unsigned short col = 0;
-    char colLetter = 'A';
-    for (auto &cRow : chessboard)
-    {   std::cout << 8-row << "  "; 
-        for (auto &cCol : cRow)
-        {
-            std::cout << chessboard[col][row]->getChar();
+    for (unsigned short iRow = 0; iRow < 8; ++iRow) {
+        std::cout << 8-iRow << "    ";
+        for (unsigned short iCol = 0; iCol < 8; ++iCol) {
+            if (chessboard[iRow][iCol] not_eq nullptr)
+                std::cout << chessboard[iRow][iCol]->getChar() << " ";
+             else {
+                std::cout << " ";
+            }
         }
+        std::cout << "\n";
     }
-    std::cout<<'\n'<<'\n'<<"  ABCDEFGH";
+    std::cout<<"\n     A B C D E F G H";
 }
+
+std::string board::to_string(bool fixed_allignment = false)
+{
+    std::string board;
+    for (unsigned short iRow = 0; iRow < 8; ++iRow) {
+        board += (fixed_allignment ? "\t\t\t       " : "");
+        board += std::to_string(8-iRow) + "    ";
+        for (unsigned short iCol = 0; iCol < 8; ++iCol) {
+            if (chessboard[iRow][iCol] not_eq nullptr) {
+                board += (chessboard[iRow][iCol]->getChar());
+                board += " ";
+            }
+            else {
+                board += " ";
+            }
+        }
+        board += "\n";
+    }
+    board += (fixed_allignment ? "\n\t\t\t       " : "\n");
+    board +="     A B C D E F G H";
+
+    return board;
+}
+
+
 #endif
