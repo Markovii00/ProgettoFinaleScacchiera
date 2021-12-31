@@ -7,7 +7,7 @@
 #include "match/player.hpp"
 #include "match/match.hpp"
 #include <iostream>
-#include <regex>
+#include <thread>
 #include <list>
 #include <graphic/graphic.h>
 
@@ -64,7 +64,12 @@ int main(int argc, char *argv[]) {
         cout << "Mossa " << ++i <<": " << a << "\n";
     }
 
-    cout << scan_variable(m);
+    this_thread::sleep_for(chrono::seconds(2));
+    for (int j = 0; j < 10; ++j) {
+        replay_print(m);
+        m.next_round();
+        this_thread::sleep_for(chrono::seconds(2));
+    }
 
     return 0;
 }

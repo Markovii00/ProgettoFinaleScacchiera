@@ -66,12 +66,8 @@ inline std::string datetime() {
  * Implementazione del "motore" grafico per la visualizzazine del replay.
  *
  */
-void g_cout() {
 
-
-}
-
-std::string scan_variable(match& m) {
+std::string& scan_variable(match& m) {
 
     player& p1 = m.get_player(1);
     player& p2 = m.get_player(2);
@@ -105,4 +101,12 @@ std::string scan_variable(match& m) {
     return elaborated_string;
 }
 
+void clean_cout(std::string& str) {
+    std::system("clear"); //nojn va, da revisionare
+    std::cout << str;
+}
+
+void replay_print(match& m) {
+    clean_cout(scan_variable(m));
+}
 #endif //PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_GRAPHIC_H

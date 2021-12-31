@@ -12,7 +12,7 @@ class chessman
 
     public:
     chessman(char p);
-    ~chessman();
+    virtual ~chessman();
 
     //check if the move can be done by a specific chessman
     virtual bool isLegalMove(unsigned short _startCol, unsigned short _startRow, unsigned short _destiCol, unsigned short _destiRow) = 0;

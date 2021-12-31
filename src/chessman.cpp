@@ -6,8 +6,6 @@
 
 chessman::chessman(char p) : piece{p} {}
 
-chessman::~chessman() {
-
-}
+chessman::~chessman() = default;
 
 char chessman::getChar() const { return piece; }

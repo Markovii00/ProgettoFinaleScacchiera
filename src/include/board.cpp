@@ -65,7 +65,6 @@ board::~board()
         {
             //Questo if serve ad evitare il segfault nel caso il chessman sia null.
             if (chessboard[iRow][cCol] not_eq nullptr) {
-                chessboard[iRow][cCol]->chessman::~chessman();
                 delete cRow[cCol];
                 cRow[cCol] = nullptr;
                 iRow++;
