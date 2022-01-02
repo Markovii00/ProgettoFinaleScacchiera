@@ -8,7 +8,6 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include <vector>
 #include "chessman.h"
 
 class board
@@ -64,10 +63,6 @@ class board
 
     std::string to_string(bool fixed_allignment);
     std::string getKing(bool requestColor);
-
-    bool isBlack(char request);
-
-    bool acceptableMove(short fromRow, short fromCol, short toRow, short toCol);
 };
 
 #endif

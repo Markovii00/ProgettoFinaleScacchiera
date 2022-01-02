@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
     }
 
     cout << "-.-.-.-.- THE CHESS GAME -.-.-.-.-" << "\n";
-    system("cls");
+
     fstream log_file(argv[1]);
 
     string play_id = get_log_number(log_file);
@@ -52,25 +52,25 @@ int main(int argc, char *argv[]) {
 
     cout << "Player 1 moves\n";
     int i = 0;
-    for (auto &a: p1.get_moves()) {
-        cout << "Mossa " << ++i << ": " << a << "\n";
+    for (auto & a : p1.get_moves()) {
+        cout << "Mossa " << ++i <<": " << a << "\n";
     }
 
     cout << "\n";
     cout << "\n";
     cout << "Player 2 moves\n";
     i = 0;
-    for (auto &a: p2.get_moves()) {
-        cout << "Mossa " << ++i << ": " << a << "\n";
+    for (auto & a : p2.get_moves()) {
+        cout << "Mossa " << ++i <<": " << a << "\n";
     }
 
     this_thread::sleep_for(chrono::seconds(2));
-    replay_print(m);
-    m.next_round();
-
-    m.get_board().move(5, 2, 5, 4);
-    replay_print(m);
-    m.next_round();
+    for (int j = 0; j < 10; ++j) {
+        replay_print(m);
+        m.next_round();
+        this_thread::sleep_for(chrono::seconds(2));
+    }
 
     return 0;
 }
+
