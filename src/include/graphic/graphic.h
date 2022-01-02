@@ -67,7 +67,7 @@ inline std::string datetime() {
  *
  */
 
-std::string& scan_variable(match& m) {
+std::string scan_variable(match& m) {
 
     player& p1 = m.get_player(1);
     player& p2 = m.get_player(2);
@@ -96,13 +96,13 @@ std::string& scan_variable(match& m) {
             line = std::regex_replace(line, hour, hourtime());
             line = std::regex_replace(line, board, b.to_string(true));
         }
-        elaborated_string += line + "\n";
+        elaborated_string += "\r" + line + "\n";
     }
     return elaborated_string;
 }
 
-void clean_cout(std::string& str) {
-    std::system("clear"); //nojn va, da revisionare
+void clean_cout(const std::string& str) {
+    system("cls");
     std::cout << str;
 }
 
