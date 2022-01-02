@@ -75,9 +75,9 @@ board::~board()
 
 bool board::kingInCheck(short col, short row, bool requestColor)
 {
-    for (int iRow = 0; iRow<8; iRow++)
+    for (auto &cRow : chessboard)
     {
-        for (int iCol = 0; iCol<8; iCol++)
+        for (auto &cCol : cRow)
         {
             //MODIFICARE DI SICURO
             short counterRow = 0;
@@ -115,9 +115,9 @@ bool board::kingInCheck(bool requestColor)
         }
     }
     // scan all opponent's pieces to see if there is a legal move to take the king
-    for (int iRow = 0; iRow<8; iRow++)
+    for (auto &cRow : chessboard)
     {
-        for (int iCol = 0; iCol<8; iCol++)
+        for (auto &cCol : cRow)
         {
             short counterRow = 0;
             short counterCol = 0;
