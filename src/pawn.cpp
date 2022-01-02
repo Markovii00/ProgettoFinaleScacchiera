@@ -42,6 +42,11 @@ bool pawn::isLegalMove(unsigned short _startRow, unsigned short _startCol, unsig
     return false;
 }
 
+bool pawn::PartialEnPassantConditions(unsigned short _startRow, unsigned short _destiRow) const
+{
+    return (abs(_destiRow - _startRow) == 2) && (first_move == false);
+}
+
 bool pawn::is_White(void) const { return isWhite; }
 bool pawn::hasMoved(void) const { return first_move; }
 void pawn::setMoved(void) { first_move = true; }

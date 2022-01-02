@@ -9,21 +9,33 @@
 #define BOARD_H
 
 #include "chessman.h"
+#include <vector>
+#include <utility>
+#include <string>
 
 class board
 {
     private:
+    chessman* chessboard[8][8];
     bool isWhiteTurn;
     int maxMoves;
-    chessman* chessboard[8][8];
+    bool possibleEnPassant;
+    std::pair<short, short> freezeCordinateEnPassant;
     bool isBlack(char request) const;
-    //bool isInDanger = false;
+    bool isPawn(char pieceId) const;
+    bool isKing(char pieceId) const;
+    bool isQueen(char pieceId) const;
+    bool isBishop(char pieceId) const;
+    bool isKnight(char pieceId) const;
+    bool isRook(char pieceId) const; 
 
+    
+    //bool isInDanger = false;
 
     public: 
     board();
     ~board();
-
+    
     bool findKing();
     //returns true is game is ended
     bool isEnded();
@@ -37,7 +49,7 @@ class board
     //return true if there is a clear way to the destination
     bool clearPath(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow);
     bool move(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow);
-    bool movePawn(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow);
+    bool movePawn(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow, bool fromPieceColor);
     //changes the active player
     void changeTurn();
     //applies the move to the board
@@ -55,9 +67,12 @@ class board
     //prints current board to file 
     void printToLog();
     void promotion(unsigned short pawnCol,unsigned short pawnRow);
-    bool castling(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow);
+    bool castling(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol, bool kingIsBlack);
     //returns 0 if tile is empty, otherwise returns piece id
     char getName(short row, short col) const;
+    void EnPassant(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol);
+    bool CheckOnEnPassant(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol);
+
 
     //returns board in a string
 
