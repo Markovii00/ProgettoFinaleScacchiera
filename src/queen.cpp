@@ -8,7 +8,7 @@ queen::queen(char type) : chessman(type) {}
 
 queen::~queen() {}
 
-bool queen::isLegalMove(unsigned short _startCol, unsigned short _startRow, unsigned short _destiCol, unsigned short _destiRow)
+bool queen::isLegalMove(unsigned short _startRow, unsigned short _startCol, unsigned short _destiRow, unsigned short _destiCol)
 {
     short dRow = _destiRow - _startRow;
     short dCol = _destiCol - _startCol;

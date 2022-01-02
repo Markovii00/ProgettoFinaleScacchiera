@@ -8,7 +8,7 @@ king::king(char type) : chessman(type) { first_move = false; }
 
 king::~king() {}
 
-bool king::isLegalMove(unsigned short _startCol, unsigned short _startRow, unsigned short _destiCol, unsigned short _destiRow)
+bool king::isLegalMove(unsigned short _startRow, unsigned short _startCol, unsigned short _destiRow, unsigned short _destiCol)
 {
     short dRow = _destiRow - _startRow;
     short dCol = _destiCol - _startCol;

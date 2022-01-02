@@ -36,6 +36,7 @@ void playerGame()
     cout << starter;
     p1 p2 int b
     //problems with board.h
+    //METTERE UN IF PER VERIFICARE IL COLORE DELLE PEDINE CHE CHIAMANO IL MOVE PER NON MUOVERE PEZZI AVVERSARI 
 
 
 }

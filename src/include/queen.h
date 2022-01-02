@@ -14,7 +14,7 @@ class queen : public chessman
     ~queen();
 
     //Return true whether destination is legal for the queen's set of moves
-    bool isLegalMove(unsigned short _startCol, unsigned short _startRow, unsigned short _destiCol, unsigned short _destiRow) override;
+    bool isLegalMove(unsigned short _startRow, unsigned short _startCol, unsigned short _destiRow, unsigned short _destiCol) override;
 };
 
 #endif

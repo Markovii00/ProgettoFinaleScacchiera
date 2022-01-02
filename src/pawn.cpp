@@ -17,7 +17,7 @@ pawn::pawn(char type) : chessman(type)
 
 pawn::~pawn() {}
 
-bool pawn::isLegalMove(unsigned short _startCol, unsigned short _startRow, unsigned short _destiCol, unsigned short _destiRow)
+bool pawn::isLegalMove(unsigned short _startRow, unsigned short _startCol, unsigned short _destiRow, unsigned short _destiCol)
 {
     short dRow = _destiRow - _startRow;
     short dCol = _destiCol - _startCol;

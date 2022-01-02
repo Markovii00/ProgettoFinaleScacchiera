@@ -8,7 +8,7 @@ rook::rook(char type) : chessman(type) { first_move = false; }
 
 rook::~rook() {}
 
-bool rook::isLegalMove(unsigned short _startCol, unsigned short _startRow, unsigned short _destiCol, unsigned short _destiRow)
+bool rook::isLegalMove(unsigned short _startRow, unsigned short _startCol, unsigned short _destiRow, unsigned short _destiCol)
 {
     //XOR (exclusive or)
     return ((_destiCol == _startCol) && !(_destiRow == _startRow)) || (!(_destiCol == _startCol) && (_destiRow == _startRow));
