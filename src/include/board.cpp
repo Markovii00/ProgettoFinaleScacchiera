@@ -79,7 +79,6 @@ bool board::kingInCheck(short col, short row, bool requestColor)
     {
         for (auto &cCol : cRow)
         {
-            //MODIFICARE DI SICURO
             short counterRow = 0;
             short counterCol = 0;
             char id = (*cCol).getChar();
@@ -187,7 +186,6 @@ bool board::move(unsigned short fromCol, unsigned short fromRow, unsigned short 
 }
 void board::executeMove(short fromRow, short fromCol, short toRow, short toCol)
 {
-    //DA RIFARE, CON 3 IF, OVVERO SE TORRE, RE O PEDONE SPOSTATI SETTARE CON RELATIVO METODO IL FIRSTMOVE = TRUE
     if (chessboard[toRow][toCol]->getChar() != 0)
     {
         chessboard[toRow][toCol]->~chessman();
