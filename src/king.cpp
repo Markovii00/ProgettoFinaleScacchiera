@@ -12,7 +12,11 @@ bool king::isLegalMove(unsigned short _startRow, unsigned short _startCol, unsig
 {
     short dRow = _destiRow - _startRow;
     short dCol = _destiCol - _startCol;
-
+    if(!first_move)
+    {
+        return ((abs(dRow) == 2) && (dCol == 0)) || ((dCol == 0) && (abs(dRow) == 1)) || ((abs(dCol) == 1) && (abs(dRow) == 1)) || ((dCol == 1) && (abs(dRow) == 0));
+    }
+    
     return ((dCol == 0) && (abs(dRow) == 1)) || ((abs(dCol) == 1) && (abs(dRow) == 1)) || ((dCol == 1) && (abs(dRow) == 0));
 }
 

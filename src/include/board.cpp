@@ -77,6 +77,7 @@ bool board::kingInCheck(short row, short col, bool requestColor)
     {
         for (auto &cCol : cRow)
         {
+            //MODIFICARE DI SICURO
             short counterRow = 0;
             short counterCol = 0;
             char id = (*cCol).getChar();
@@ -191,6 +192,7 @@ std::vector<std::pair<short, short>> board::KingPossibleMoves(short fromRow, sho
 
 void board::executeMove(short fromRow, short fromCol, short toRow, short toCol)
 {
+    //DA RIFARE, CON 3 IF, OVVERO SE TORRE, RE O PEDONE SPOSTATI SETTARE CON RELATIVO METODO IL FIRSTMOVE = TRUE
     if (chessboard[toRow][toCol]->getChar() != 0)
     {
         delete chessboard[toRow][toCol];

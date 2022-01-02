@@ -29,19 +29,27 @@ class board
     bool isEnded();
     //returns true if game is against a human opponent, input from main function: 0 = against human, 1 = pc vs pc
     bool isVsUser(int input);
-    //returns true if the selected column is empty and contained in the board
+
+    //returns true if the selected tile is empty, contained in the board or with an opponent chessman
     bool acceptableMove(short fromRow, short fromCol, short toRow, short toCol) const;
+
     //returns true if the king is in a safe position
     bool kingInCheck(bool requestColor);
     bool kingInCheck(short col, short row, bool requestColor);
+
     //return true if there is a clear way to the destination
     bool clearPath(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow);
+
+    //return true if the move is executed
     bool move(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow);
+
     bool movePawn(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow);
     //changes the active player
     void changeTurn();
+
     //applies the move to the board
     void executeMove(short fromCol, short fromRow, short toCol, short toRow);
+    
     //quits and executes post-game code
     void endGame();
     //throws needed exceptions
