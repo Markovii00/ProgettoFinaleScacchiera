@@ -6,6 +6,7 @@
 #define PAWN_H
 
 #include "chessman.h"
+#include <cmath>
 
 class pawn : public chessman
 {

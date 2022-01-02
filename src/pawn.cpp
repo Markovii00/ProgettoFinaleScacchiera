@@ -21,21 +21,22 @@ bool pawn::isLegalMove(unsigned short _startRow, unsigned short _startCol, unsig
 {
     short dRow = _destiRow - _startRow;
     short dCol = _destiCol - _startCol;
+    
     if (isWhite && !first_move)
     {
-        return ((dCol == 0) && (dRow == -2)) || ((dCol == 0) && (dRow == -1));
+        return ((dCol == 0) && (dRow == -2)) || ((dCol == 0) && (dRow == -1)) || ((dRow == -1) && (abs(dCol) == 1));
     }
     else if (isWhite && first_move)
     {
-        return (dCol == 0) && (dRow == -1);
+        return ((dCol == 0) && (dRow == -1)) || ((dRow == -1) && (abs(dCol) == 1));
     }
     else if (!isWhite && !first_move)
     {
-        return ((dCol == 0) && (dRow == 2)) || ((dCol == 0) && (dRow == 1));
+        return ((dCol == 0) && (dRow == 2)) || ((dCol == 0) && (dRow == 1)) || ((dRow == 1) && (abs(dCol) == 1));
     }
     else if (!isWhite && first_move)
     {
-        return (dCol == 0) && (dRow == 1);
+        return ((dCol == 0) && (dRow == 1)) || ((dRow == 1) && (abs(dCol) == 1));
     }
 
     return false;
