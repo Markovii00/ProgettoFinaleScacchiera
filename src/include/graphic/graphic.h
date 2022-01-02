@@ -102,7 +102,7 @@ std::string scan_variable(match& m) {
 }
 
 void clean_cout(const std::string& str) {
-    system("clear");
+    system("cls");
     std::cout << str;
 }
 

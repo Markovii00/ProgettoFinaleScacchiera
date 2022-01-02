@@ -82,14 +82,14 @@ bool board::kingInCheck(short col, short row, bool requestColor)
             //MODIFICARE DI SICURO
             short counterRow = 0;
             short counterCol = 0;
-            //char id = (*cCol).getChar();
-            //bool cycleColor = isBlack(id);
-            /*if (id != 0 && cycleColor != requestColor && (*cCol).isLegalMove(counterCol, counterRow, col, row) && clearPath(counterCol, counterRow, col, row))
+            char id = (*cCol).getChar();
+            bool cycleColor = isBlack(id);
+            if (id != 0 && cycleColor != requestColor && (*cCol).isLegalMove(counterCol, counterRow, col, row) && clearPath(counterCol, counterRow, col, row))
             {
                 return true;
             }
             counterRow++;
-            counterCol++;*/
+            counterCol++;
         }
     }
     return false;
@@ -121,14 +121,14 @@ bool board::kingInCheck(bool requestColor)
         {
             short counterRow = 0;
             short counterCol = 0;
-            /*char id = (*cCol).getChar();
+            char id = (*cCol).getChar();
             bool cycleColor = isBlack(id);
             if (id != 0 && cycleColor != requestColor && (*cCol).isLegalMove(counterCol, counterRow, targetKingCol, targetKingRow) && clearPath(counterCol, counterRow, targetKingCol, targetKingRow))
             {
                 return true;
             }
             counterRow++;
-            counterCol++;*/
+            counterCol++;
         }
     }
     return false;
