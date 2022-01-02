@@ -21,7 +21,6 @@ int main(int argc, char *argv[]) {
     }
 
     cout << "-.-.-.-.- THE CHESS GAME -.-.-.-.-" << "\n";
-    system("cls");
     fstream log_file(argv[1]);
 
     string play_id = get_log_number(log_file);
@@ -67,8 +66,8 @@ int main(int argc, char *argv[]) {
     this_thread::sleep_for(chrono::seconds(2));
     replay_print(m);
     m.next_round();
-
-    m.get_board().move(5, 2, 5, 4);
+    this_thread::sleep_for(chrono::seconds(2));
+    //m.get_board().move(5, 2, 5, 4);
     replay_print(m);
     m.next_round();
 
