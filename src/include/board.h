@@ -27,7 +27,10 @@ class board
     bool isQueen(char pieceId) const;
     bool isBishop(char pieceId) const;
     bool isKnight(char pieceId) const;
-    bool isRook(char pieceId) const; 
+    bool isRook(char pieceId) const;
+    bool isVertical(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol) const;
+    bool isHorizontal(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol) const;
+    bool isDiagonal(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol) const;
 
     
     //bool isInDanger = false;
@@ -42,12 +45,12 @@ class board
     //returns true if game is against a human opponent, input from main function: 0 = against human, 1 = pc vs pc
     bool isVsUser(int input);
     //returns true if the selected column is empty and contained in the board
-    bool acceptableMove(short fromRow, short fromCol, short toRow, short toCol) const;
+    bool acceptableMove(short fromRow, short fromCol, short toRow, short toCol, char fromPieceId) const;
     //returns true if the king is in a safe position
     bool kingInCheck(bool requestColor);
     bool kingInCheck(short col, short row, bool requestColor);
     //return true if there is a clear way to the destination
-    bool clearPath(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow);
+    bool clearPath(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow, char fromPieceId);
     bool move(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow);
     bool movePawn(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow, bool fromPieceColor);
     //changes the active player
@@ -60,7 +63,7 @@ class board
     void handleExceptions();
 
     //returns all the possible cordinates where the king can move
-    std::vector<std::pair<short, short>> KingPossibleMoves(short fromRow, short fromCol) const;
+    std::vector<std::pair<short, short>> KingPossibleMoves(short fromRow, short fromCol, char fromPieceColor) const;
     
     //prints current board to terminal (cout)
     void printBoard();
@@ -72,7 +75,6 @@ class board
     char getName(short row, short col) const;
     void EnPassant(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol);
     bool CheckOnEnPassant(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol);
-
 
     //returns board in a string
 

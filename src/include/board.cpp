@@ -9,6 +9,7 @@
 #include <vector>
 #include <utility>
 #include <string>
+#include <cctype>
 #include "board.h"
 #include "pawn.h"
 #include "rook.h"
@@ -17,7 +18,7 @@
 #include "queen.h"
 #include "king.h"
 /*
-if (chessboard[cRow][cCol] not_eq nullptr)
+if (cnhessboard[cRow][cCol] not_eq ullptr)
 {
 }
 */
@@ -91,7 +92,7 @@ bool board::kingInCheck(short row, short col, bool requestColor)
             {
                 char id = chessboard[cRow][cCol]->getChar();
                 bool cycleColor = isBlack(id);
-                if (id != 0 && cycleColor != requestColor && chessboard[cRow][cCol]->isLegalMove(cRow, cCol, row, col) && clearPath(cRow, cCol, row, col))
+                if (id != 0 && cycleColor != requestColor && chessboard[cRow][cCol]->isLegalMove(cRow, cCol, row, col) && clearPath(cRow, cCol, row, col, cycleColor))
                 {
                     return true;
                 }
@@ -101,17 +102,266 @@ bool board::kingInCheck(short row, short col, bool requestColor)
     return false;
 }
 
+bool board::acceptableMove(short fromRow, short fromCol, short toRow, short toCol, char fromPieceId) const
+{
+    if (fromPieceId == 0)
+        return false;
+    bool fromIsBlack = isBlack(fromPieceId);
+
+    char toId = getName(toRow, toCol);
+    bool toIsBlack = isBlack(toId);
+    if (toRow >= 0 && toRow < 8 && toCol >= 0 && toCol < 8)
+    {
+        if (toId == 0 || fromIsBlack != toIsBlack)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool board::clearPath(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol, char fromPieceId)
+{
+    fromPieceId = tolower(fromPieceId);
+    short dR = toRow - fromRow;
+    short dC = toCol - fromCol;
+
+    short rMov = fromRow;
+    short cMov = fromCol;
+
+    bool vertical = isVertical( fromRow, fromCol, toRow, toCol);
+    bool horizontal = isHorizontal( fromRow, fromCol, toRow, toCol);
+    bool diagonal = isDiagonal( fromRow, fromCol, toRow, toCol);
+
+    switch (fromPieceId)
+    {
+        case 'c' : return true;
+        case 'a' : 
+        {
+            //movement Sud-Est
+            if(dR > 0 && dC > 0) 
+            {
+                while (rMov < toRow && cMov < toCol)
+                {
+                    rMov += 1;
+                    cMov += 1;
+                    if(chessboard[rMov][cMov] not_eq nullptr) return false;
+                }
+                return true;
+            }
+            //movement Nord-Est
+            else if(dR < 0 && dC > 0)
+            {
+                while (rMov > toRow && cMov < toCol)
+                {
+                    rMov -= 1;
+                    cMov += 1;
+                    if(chessboard[rMov][cMov] not_eq nullptr) return false;
+                }
+                return true;
+            }
+            //movement Nord-West
+            else if(dR < 0 && dC < 0)
+            {
+                while (rMov > toRow && cMov > toCol)
+                {
+                    rMov -= 1;
+                    cMov -= 1;
+                    if(chessboard[rMov][cMov] not_eq nullptr) return false;
+                }
+                return true;
+            }
+            //movement Sud-West
+            else if(dR > 0 && dC < 0)
+            {
+                while (rMov < toRow && cMov > toCol)
+                {
+                    rMov += 1;
+                    cMov -= 1;
+                    if(chessboard[rMov][cMov] not_eq nullptr) return false;
+                }
+                return true;
+            }
+        }
+
+        case 'd' :
+        {
+            if(vertical)
+            {
+                if(dR > 0) 
+                {
+                    while (rMov < toRow)
+                    {
+                        rMov += 1;
+                        if(chessboard[rMov][fromCol] not_eq nullptr) return false;
+                    }
+                    return true;
+                }
+                else
+                {
+                    while (rMov > toRow)
+                    {
+                        rMov -= 1;
+                        if(chessboard[rMov][fromCol] not_eq nullptr) return false;
+                    }
+                    return true;
+                }
+            }
+            else if(horizontal) 
+            {
+                if(dC > 0) 
+                {
+                    while (cMov < toCol)
+                    {
+                        cMov += 1;
+                        if(chessboard[fromRow][cMov] not_eq nullptr) return false;
+                    }
+                    return true;
+                }
+                else
+                {
+                    while (cMov > toCol)
+                    {
+                        cMov -= 1;
+                        if(chessboard[fromRow][cMov] not_eq nullptr) return false;
+                    }
+                    return true;
+                }
+
+            }
+            else //diagonal movement
+            {
+                //movement Sud-Est
+                if(dR > 0 && dC > 0) 
+                {
+                    while (rMov < toRow && cMov < toCol)
+                    {
+                        rMov += 1;
+                        cMov += 1;
+                        if(chessboard[rMov][cMov] not_eq nullptr) return false;
+                    }
+                    return true;
+                }
+                //movement Nord-Est
+                else if(dR < 0 && dC > 0)
+                {
+                    while (rMov > toRow && cMov < toCol)
+                    {
+                        rMov -= 1;
+                        cMov += 1;
+                        if(chessboard[rMov][cMov] not_eq nullptr) return false;
+                    }
+                    return true;
+                }
+                //movement Nord-West
+                else if(dR < 0 && dC < 0)
+                {
+                    while (rMov > toRow && cMov > toCol)
+                    {
+                        rMov -= 1;
+                        cMov -= 1;
+                        if(chessboard[rMov][cMov] not_eq nullptr) return false;
+                    }
+                    return true;
+                }
+                //movement Sud-West
+                else if(dR > 0 && dC < 0)
+                {
+                    while (rMov < toRow && cMov > toCol)
+                    {
+                        rMov += 1;
+                        cMov -= 1;
+                        if(chessboard[rMov][cMov] not_eq nullptr) return false;
+                    }
+                    return true;
+                }    
+            }
+        }
+
+        case 'k' : return true;
+
+        case 't' :
+        {
+            if(vertical)
+            {
+                if(dR > 0)
+                {
+                    while (rMov < toRow)
+                    {
+                        rMov += 1;
+                        if(chessboard[rMov][fromCol] not_eq nullptr) return false;
+                    }
+                    return true;
+                }
+                else 
+                {
+                    while (rMov > toRow)
+                    {
+                        rMov -= 1;
+                        if(chessboard[rMov][fromCol] not_eq nullptr) return false;
+                    }
+                    return true;
+                }
+            }
+            else if(horizontal)
+            {
+                if(dC > 0)
+                {
+                    while (cMov < toCol)
+                    {
+                        cMov += 1;
+                        if(chessboard[fromRow][cMov] not_eq nullptr) return false;
+                    }
+                    return true;
+                }
+                else
+                {
+                    while (cMov > toCol)
+                    {
+                        cMov -= 1;
+                        if(chessboard[fromRow][cMov] not_eq nullptr) return false;
+                    }
+                    return true;
+                }
+            }
+        }
+
+        case 'p' :
+        {
+            if(dR == 2)
+            {
+                rMov+=1;
+                if(chessboard[rMov][fromCol] not_eq nullptr) return false;
+                return true;
+            }
+            else if (dR == -2) 
+            {
+                rMov -= 1;
+                if(chessboard[rMov][fromCol] not_eq nullptr) return false;
+                return true;
+            }
+
+            else return true; //this is for either a 1 tile diagonal move or 1 tile vertical move
+        }
+
+        default: //impossible but ok
+            return false;
+    }
+    return false;
+}
+
 bool board::move(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol) // controllare complessità
 {
+    char fromPieceId = chessboard[fromRow][fromCol]->getChar();
+
     // check if the coordinates are within the board limits and whether the destination tile is empty or there is an opponent chessman
-    if (!acceptableMove(fromRow, fromCol, toRow, toCol))
+    if (!acceptableMove(fromRow, fromCol, toRow, toCol, fromPieceId))
         return false;
     if (!chessboard[fromRow][fromCol]->isLegalMove(fromRow, fromCol, toRow, toCol))
         return false;
-    if (!clearPath(fromRow, fromCol, toRow, toCol))
+    if (!clearPath(fromRow, fromCol, toRow, toCol, fromPieceId))
         return false;
 
-    char fromPieceId = chessboard[fromRow][fromCol]->getChar();
     bool fromPieceColor = isBlack(fromPieceId);
     short kingCol;
     short kingRow;
@@ -123,7 +373,7 @@ bool board::move(unsigned short fromRow, unsigned short fromCol, unsigned short 
     if (kingInCheck(kingRow, kingCol, fromPieceColor))
     {
         std::vector<std::pair<short, short>> PMoves;
-        PMoves = KingPossibleMoves(kingRow, kingCol);
+        PMoves = KingPossibleMoves(kingRow, kingCol, fromPieceColor);
         for (std::pair<short, short> x : PMoves)
         {
             if (!kingInCheck(x.first, x.second, fromPieceColor))
@@ -179,7 +429,7 @@ bool board::move(unsigned short fromRow, unsigned short fromCol, unsigned short 
     return true;
 }
 
-std::vector<std::pair<short, short>> board::KingPossibleMoves(short fromRow, short fromCol) const
+std::vector<std::pair<short, short>> board::KingPossibleMoves(short fromRow, short fromCol, char fromPieceColor) const
 {
     std::vector<std::pair<short, short>> PMoves;
     // i rows j colums
@@ -191,7 +441,7 @@ std::vector<std::pair<short, short>> board::KingPossibleMoves(short fromRow, sho
                 continue;
             short possRow = fromRow + i;
             short possCol = fromCol + j;
-            if (acceptableMove(fromRow, fromCol, possRow, possCol))
+            if (acceptableMove(fromRow, fromCol, possRow, possCol, fromPieceColor))
             {
                 std::pair<short, short> amogus;
                 amogus.first = possRow;
@@ -252,6 +502,8 @@ bool board::movePawn(unsigned short fromRow, unsigned short fromCol, unsigned sh
         }  
         else
         {
+            if(toPieceId != 0) //check if one/two tile/s ahead there aren't chessmans 
+                return false;
             executeMove(fromRow, fromCol, toRow, toCol);
             return true;
         }     
@@ -274,25 +526,6 @@ void board::changeTurn()
     isWhiteTurn = !isWhiteTurn;
 }
 
-bool board::acceptableMove(short fromRow, short fromCol, short toRow, short toCol) const
-{
-    char fromId = getName(fromRow, fromCol);
-    if (fromId == 0)
-        return false;
-    bool fromIsBlack = isBlack(fromId);
-
-    char toId = getName(toRow, toCol);
-    bool toIsBlack = isBlack(toId);
-    if (toRow >= 0 && toRow < 8 && toCol >= 0 && toCol < 8)
-    {
-        if (toId == 0 || fromIsBlack != toIsBlack)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
 char board::getName(short row, short col) const
 {
     if (chessboard[row][col] == nullptr)
@@ -311,12 +544,6 @@ bool board::isBlack(char request) const
 bool board::isEnded()
 {
     return true;
-}
-
-bool board::clearPath(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol)
-{
-    // if() lo ho commentato o non riuscivo a fare i miei test da scienziato pazzo uwu
-    return false;
 }
 
 void board::promotion(unsigned short pawnRow, unsigned short pawnCol)
@@ -524,4 +751,8 @@ bool board::isKnight(char pieceId) const { return pieceId == 'c' || pieceId == '
 
 bool board::isRook(char pieceId) const { return pieceId == 't' || pieceId == 'T'; }
 
+bool board::isVertical(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol) const { return fromCol == toCol && fromRow != toRow;}
 
+bool board::isHorizontal(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol) const {return fromRow==toRow&&fromCol!=toCol;}
+
+bool board::isDiagonal(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol) const { return abs(toRow - fromRow) == abs(toCol - fromCol); }
