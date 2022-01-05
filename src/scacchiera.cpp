@@ -2,7 +2,7 @@
  * @author Alessandro Viespoli - 2009659 (alessandro.viespoli@studentiunipd.it)
  */ 
 
-#include "include/board.h"
+#include "board.cpp"
 #include "include/match/player.hpp"
 #include "include/match/match.hpp"
 #include "include/log/logger.hpp"
@@ -15,7 +15,7 @@ string const console = "console";
 
 void playerGame() 
 {
-    board b();
+    board b;
     logger logger;
     logger.log(console, "Welcome");
     logger.log(console, "Starting new log session");
@@ -28,23 +28,18 @@ void playerGame()
 
     player p1(username, false);
     player pc(computer, true);
-    match sus(p1, computer, b); 
+    match sus(p1, pc, b); 
     logger.log(console, "Initializing player 1 " + username);
     logger.log(console, "Initializing player 2 " + computer);
 
     int starter = rand() % 1;
     cout << starter;
-    p1 p2 int b
-    //problems with board.h
+ 
     //METTERE UN IF PER VERIFICARE IL COLORE DELLE PEDINE CHE CHIAMANO IL MOVE PER NON MUOVERE PEZZI AVVERSARI 
 
 
 }
     
-    
-    
-}
-
 void computersGame() {}
 
 int main() 

@@ -10,13 +10,7 @@
 #include <utility>
 #include <string>
 #include <cctype>
-#include "board.h"
-#include "pawn.h"
-#include "rook.h"
-#include "knight.h"
-#include "bishop.h"
-#include "queen.h"
-#include "king.h"
+#include "include/board.h"
 
 board::board()
 {
@@ -348,7 +342,6 @@ bool board::clearPath(unsigned short fromRow, unsigned short fromCol, unsigned s
 bool board::move(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol) // controllare complessità
 {
     char fromPieceId = chessboard[fromRow][fromCol]->getChar();
-
     // check if the coordinates are within the board limits and whether the destination tile is empty or there is an opponent chessman
     if (!acceptableMove(fromRow, fromCol, toRow, toCol, fromPieceId))
         return false;
@@ -356,7 +349,7 @@ bool board::move(unsigned short fromRow, unsigned short fromCol, unsigned short 
         return false;
     if (!clearPath(fromRow, fromCol, toRow, toCol, fromPieceId))
         return false;
-
+    
     bool fromPieceColor = isBlack(fromPieceId);
     short kingCol;
     short kingRow;
@@ -380,7 +373,7 @@ bool board::move(unsigned short fromRow, unsigned short fromCol, unsigned short 
         // all the possible king moves are covered, GG!
         endGame();
     }
-
+    
     //PAWN HANDLING
     bool isChangedLastTurn = possibleEnPassant;
     if (isPawn(fromPieceId))
@@ -406,7 +399,7 @@ bool board::move(unsigned short fromRow, unsigned short fromCol, unsigned short 
         }
         return movePawn(fromRow, fromCol, toRow, toCol, fromPieceColor);
     }
-
+    
     //Castling Management
     if(isKing(fromPieceId) && castling(fromRow, fromCol, toRow, toCol, fromPieceColor)) 
         return true;
@@ -454,10 +447,10 @@ void board::executeMove(short fromRow, short fromCol, short toRow, short toCol)
     {
         delete chessboard[toRow][toCol];
     }
-    else
-        chessboard[toRow][toCol] = chessboard[fromRow][fromCol];
-    delete chessboard[fromRow][fromCol];
+    
+    chessboard[toRow][toCol] = chessboard[fromRow][fromCol];
     chessboard[fromRow][fromCol] = nullptr;
+
     char toId = getName(toRow, toCol);
     if(isRook(toId) && !((rook*)chessboard[toRow][toCol])->hasMoved()) 
         ((rook*)chessboard[toRow][toCol])->setMoved();
@@ -465,6 +458,8 @@ void board::executeMove(short fromRow, short fromCol, short toRow, short toCol)
         ((king*)chessboard[toRow][toCol])->setMoved();
     else if(isPawn(toId) && !((pawn*)chessboard[toRow][toCol])->hasMoved()) 
         ((pawn*)chessboard[toRow][toCol])->setMoved();
+
+    //un if all'inizio per vedere hasMoved, creare un nuovo oggetto e ri-settarlo come all'inizio in modo da non fare merda
 }
 
 bool board::movePawn(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol, bool fromPieceColor)
@@ -661,6 +656,8 @@ bool board::castling(unsigned short fromRow, unsigned short fromCol, unsigned sh
     }
     return false;
 }
+
+bool board::endGame() {return false;}
 
 void board::printBoard()
 {

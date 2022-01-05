@@ -8,7 +8,13 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include "chessman.h"
+#include "../chessman.cpp"
+#include "../king.cpp"
+#include "../pawn.cpp"
+#include "../bishop.cpp"
+#include "../queen.cpp"
+#include "../rook.cpp"
+#include "../knight.cpp"
 #include <vector>
 #include <utility>
 #include <string>
@@ -58,7 +64,7 @@ class board
     //applies the move to the board
     void executeMove(short fromCol, short fromRow, short toCol, short toRow);
     //quits and executes post-game code
-    void endGame();
+    bool endGame();
     //throws needed exceptions
     void handleExceptions();
 
