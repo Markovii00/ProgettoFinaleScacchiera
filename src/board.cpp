@@ -443,14 +443,13 @@ std::vector<std::pair<short, short>> board::KingPossibleMoves(short fromRow, sho
 
 void board::executeMove(short fromRow, short fromCol, short toRow, short toCol)
 {
-    if (chessboard[toRow][toCol]->getChar() != 0)
+    if (getName(toRow, toCol) != 0)
     {
         delete chessboard[toRow][toCol];
     }
     
     chessboard[toRow][toCol] = chessboard[fromRow][fromCol];
     chessboard[fromRow][fromCol] = nullptr;
-
     char toId = getName(toRow, toCol);
     if(isRook(toId) && !((rook*)chessboard[toRow][toCol])->hasMoved()) 
         ((rook*)chessboard[toRow][toCol])->setMoved();
@@ -458,7 +457,6 @@ void board::executeMove(short fromRow, short fromCol, short toRow, short toCol)
         ((king*)chessboard[toRow][toCol])->setMoved();
     else if(isPawn(toId) && !((pawn*)chessboard[toRow][toCol])->hasMoved()) 
         ((pawn*)chessboard[toRow][toCol])->setMoved();
-
     //un if all'inizio per vedere hasMoved, creare un nuovo oggetto e ri-settarlo come all'inizio in modo da non fare merda
 }
 

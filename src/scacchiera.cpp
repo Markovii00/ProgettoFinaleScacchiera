@@ -9,6 +9,7 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <string>
 
 using namespace std; 
 string const console = "console";
@@ -16,6 +17,7 @@ string const console = "console";
 void playerGame() 
 {
     board b;
+    string _coordinates;
     logger logger;
     logger.log(console, "Welcome");
     logger.log(console, "Starting new log session");
@@ -34,6 +36,8 @@ void playerGame()
 
     int starter = rand() % 1;
     cout << starter;
+
+    short *mosse = conversion(_coordinates);
  
     //METTERE UN IF PER VERIFICARE IL COLORE DELLE PEDINE CHE CHIAMANO IL MOVE PER NON MUOVERE PEZZI AVVERSARI 
 
@@ -88,6 +92,20 @@ int main()
         }
     }
     return 0;
+}
+
+
+short* conversion(string _m) 
+{
+    short fromCol = ((int)_m[0]-65);
+    short fromRow = ((int)_m[1]-8);
+    short toCol = ((int)_m[3]-65);
+    short toRow = ((int)_m[4]-8);
+
+    cout << fromCol << endl;
+    cout << fromRow << endl;
+    cout << toCol << endl;
+    cout << toRow << endl;
 }
 
 
