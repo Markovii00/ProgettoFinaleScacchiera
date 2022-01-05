@@ -17,11 +17,6 @@
 #include "bishop.h"
 #include "queen.h"
 #include "king.h"
-/*
-if (cnhessboard[cRow][cCol] not_eq ullptr)
-{
-}
-*/
 
 board::board()
 {
