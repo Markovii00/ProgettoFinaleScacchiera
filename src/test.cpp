@@ -8,6 +8,7 @@ string const console = "console";
 
 short* conversion(string _m) 
 {
+    if()
     short fromCol = ((int)_m[0]-65);
     short fromRow = ((int)_m[1]-8);
     short toCol = ((int)_m[3]-65);
