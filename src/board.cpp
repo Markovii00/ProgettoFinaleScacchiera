@@ -200,7 +200,7 @@ std::pair<bool,bool> board::move(unsigned short& fromRow, unsigned short& fromCo
         PMoves = KingPossibleMoves(kingCoords, fromPieceColor); 
         for (std::pair<unsigned short, unsigned short> x : PMoves)
         {
-            if (!kingInCheck(x.first, x.second, fromPieceColor))
+            if (!kingInCheck(x.first, x.second, fromPieceColor)) //sdfgdsgd
             {
                 std::cout << "Your king is in check, move it";
                 return false;
