@@ -57,9 +57,9 @@ class board
     
     //returns true if the king is in a safe position
     bool kingInCheck(bool requestColor);
-    bool kingInCheck(short col, short row, bool requestColor);
+    bool kingInCheck(unsigned short col,unsigned short row, bool requestColor);
     
-    bool move(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow, char pieceToMoveColor);
+    bool move(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol, bool pieceToMoveColor);
     
    
     //applies the move to the board
@@ -70,7 +70,7 @@ class board
     void handleExceptions();
 
     //returns all the possible cordinates where the king can move
-    std::vector<std::pair<short, short>> KingPossibleMoves(short fromRow, short fromCol, char fromPieceColor) const;
+    std::vector<std::pair<short, short>> KingPossibleMoves(unsigned short fromRow, unsigned short fromCol, char fromPieceid) const;
     
     //prints current board to terminal (cout)
     void printBoard();
@@ -90,12 +90,16 @@ class board
 
     private:
     chessman* chessboard[8][8];
-    bool isWhiteTurn;
-    int maxMoves;
     bool possibleEnPassant;
     std::pair<short, short> freezeCordinateEnPassant;
+    std::vector<std::pair<short, short>> whiteSet;
+    std::vector<std::pair<short, short>> blackSet;
 
     bool movePawn(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow, bool fromPieceColor);
+
+
+    template<typename Type>
+    bool is(const chessman &data);
 
     bool isBlack(char& request) const;
     bool isPawn(char& pieceId) const;
