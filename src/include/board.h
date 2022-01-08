@@ -42,6 +42,17 @@ class board
      */
     bool acceptableMove(unsigned short& fromRow, unsigned short& fromCol, unsigned short& toRow, unsigned short& toCol, char& fromPieceId) const;
 
+    /**
+     * @brief   Look all the possible mechanics in chees game
+     * 
+     * @param   pieceToMoveColor black or white turn, initial and final coordinates 
+     * @return  std::pair<bool,bool> :
+                    -(false, false) game is over (Check mate), or tie
+                    -(true, true)   move went smoothly
+                    -(true, false)  king in check, move the king
+                    -(false, true)  error in accettable move, legalMove, clearPath.  
+     */
+    std::pair<bool,bool> move(unsigned short& fromRow, unsigned short& fromCol, unsigned short& toRow, unsigned short& toCol, bool& pieceToMoveColor);
 
     /**
      * @brief   When all the condition are checked the move action is here applied; updating all the involved pointers
@@ -49,28 +60,20 @@ class board
      * @param  /initial and final coordinates
      * @return void                
      */
-    void executeMove(short fromCol, short fromRow, short toCol, short toRow);
+    void executeMove(unsigned short fromCol,unsigned short fromRow,unsigned short toCol,unsigned short toRow);
 
-    bool findKing();
-  
-   
-    
+
     //returns true if the king is in a safe position
     bool kingInCheck(bool requestColor);
-    bool kingInCheck(unsigned short col,unsigned short row, bool requestColor);
+    bool kingInCheck(std::pair<unsigned short, unsigned short>, bool requestColor);
     
-    bool move(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol, bool pieceToMoveColor);
-    
-   
-    //applies the move to the board
-    void executeMove(short fromCol, short fromRow, short toCol, short toRow);
     //quits and executes post-game code
     bool endGame();
     //throws needed exceptions
     void handleExceptions();
 
     //returns all the possible cordinates where the king can move
-    std::vector<std::pair<short, short>> KingPossibleMoves(unsigned short fromRow, unsigned short fromCol, char fromPieceid) const;
+    std::vector<std::pair<unsigned short,unsigned short>> KingPossibleMoves(unsigned short fromRow, unsigned short fromCol, char fromPieceid) const;
     
     //prints current board to terminal (cout)
     void printBoard();
@@ -79,7 +82,7 @@ class board
     void promotion(unsigned short pawnCol,unsigned short pawnRow);
     bool castling(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol, bool kingIsBlack);
     //returns 0 if tile is empty, otherwise returns piece id
-    char getName(short row, short col) const;
+    char getName(unsigned short row, unsigned short col) const;
     void EnPassant(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol);
     bool CheckOnEnPassant(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol);
 
@@ -90,24 +93,27 @@ class board
 
     private:
     chessman* chessboard[8][8];
+    unsigned short moveCounter;
     bool possibleEnPassant;
-    std::pair<short, short> freezeCordinateEnPassant;
-    std::vector<std::pair<short, short>> whiteSet;
-    std::vector<std::pair<short, short>> blackSet;
+    std::pair<unsigned short, unsigned short> freezeCordinateEnPassant;
+    std::vector<std::pair<unsigned short, unsigned short>> whiteSet;
+    std::vector<std::pair<unsigned short, unsigned short>> blackSet;
 
     bool movePawn(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow, bool fromPieceColor);
 
+    bool checkTie();
 
     template<typename Type>
     bool is(const chessman &data);
 
+    template<typename Type>
+    std::pair<unsigned short, unsigned short> search(bool& requestColor) const;
+
+    template<typename Type>
+    bool find(bool& requestColor) const;
+
     bool isBlack(char& request) const;
-    bool isPawn(char& pieceId) const;
-    bool isKing(char& pieceId) const;
-    bool isQueen(char& pieceId) const;
-    bool isBishop(char& pieceId) const;
-    bool isKnight(char& pieceId) const;
-    bool isRook(char& pieceId) const;
+    
     bool isVertical(unsigned short& fromRow, unsigned short& fromCol, unsigned short& toRow, unsigned short& toCol) const;
     bool isHorizontal(unsigned short& fromRow, unsigned short& fromCol, unsigned short& toRow, unsigned short& toCol) const;
     bool isDiagonal(unsigned short& fromRow, unsigned short& fromCol, unsigned short& toRow, unsigned short& toCol) const;
