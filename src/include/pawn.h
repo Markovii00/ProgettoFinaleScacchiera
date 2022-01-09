@@ -22,7 +22,7 @@ class pawn : public chessman
     bool isLegalMove(unsigned short _startRow, unsigned short _startCol, unsigned short _destiRow, unsigned short _destiCol) override;
 
     //Check part of the enPassant Conditions
-    bool PartialEnPassantConditions(unsigned short _startRow, unsigned short _destiRow) const;
+    bool PartialEnPassantConditions(unsigned short& _startRow, unsigned short& _destiRow) const;
 
     //true if the piece has moved
     bool hasMoved(void) const;

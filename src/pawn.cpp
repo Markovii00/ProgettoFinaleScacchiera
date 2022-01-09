@@ -42,7 +42,7 @@ bool pawn::isLegalMove(unsigned short _startRow, unsigned short _startCol, unsig
     return false;
 }
 
-bool pawn::PartialEnPassantConditions(unsigned short _startRow, unsigned short _destiRow) const
+bool pawn::PartialEnPassantConditions(unsigned short& _startRow, unsigned short& _destiRow) const
 {
     return (abs(_destiRow - _startRow) == 2) && (first_move == false);
 }

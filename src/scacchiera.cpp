@@ -37,6 +37,9 @@ void playerGame()
     logger logger;
     regex input_filter("^([a-hA-H]){1}([1-8]){1} ([a-hA-H]){1}([1-8]){1}$");
     smatch coordinates;
+    pair<unsigned short, unsigned short> start;
+    pair<unsigned short, unsigned short> end;
+
 
     logger.log(console, "Welcome");
     logger.log(console, "Starting new log session");
@@ -72,11 +75,13 @@ void playerGame()
             } while(!regex_match(input, input_filter));
             
             short *mosse = conversion(coordinates);
-            short fRow = *(mosse + 0);
-            short fCol = *(mosse + 1);
-            short toRow = *(mosse + 2);
-            short toCol = *(mosse + 3);
-            
+            start.first = *(mosse + 0);
+            start.second = *(mosse + 1);
+            end.first = *(mosse + 2);
+            end.second = *(mosse + 3);
+
+            b.move(start, end, game.whose_turn());
+            logger.log(game.get_player_turn().get_name(), Moving)
 
         }
         else { //pc turn

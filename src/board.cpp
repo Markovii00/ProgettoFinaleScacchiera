@@ -12,9 +12,16 @@
 #include <cctype>
 #include "include/board.h"
 
-board::board()
+board::board(std::vector<chessman*> copy, coords& start, coords& end) {
+    chessman* copyBoard[8][8];  
+    for(unsigned int i = 0; i < 64; i++) 
+        copyBoard[i/8][i%8] = copy.at(i);
+    //manca la copia dei set di pedine        
+}
+
+board::board(void)
 {
-    possibleEnPassant = false;
+    //possibleEnPassant = false;
     freezeCordinateEnPassant.first = 0;
     freezeCordinateEnPassant.second = 0;
     moveCounter = 0;
@@ -76,33 +83,35 @@ board::~board()
     }
 }
 
-bool board::kingInCheck(std::pair<unsigned short, unsigned short> king_coordinates, bool requestColor)
+bool board::kingInCheck(coords& king_coordinates, bool requestColor)
 {
-    //king is black, look for white pieces that can eat it
-    if(requestColor == true) {
+    //king is white, look for black pieces that can eat it
+    if(!requestColor) {
         for(unsigned int i = 0; i < blackSet.size(); i++) {
-            if(chessboard[blackSet[i].first][blackSet[i].second]->isLegalMove(blackSet[i].first, blackSet[i].second, king_coordinates.first, king_coordinates.second) && clearPath(blackSet[i].first, blackSet[i].second, king_coordinates.first, king_coordinates.second, *(chessboard[blackSet[i].first][blackSet[i].second])->getChar())
-                return true;
+            char pedina = chessboard[blackSet[i].first][blackSet[i].second]->getChar();
+            if(chessboard[blackSet[i].first][blackSet[i].second]->isLegalMove(blackSet[i].first, blackSet[i].second, king_coordinates.first, king_coordinates.second) && clearPath(blackSet[i], king_coordinates, pedina))
+                return false;
         }
     }
-    else {
+    else { //king is black, look for white pieces that can eat it
         for(unsigned int i = 0; i < whiteSet.size(); i++) {
-            if(chessboard[whiteSet[i].first][whiteSet[i].second]->isLegalMove(whiteSet[i].first, whiteSet[i].second, king_coordinates.first, king_coordinates.second) && clearPath(whiteSet[i].first, whiteSet[i].second, king_coordinates.first, king_coordinates.second, *(chessboard[whiteSet[i].first][whiteSet[i].second])->getChar()))
-                return true;
+            char pedina = chessboard[whiteSet[i].first][whiteSet[i].second]->getChar();
+            if(chessboard[whiteSet[i].first][whiteSet[i].second]->isLegalMove(whiteSet[i].first, whiteSet[i].second, king_coordinates.first, king_coordinates.second) && clearPath(whiteSet[i], king_coordinates, pedina))
+                return false;
         }
     }
     return false;
 }
 
-bool board::acceptableMove(unsigned short& fromRow, unsigned short& fromCol, unsigned short& toRow, unsigned short& toCol, char& fromPieceId) const
+bool board::acceptableMove(coords start, coords end, char& fromPieceId) const
 {
     if (fromPieceId == 0)
         return false;
     bool fromColor = isBlack(fromPieceId); //true is black
 
-    char toId = getName(toRow, toCol);
+    char toId = getName(end.first, end.second);
     bool toColor = isBlack(toId); //true is black
-    if (toRow < 8 && toCol < 8)
+    if (end.first < 8 && end.second < 8)
     {
         if (toId == 0 || fromColor != toColor)
         {
@@ -113,7 +122,7 @@ bool board::acceptableMove(unsigned short& fromRow, unsigned short& fromCol, uns
 }
 
 template<typename Type>
-bool is(const chessman &data) {
+bool is(chessman &data) {
     if( &data == NULL ) return false;
 
     if (typeid(Type) == typeid(rook)) return tolower(data.getChar()) == 't';
@@ -127,32 +136,32 @@ bool is(const chessman &data) {
 }
 
 template<typename Type>
-std::pair<unsigned short, unsigned short> board::search(bool& requestColor) const {
+coords board::search(bool& requestColor) {
     if(requestColor == true) {
-        for(std::pair<unsigned short, unsigned short> i : blackSet) {
+        for(coords i : blackSet) {
             if(is<Type>(*(chessboard[i.first][i.second])))
-                return make_pair(i.first, i.second)
+                return std::make_pair(i.first, i.second);
         }
     }
     else {
-        for(std::pair<unsigned short, unsigned short> i : whiteSet) {
+        for(coords i : whiteSet) {
             if(is<Type>(*(chessboard[i.first][i.second])))
-                return make_pair(i.first, i.second)
+                return std::make_pair(i.first, i.second);
         }
     }
-    return make_pair(-1, -1);
+    return std::make_pair(-1, -1);
 }
 
 template<typename Type>
 bool board::find(bool& requestColor) const {
     if(requestColor == true) {
-        for(std::pair<unsigned short, unsigned short> i : blackSet) {
+        for(coords i : blackSet) {
             if(is<Type>(*(chessboard[i.first][i.second])))
                 return true;
         }
     }
     else {
-        for(std::pair<unsigned short, unsigned short> i : whiteSet) {
+        for(coords i : whiteSet) {
             if(is<Type>(*(chessboard[i.first][i.second])))
                 return true;
         }
@@ -160,102 +169,94 @@ bool board::find(bool& requestColor) const {
     return false;
 }
 
-std::pair<bool,bool> board::move(unsigned short& fromRow, unsigned short& fromCol, unsigned short& toRow, unsigned short& toCol, bool& pieceToMoveColor) // controllare complessità
+std::vector<chessman*> board::copy_board(){
+    std::vector<chessman*> ret;
+    for(unsigned int i = 0; i < 64; i++) 
+        ret.push_back(chessboard[i/8][i%8]);
+    return ret;   
+}
+
+std::pair<bool,bool> board::move(coords& start, coords& end, bool& pieceToMoveColor) // controllare complessità
 { 
     if(checkTie()) {
         return std::make_pair(false, false); //is over baby
     }
 
-    char fromPieceId = chessboard[fromRow][fromCol]->getChar();
+    char fromPieceId = chessboard[start.first][start.second]->getChar();
     bool fromPieceColor = isBlack(fromPieceId);
 
     // check if the coordinates are within the board limits and whether the destination tile is empty or there is an opponent chessman
-    if(!acceptableMove(fromRow, fromCol, toRow, toCol, fromPieceId))
-    {
+    if(!acceptableMove(start, end, fromPieceId)) {
         std::cout << "The selected move is out of bounds, select a new one\n";
         return std::make_pair(false,true);
     }
-    if(fromPieceColor != pieceToMoveColor)
-    {
+    if(fromPieceColor != pieceToMoveColor) {
         std::cout << "You can't move an opponent's piece, select a new move\n";
         return std::make_pair(false,true);
     }
-    if(!chessboard[fromRow][fromCol]->isLegalMove(fromRow, fromCol, toRow, toCol))
-    {
+    if(!chessboard[start.first][start.second]->isLegalMove(start.first, start.second, end.first, end.second)) {
         std::cout << "The selected move is illegal, select a new one\n";
         return std::make_pair(false,true);
     }
-    if(!clearPath(fromRow, fromCol, toRow, toCol, fromPieceId))
-    {
+    if(!clearPath(start, end, fromPieceId)) {
         std::cout << "There is a piece in the way of your move, select a new one\n";
         return std::make_pair(false,true);
     }
 
-    std::pair<short, short> kingCoords = search<king>(fromPieceColor);
+    //create a copy to verify if after any move the king is under check
+    std::vector<chessman*> pointer_copy = copy_board(); 
+    board copy(pointer_copy, start, end); 
 
-    // Control on the king
-    if (kingInCheck(kingCoords, fromPieceColor))
-    {
-        std::vector<std::pair<unsigned short, unsigned short>> PMoves;
-        PMoves = KingPossibleMoves(kingCoords, fromPieceColor); 
-        for (std::pair<unsigned short, unsigned short> x : PMoves)
-        {
-            if (!kingInCheck(x.first, x.second, fromPieceColor)) //sdfgdsgd
-            {
-                std::cout << "Your king is in check, move it";
-                return false;
-            }
+    if(copy.castling(start, end, pieceToMoveColor)) {
+        coords kingCoords = copy.search<king>(fromPieceColor);
+        if(kingInCheck(kingCoords, fromPieceColor)) {
+            std::cout << "King in check, insert a new move\n";
+            return std::make_pair(false,true);
         }
-        // all the possible king moves are covered, GG!
-        endGame();
+    }
+    else if(copy.EnPassant(start, end, fromPieceColor, fromPieceId)) { //RICORDARMI DI FARE LA MOSSA
+        coords kingCoords = copy.search<king>(fromPieceColor);
+        if(kingInCheck(kingCoords, fromPieceColor)) {
+            std::cout << "King in check, insert a new move\n";
+            return std::make_pair(false,true);
+        }
+    }
+    else {
+        //mossa normale, per il pedone chiama il suo metodo specifico
     }
     
-    //PAWN HANDLING
-    bool isChangedLastTurn = possibleEnPassant;
-    if (isPawn(fromPieceId))
-    {
-        // first move && 2 tile row movement
-        if (((pawn *)chessboard[fromRow][fromCol])->PartialEnPassantConditions(fromRow, toRow))
-        {
-            // sure to be next to opponent pawn
-            if(fromPieceId == 'p' && ((chessboard[toRow][toCol + 1]->getChar() == 'P') || (chessboard[toRow][toCol - 1]->getChar() == 'P')))
-            {
-                possibleEnPassant = true;
-                freezeCordinateEnPassant.first = toRow;
-                freezeCordinateEnPassant.second = toCol;
-                isChangedLastTurn = true;
-            }
-            else if (fromPieceId == 'P' && ((chessboard[toRow][toCol + 1]->getChar() == 'p') || (chessboard[toRow][toCol - 1]->getChar() == 'p')))
-            {
-                possibleEnPassant = true;
-                freezeCordinateEnPassant.first = toRow;
-                freezeCordinateEnPassant.second = toCol;
-                isChangedLastTurn = true;
-            }
-        }
-        return movePawn(fromRow, fromCol, toRow, toCol, fromPieceColor);
-    }
+
+
     
-    //Castling Management
-    if(isKing(fromPieceId) && castling(fromRow, fromCol, toRow, toCol, fromPieceColor)) 
-        return true;
     
+
+
     //General Move
-    executeMove(fromRow, fromCol, toRow, toCol);
+    executeMove(start, end);
     
-    //Keep those variables updated
-    if(isChangedLastTurn != false) 
-    {
-        possibleEnPassant = false;
-        freezeCordinateEnPassant.first = 0;
-        freezeCordinateEnPassant.second = 0;
-    }
-    return true;
+    return std::make_pair(true,true);
 }
 
-std::vector<std::pair<unsigned short, unsigned short>> board::KingPossibleMoves(std::pair<unsigned short, unsigned short> kCords, char fromPieceId) const
+bool board::EnPassant(coords& start, coords& end, bool& kingIsBlack, char& fromPieceId) {
+    if (freezeCordinateEnPassant.first != 100 && freezeCordinateEnPassant.second != 100 && is<pawn>(*chessboard[start.first][start.second]))
+    {
+        // first move && 2 tile row movement
+        if (((pawn *)chessboard[start.first][start.second])->PartialEnPassantConditions(start.first, end.first))
+        {
+            // sure to be next to opponent pawn
+            if(fromPieceId == 'p' && ((chessboard[end.first][end.second + 1]->getChar() == 'P') || (chessboard[end.first][end.second - 1]->getChar() == 'P')))
+                return true;
+            else if (fromPieceId == 'P' && ((chessboard[end.first][end.second + 1]->getChar() == 'p') || (chessboard[end.first][end.second - 1]->getChar() == 'p')))
+                return true;
+        }
+    }
+    return false;
+}
+
+
+std::vector<coords> board::KingPossibleMoves(coords kCords, char fromPieceId) const
 {
-    std::vector<std::pair<unsigned short, unsigned short>> PMoves;
+    std::vector<coords> PMoves;
     // i rows j colums
     for (short i = -1; i < 2; i++)
     {
@@ -263,13 +264,11 @@ std::vector<std::pair<unsigned short, unsigned short>> board::KingPossibleMoves(
         {
             if (i == 0 && j == 0)
                 continue;
-            unsigned short possRow = kCords.first + i;
-            unsigned short possCol = kCords.second + j;
-            if (acceptableMove(kCords.first, kCords.second, possRow, possCol, fromPieceId))
+            if (acceptableMove(kCords, std::make_pair(kCords.first+i, kCords.second+j), fromPieceId))
             {
-                std::pair<unsigned short, unsigned short> amogus;
-                amogus.first = possRow;
-                amogus.second = possCol;
+                coords amogus;
+                amogus.first = kCords.first+i;
+                amogus.second = kCords.second+j;
                 PMoves.push_back(amogus);
             }
         }
@@ -277,23 +276,22 @@ std::vector<std::pair<unsigned short, unsigned short>> board::KingPossibleMoves(
     return PMoves;
 }
 
-void board::executeMove(short fromRow, short fromCol, short toRow, short toCol)
+void board::executeMove(coords start, coords end)
 {
-    if (getName(toRow, toCol) != 0)
+    if (getName(end.first, end.second) != 0)
     {
-        delete chessboard[toRow][toCol];
+        delete chessboard[end.first][end.second];
     }
     
-    chessboard[toRow][toCol] = chessboard[fromRow][fromCol];
-    chessboard[fromRow][fromCol] = nullptr;
-    char toId = getName(toRow, toCol);
-    if(isRook(toId) && !((rook*)chessboard[toRow][toCol])->hasMoved()) 
-        ((rook*)chessboard[toRow][toCol])->setMoved();
-    else if(isKing(toId) && !((king*)chessboard[toRow][toCol])->hasMoved()) 
-        ((king*)chessboard[toRow][toCol])->setMoved();
-    else if(isPawn(toId) && !((pawn*)chessboard[toRow][toCol])->hasMoved()) 
-        ((pawn*)chessboard[toRow][toCol])->setMoved();
-    //un if all'inizio per vedere hasMoved, creare un nuovo oggetto e ri-settarlo come all'inizio in modo da non fare merda
+    chessboard[end.first][end.second] = chessboard[start.first][start.second];
+    chessboard[start.first][start.second] = nullptr;
+    char toId = getName(end.first, end.second);
+    if(is<rook>(*chessboard[end.first][end.second]) && !((rook*)chessboard[start.first][start.second])->hasMoved()) 
+        ((rook*)chessboard[end.first][end.second])->setMoved();
+    else if(is<king>(*chessboard[end.first][end.second]) && !((king*)chessboard[start.first][start.second])->hasMoved()) 
+        ((king*)chessboard[end.first][end.second])->setMoved();
+    else if(is<pawn>(*chessboard[end.first][end.second]) && !((pawn*)chessboard[start.first][start.second])->hasMoved()) 
+        ((pawn*)chessboard[end.first][end.second])->setMoved();
 }
 
 bool board::movePawn(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol, bool fromPieceColor)
@@ -305,12 +303,12 @@ bool board::movePawn(unsigned short fromRow, unsigned short fromCol, unsigned sh
     {
         if (toPieceColor != fromPieceColor && toPieceId != 0) // chessman to eat diagonally
         {
-            executeMove(fromRow, fromCol, toRow, toCol);
+            executeMove(std::make_pair(fromRow, fromCol), std::make_pair(toRow, toCol));
             return true;
         }
         else if (CheckOnEnPassant(fromRow, fromCol, toRow, toCol)) // if not chessman to eat diagonally, might be an en passant
         {
-            EnPassant(fromRow, fromCol, toRow, toCol);
+            applyEnPassant(fromRow, fromCol, toRow, toCol);
             return true;
         }
         else // if not none of the above, ILLEGAL MOVE
@@ -320,7 +318,7 @@ bool board::movePawn(unsigned short fromRow, unsigned short fromCol, unsigned sh
     {
         if (toRow == 0 || toRow == 7)
         {
-            executeMove(fromRow, fromCol, toRow, toCol);
+            executeMove(std::make_pair(fromRow, fromCol), std::make_pair(toRow, toCol));
             promotion(toRow, toCol);
             return true;
         }  
@@ -328,7 +326,7 @@ bool board::movePawn(unsigned short fromRow, unsigned short fromCol, unsigned sh
         {
             if(toPieceId != 0) //check if one/two tile/s ahead there aren't chessmans 
                 return false;
-            executeMove(fromRow, fromCol, toRow, toCol);
+            executeMove(std::make_pair(fromRow, fromCol), std::make_pair(toRow, toCol));
             return true;
         }     
     }
@@ -337,7 +335,7 @@ bool board::movePawn(unsigned short fromRow, unsigned short fromCol, unsigned sh
 
 bool board::CheckOnEnPassant(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol) { return possibleEnPassant && freezeCordinateEnPassant.first == fromRow && ((freezeCordinateEnPassant.second == fromCol + 1) || (freezeCordinateEnPassant.second == fromCol - 1)) && abs(freezeCordinateEnPassant.first - toRow) == 1 && freezeCordinateEnPassant.second == toCol; }
 
-void board::EnPassant(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol)
+void board::applyEnPassant(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol)
 {
     chessboard[toRow][toCol] = chessboard[fromRow][fromCol];
     chessboard[fromRow][fromCol] = nullptr;
@@ -345,7 +343,7 @@ void board::EnPassant(unsigned short fromRow, unsigned short fromCol, unsigned s
     chessboard[fromRow][toCol] = nullptr;
 }
 
-char board::getName(short row, short col) const
+char board::getName(unsigned short row,unsigned short col) const
 {
     if (chessboard[row][col] == nullptr)
         return 0;
@@ -365,13 +363,14 @@ bool board::checkTie()
     unsigned short blackSetSize = blackSet.size();
     unsigned short whiteSetSize = whiteSet.size();
     bool isBlack = true;
+    bool isWhite = false;
     if(moveCounter > 150){                                               
-        std::cout << "75 turns have been done, the game is a tie!"
+        std::cout << "75 turns have been done, the game is a tie!";
         return true;
     }
     else if(whiteSetSize == 1 && blackSetSize == 1)                     
     {
-        if(find<king>(isBlack) && find<king>(!isBlack))
+        if(find<king>(isBlack) && find<king>(isWhite))
         {
             std::cout << "No more moves are possible, the game is tie!";
             return true;
@@ -379,7 +378,7 @@ bool board::checkTie()
     }
     else if(whiteSetSize == 2 && blackSetSize == 1)                      
     {
-        if((find<king>(!isBlack) && find<bishop>(!isBlack)) && find<king>(isBlack))
+        if((find<king>(isWhite) && find<bishop>(isWhite)) && find<king>(isBlack))
         {
             std::cout << "No more moves are possible, the game is tie!";
             return true;
@@ -387,7 +386,7 @@ bool board::checkTie()
     }
     else if(whiteSetSize == 1 && blackSetSize == 2)
     {
-        if((find<king>(isBlack) && find<bishop>(isBlack)) && find<king>(!isBlack))
+        if((find<king>(isBlack) && find<bishop>(isBlack)) && find<king>(isWhite))
         {
             std::cout << "No more moves are possible, the game is tie!";
             return true;
@@ -395,7 +394,7 @@ bool board::checkTie()
     }
     else if(whiteSetSize == 2 && blackSetSize == 1)                       
     {
-        if((find<king>(!isBlack) && find<knight>(!isBlack)) && find<king>(isBlack))
+        if((find<king>(isWhite) && find<knight>(isWhite)) && find<king>(isBlack))
         {
             std::cout << "No more moves are possible, the game is tie!";
             return true;
@@ -403,7 +402,7 @@ bool board::checkTie()
     }
     else if(whiteSetSize == 1 && blackSetSize == 2)
     {
-        if((find<king>(isBlack) && find<knight>(isBlack)) && find<king>(!isBlack))
+        if((find<king>(isBlack) && find<knight>(isBlack)) && find<king>(isWhite))
         {
             std::cout << "No more moves are possible, the game is tie!";
             return true;
@@ -417,19 +416,20 @@ void board::promotion(unsigned short pawnRow, unsigned short pawnCol)
     char newPiece;
     char id = chessboard[pawnRow][pawnCol]->getChar();
     bool isPawnBlack = isBlack(id);
+    bool isValid = false;
 
     std::cout << "La pedina in posizione " << pawnRow + 1 << pawnCol + 1 << " può essere promossa, inserire il tipo di pedina desiderato";
-    std::cin >> newPiece;
-    while (!isQueen(newPiece) || !isBishop(newPiece) || !isKnight(newPiece) || !isQueen(newPiece) || !isRook(newPiece))
+    while (!isValid)
     {
-        std::cout << "Pedina richiesta non valida";
         std::cin >> newPiece;
+        if(newPiece == "q")
+        std::cout << "Pedina richiesta non valida";
     }
     
     delete chessboard[pawnRow][pawnCol];
     if (isPawnBlack == true)
     {
-        if (isQueen(newPiece))
+        if ()
             chessboard[pawnRow][pawnCol] = new queen('D');
         else if (isBishop(newPiece))
             chessboard[pawnRow][pawnCol] = new bishop('A');
@@ -451,89 +451,76 @@ void board::promotion(unsigned short pawnRow, unsigned short pawnCol)
     }
 }
 
-bool board::castling(unsigned short fromRow, unsigned short fromCol, unsigned short toRow, unsigned short toCol, bool kingIsBlack)
-{
 
-    if (kingIsBlack)
-    {
-        if (fromRow == toRow && toCol == fromCol + 2 && getName(7, 7) == 'T')
-        {
-            if (((rook *)chessboard[7][7])->hasMoved() == false)
-            {
-                short counter = fromCol + 1;
-                while (counter < 7)
-                {
-                    if (getName(fromRow, counter) != 0)
+
+
+bool board::isVertical(unsigned short& fromRow, unsigned short& fromCol, unsigned short& toRow, unsigned short& toCol) const { return fromCol == toCol && fromRow != toRow;}
+
+bool board::isHorizontal(unsigned short& fromRow, unsigned short& fromCol, unsigned short& toRow, unsigned short& toCol) const {return fromRow==toRow&&fromCol!=toCol;}
+
+bool board::isDiagonal(unsigned short& fromRow, unsigned short& fromCol, unsigned short& toRow, unsigned short& toCol) const { return abs(toRow - fromRow) == abs(toCol - fromCol); }
+
+bool board::castling(coords& start, coords& end, bool& kingIsBlack) {
+    if(is<king>(*chessboard[start.first][start.second]) && !((king *)chessboard[start.first][start.second])->hasMoved()) {
+        if (kingIsBlack) { //arrocco corto nero
+            if (end.first == 0 && end.second == start.second + 2 && is<rook>(*chessboard[0][7]) && !((rook *)chessboard[0][7])->hasMoved()) {
+                short counter = start.second + 1;
+                while (counter < 7) {
+                    if (getName(start.first, counter) != 0)
                         return false;
                     counter++;
                 }
-                executeMove(fromRow, fromCol, toRow, toCol);
-                executeMove(7, 7, 7, 5);
+                coords rookStart = std::make_pair(0, 7);
+                coords rookEnd = std::make_pair(0, 5);
+                executeMove(start, end);
+                executeMove(rookStart, rookEnd);
                 return true;
-            }
-        }
-        else if (fromRow == toRow && toCol == fromCol - 2 && getName(7, 0) == 'T')
-        {
-            if (((rook *)chessboard[7][0])->hasMoved() == false)
-            {
-                short counter = fromCol - 1;
-                while (counter > 0)
-                {
-                    if (getName(fromRow, counter) != 0)
+            } //arrocco lungo nero
+            else if (end.first == 0 && end.second == start.second - 2 && is<rook>(*chessboard[0][0]) && !((rook *)chessboard[0][0])->hasMoved()) {
+                short counter = start.second - 1;
+                while (counter > 0) {
+                    if (getName(start.first, counter) != 0)
                         return false;
                     counter--;
                 }
-
-                executeMove(fromRow, fromCol, toRow, toCol);
-                executeMove(7, 0, 7, 3);
+                coords rookStart = std::make_pair(0, 0);
+                coords rookEnd = std::make_pair(0, 3);
+                executeMove(start, end);
+                executeMove(rookStart, rookEnd);
                 return true;
-            }
-        }
-    }
-    else if (!kingIsBlack)
-    {
-        if (fromRow == toRow && toCol == fromCol + 2 && getName(0, 7) == 't')
-        {
-            if (((rook *)chessboard[0][7])->hasMoved() != false)
-            {
-                short counter = fromCol + 1;
-                while (counter < 7)
-                {
-                    if (getName(fromRow, counter) != 0)
+            } 
+        }  
+        else if(!kingIsBlack) { //arrocco corto bianco
+            if (end.first == 7 && end.second == start.second + 2 && is<rook>(*chessboard[7][7]) && !((rook *)chessboard[7][7])->hasMoved()) {
+                short counter = start.second + 1;
+                while (counter < 7) {
+                    if (getName(start.first, counter) != 0)
                         return false;
                     counter++;
                 }
-                executeMove(fromRow, fromCol, toRow, toCol);
-                executeMove(0, 7, 0, 5);
+                coords rookStart = std::make_pair(7, 7);
+                coords rookEnd = std::make_pair(7, 5);
+                executeMove(start, end);
+                executeMove(rookStart, rookEnd);
                 return true;
-            }
-        }
-        else if (fromRow == toRow && toCol == fromCol - 2 && getName(0, 0) == 't')
-        {
-            if (((rook *)chessboard[0][0])->hasMoved() != false)
-            {
-                short fromTCol = 0;
-                short fromTRow = 0;
-                short toTRow = 0;
-                short toTCol = 3;
-                unsigned short counter = fromCol - 1;
-                while (counter > 0)
-                {
-                    if (getName(fromRow, counter) != 0)
+            } //arrocco lungo bianco
+            else if (end.first == 7 && end.second == start.second - 2 && is<rook>(*chessboard[7][0]) && !((rook *)chessboard[7][0])->hasMoved()) {
+                short counter = start.second - 1;
+                while (counter > 0) {
+                    if (getName(start.first, counter) != 0)
                         return false;
                     counter--;
                 }
-
-                executeMove(fromRow, fromCol, toRow, toCol);
-                executeMove(fromTRow, fromTCol, toTRow, toTCol);
+                coords rookStart = std::make_pair(7, 0);
+                coords rookEnd = std::make_pair(7, 3);
+                executeMove(start, end);
+                executeMove(rookStart, rookEnd);
                 return true;
-            }
+            } 
         }
     }
     return false;
 }
-
-bool board::endGame() {return false;}
 
 void board::printBoard()
 {
@@ -582,26 +569,19 @@ std::string board::to_string(bool fixed_allignment = false)
     return bb;
 }
 
-bool board::isVertical(unsigned short& fromRow, unsigned short& fromCol, unsigned short& toRow, unsigned short& toCol) const { return fromCol == toCol && fromRow != toRow;}
 
-bool board::isHorizontal(unsigned short& fromRow, unsigned short& fromCol, unsigned short& toRow, unsigned short& toCol) const {return fromRow==toRow&&fromCol!=toCol;}
-
-bool board::isDiagonal(unsigned short& fromRow, unsigned short& fromCol, unsigned short& toRow, unsigned short& toCol) const { return abs(toRow - fromRow) == abs(toCol - fromCol); }
-
-
-
-bool board::clearPath(unsigned short& fromRow, unsigned short& fromCol, unsigned short& toRow, unsigned short& toCol, char& fromPieceId) const
+bool board::clearPath(coords& start, coords& end, char& fromPieceId) const
 {
     fromPieceId = tolower(fromPieceId);
-    short dR = toRow - fromRow;
-    short dC = toCol - fromCol;
+    short dR = end.first - start.first;
+    short dC = end.second - start.second;
 
-    short rMov = fromRow;
-    short cMov = fromCol;
+    short rMov = start.first;
+    short cMov = start.second;
 
-    bool vertical = isVertical( fromRow, fromCol, toRow, toCol);
-    bool horizontal = isHorizontal( fromRow, fromCol, toRow, toCol);
-    bool diagonal = isDiagonal( fromRow, fromCol, toRow, toCol);
+    bool vertical = isVertical( start.first, start.second, end.first, end.second);
+    bool horizontal = isHorizontal( start.first, start.second, end.first, end.second);
+    bool diagonal = isDiagonal( start.first, start.second, end.first, end.second);
 
     switch (fromPieceId)
     {
@@ -611,7 +591,7 @@ bool board::clearPath(unsigned short& fromRow, unsigned short& fromCol, unsigned
             //movement Sud-Est
             if(dR > 0 && dC > 0) 
             {
-                while (rMov < toRow && cMov < toCol)
+                while (rMov < end.first && cMov < end.second)
                 {
                     rMov += 1;
                     cMov += 1;
@@ -622,7 +602,7 @@ bool board::clearPath(unsigned short& fromRow, unsigned short& fromCol, unsigned
             //movement Nord-Est
             else if(dR < 0 && dC > 0)
             {
-                while (rMov > toRow && cMov < toCol)
+                while (rMov > end.first && cMov < end.second)
                 {
                     rMov -= 1;
                     cMov += 1;
@@ -633,7 +613,7 @@ bool board::clearPath(unsigned short& fromRow, unsigned short& fromCol, unsigned
             //movement Nord-West
             else if(dR < 0 && dC < 0)
             {
-                while (rMov > toRow && cMov > toCol)
+                while (rMov > end.first && cMov > end.second)
                 {
                     rMov -= 1;
                     cMov -= 1;
@@ -644,7 +624,7 @@ bool board::clearPath(unsigned short& fromRow, unsigned short& fromCol, unsigned
             //movement Sud-West
             else if(dR > 0 && dC < 0)
             {
-                while (rMov < toRow && cMov > toCol)
+                while (rMov < end.first && cMov > end.second)
                 {
                     rMov += 1;
                     cMov -= 1;
@@ -660,19 +640,19 @@ bool board::clearPath(unsigned short& fromRow, unsigned short& fromCol, unsigned
             {
                 if(dR > 0) 
                 {
-                    while (rMov < toRow)
+                    while (rMov < end.first)
                     {
                         rMov += 1;
-                        if(chessboard[rMov][fromCol] not_eq nullptr) return false;
+                        if(chessboard[rMov][start.second] not_eq nullptr) return false;
                     }
                     return true;
                 }
                 else
                 {
-                    while (rMov > toRow)
+                    while (rMov > end.first)
                     {
                         rMov -= 1;
-                        if(chessboard[rMov][fromCol] not_eq nullptr) return false;
+                        if(chessboard[rMov][start.second] not_eq nullptr) return false;
                     }
                     return true;
                 }
@@ -681,30 +661,30 @@ bool board::clearPath(unsigned short& fromRow, unsigned short& fromCol, unsigned
             {
                 if(dC > 0) 
                 {
-                    while (cMov < toCol)
+                    while (cMov < end.second)
                     {
                         cMov += 1;
-                        if(chessboard[fromRow][cMov] not_eq nullptr) return false;
+                        if(chessboard[start.first][cMov] not_eq nullptr) return false;
                     }
                     return true;
                 }
                 else
                 {
-                    while (cMov > toCol)
+                    while (cMov > end.second)
                     {
                         cMov -= 1;
-                        if(chessboard[fromRow][cMov] not_eq nullptr) return false;
+                        if(chessboard[start.first][cMov] not_eq nullptr) return false;
                     }
                     return true;
                 }
 
             }
-            else //diagonal movement
+            else //diagonal movement FIN QUA DIOBOIA
             {
                 //movement Sud-Est
                 if(dR > 0 && dC > 0) 
                 {
-                    while (rMov < toRow && cMov < toCol)
+                    while (rMov < end.first && cMov < end.second)
                     {
                         rMov += 1;
                         cMov += 1;
@@ -715,7 +695,7 @@ bool board::clearPath(unsigned short& fromRow, unsigned short& fromCol, unsigned
                 //movement Nord-Est
                 else if(dR < 0 && dC > 0)
                 {
-                    while (rMov > toRow && cMov < toCol)
+                    while (rMov > end.first && cMov < end.second)
                     {
                         rMov -= 1;
                         cMov += 1;
@@ -726,7 +706,7 @@ bool board::clearPath(unsigned short& fromRow, unsigned short& fromCol, unsigned
                 //movement Nord-West
                 else if(dR < 0 && dC < 0)
                 {
-                    while (rMov > toRow && cMov > toCol)
+                    while (rMov > end.first && cMov > end.second)
                     {
                         rMov -= 1;
                         cMov -= 1;
@@ -737,7 +717,7 @@ bool board::clearPath(unsigned short& fromRow, unsigned short& fromCol, unsigned
                 //movement Sud-West
                 else if(dR > 0 && dC < 0)
                 {
-                    while (rMov < toRow && cMov > toCol)
+                    while (rMov < end.first && cMov > end.second)
                     {
                         rMov += 1;
                         cMov -= 1;
@@ -756,19 +736,19 @@ bool board::clearPath(unsigned short& fromRow, unsigned short& fromCol, unsigned
             {
                 if(dR > 0)
                 {
-                    while (rMov < toRow)
+                    while (rMov < end.first)
                     {
                         rMov += 1;
-                        if(chessboard[rMov][fromCol] not_eq nullptr) return false;
+                        if(chessboard[rMov][start.second] not_eq nullptr) return false;
                     }
                     return true;
                 }
                 else 
                 {
-                    while (rMov > toRow)
+                    while (rMov > end.first)
                     {
                         rMov -= 1;
-                        if(chessboard[rMov][fromCol] not_eq nullptr) return false;
+                        if(chessboard[rMov][start.second] not_eq nullptr) return false;
                     }
                     return true;
                 }
@@ -777,19 +757,19 @@ bool board::clearPath(unsigned short& fromRow, unsigned short& fromCol, unsigned
             {
                 if(dC > 0)
                 {
-                    while (cMov < toCol)
+                    while (cMov < end.second)
                     {
                         cMov += 1;
-                        if(chessboard[fromRow][cMov] not_eq nullptr) return false;
+                        if(chessboard[start.first][cMov] not_eq nullptr) return false;
                     }
                     return true;
                 }
                 else
                 {
-                    while (cMov > toCol)
+                    while (cMov > end.second)
                     {
                         cMov -= 1;
-                        if(chessboard[fromRow][cMov] not_eq nullptr) return false;
+                        if(chessboard[start.first][cMov] not_eq nullptr) return false;
                     }
                     return true;
                 }
@@ -801,13 +781,13 @@ bool board::clearPath(unsigned short& fromRow, unsigned short& fromCol, unsigned
             if(dR == 2)
             {
                 rMov+=1;
-                if(chessboard[rMov][fromCol] not_eq nullptr) return false;
+                if(chessboard[rMov][start.second] not_eq nullptr) return false;
                 return true;
             }
             else if (dR == -2) 
             {
                 rMov -= 1;
-                if(chessboard[rMov][fromCol] not_eq nullptr) return false;
+                if(chessboard[rMov][start.second] not_eq nullptr) return false;
                 return true;
             }
 
