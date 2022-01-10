@@ -24,7 +24,7 @@ typedef std::pair<unsigned short, unsigned short> coords;
 class board
 {
     public:
-    board(std::vector<chessman*> copy, coords& start, coords& end); 
+    board(std::vector<chessman*> copy, std::pair<coords, coords> lastMC); 
     board(void);
     ~board(void);
 
@@ -43,7 +43,7 @@ class board
      * @param fromPieceId piece to check and initial and final coordinates
      * @return true if all the conditions in @brief are true                
      */
-    bool acceptableMove(coords start, coords end, char& fromPieceId) const;
+    bool acceptableMove(coords start, coords end, char& fromPieceId, bool& fromPieceColor) const;
 
     /**
      * @brief   Look all the possible mechanics in chees game
@@ -71,7 +71,7 @@ class board
      * @param  /initial and final coordinates
      * @return 100/100 if not in check                
      */
-    bool kingInCheck(coords& kingCords, bool requestColor);
+    bool kingInCheck(const coords& kingCords, const bool& requestColor) const;
     
     //quits and executes post-game code
     bool endGame();
@@ -81,7 +81,7 @@ class board
     bool checkKing(coords& start, coords& end, bool& fromPieceColor);
 
     //returns all the possible cordinates where the king can move
-    std::vector<coords> KingPossibleMoves(coords, char fromPieceid) const;
+    std::vector<coords> KingPossibleMoves(coords& kCords, bool& fromPieceColor) const;
     
     /**
      * @brief When called prints the board to standard out 
@@ -97,7 +97,7 @@ class board
      * @param kingIsBlack  color of the king executing the castling 
      * @return true move executed
      */
-    bool castling(coords& start,coords& end, bool& kingIsBlack);
+    std::pair<bool, coords> isCastling(const coords& start, const coords& end) const;
 
     /**
      * @brief executres all checks and executes  en passant move
@@ -107,7 +107,7 @@ class board
      * @param fromPieceColor  color of the piece to move
      * @return true  move executed
      */
-    bool EnPassant(coords& start, coords& end, bool& fromPieceColor, char& fromPieceId);
+    std::pair<bool, coords> isEnpassant(coords& start, coords& end);
 
 
     //returns 0 if tile is empty, otherwise returns piece id
@@ -121,36 +121,51 @@ class board
     std::string to_string(bool fixed_allignment);
     std::string getKing(bool requestColor);
 
+    std::vector<coords> getAllMoves(const coords& _pos) const;
+
     private:
     chessman* chessboard[8][8];
-    unsigned short moveCounter;
-    bool possibleEnPassant;
-    coords freezeCordinateEnPassant;
     std::vector<coords> whiteSet;
     std::vector<coords> blackSet;
+    std::pair<coords, coords> lastMoveCoords;
+
+    unsigned short moveCounter;
 
     bool movePawn(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow, bool fromPieceColor);
+    void do_castling(coords& start, coords& end, coords& rook_to_move);
+    void do_enpassant(coords& start, coords& end, coords& pawn_to_be_eaten);
 
     std::vector<chessman*> copy_board();
 
-    bool checkTie();
+    bool draw_for_pieces(void) const;
 
     template<typename Type>
-    bool is(chessman& data);
-
-    template<typename Type>
-    coords search(bool& requestColor);
+    coords search(bool& requestColor) const;
 
     template<typename Type>
     bool find(bool& requestColor) const;
 
-    bool isBlack(char& request) const;
+    bool isBlack(const char& request) const;
 
     bool isEatable(coords, bool toSacrificeColor);
     
-    bool isVertical(unsigned short& fromRow, unsigned short& fromCol, unsigned short& toRow, unsigned short& toCol) const;
-    bool isHorizontal(unsigned short& fromRow, unsigned short& fromCol, unsigned short& toRow, unsigned short& toCol) const;
-    bool isDiagonal(unsigned short& fromRow, unsigned short& fromCol, unsigned short& toRow, unsigned short& toCol) const;
+    bool isVertical(coords& start, coords& end) const;
+    bool isHorizontal(coords& start, coords& end) const;
+    bool isDiagonal(coords& start, coords& end) const;
 };
+
+template<typename Type>
+bool is(chessman &data) {
+    if( &data == NULL ) return false;
+
+    if (typeid(Type) == typeid(rook)) return tolower(data.getChar()) == 't';
+    if (typeid(Type) == typeid(knight)) return tolower(data.getChar()) == 'c';
+    if (typeid(Type) == typeid(bishop)) return tolower(data.getChar()) == 'a';
+    if (typeid(Type) == typeid(king)) return tolower(data.getChar()) == 'r';
+    if (typeid(Type) == typeid(queen)) return tolower(data.getChar()) == 'd';
+    if (typeid(Type) == typeid(pawn)) return tolower(data.getChar()) == 'p';
+
+    return false;
+}
 
 #endif
