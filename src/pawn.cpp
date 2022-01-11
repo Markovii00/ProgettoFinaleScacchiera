@@ -17,10 +17,10 @@ pawn::pawn(char type) : chessman(type)
 
 pawn::~pawn() {}
 
-bool pawn::isLegalMove(unsigned short _startRow, unsigned short _startCol, unsigned short _destiRow, unsigned short _destiCol)
+bool pawn::isLegalMove(const coords& start, const coords& end)
 {
-    short dRow = _destiRow - _startRow;
-    short dCol = _destiCol - _startCol;
+    short dRow = end.first - start.first;
+    short dCol = end.second - start.second;
     
     if (isWhite && !first_move)
     {

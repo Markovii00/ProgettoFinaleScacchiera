@@ -8,10 +8,9 @@ rook::rook(char type) : chessman(type) { first_move = false; }
 
 rook::~rook() {}
 
-bool rook::isLegalMove(unsigned short _startRow, unsigned short _startCol, unsigned short _destiRow, unsigned short _destiCol)
+bool rook::isLegalMove(const coords& start, const coords& end)
 {
-    //XOR (exclusive or)
-    return ((_destiCol == _startCol) && !(_destiRow == _startRow)) || (!(_destiCol == _startCol) && (_destiRow == _startRow));
+    return  (start.first == end.first && start.second != end.second) || (start.first != end.first && start.second == end.second);
 }
 
 bool rook::hasMoved(void) const { return first_move; }

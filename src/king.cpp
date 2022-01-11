@@ -8,10 +8,10 @@ king::king(char type) : chessman(type) { first_move = false; }
 
 king::~king() {}
 
-bool king::isLegalMove(unsigned short _startRow, unsigned short _startCol, unsigned short _destiRow, unsigned short _destiCol)
+bool king::isLegalMove(const coords& start, const coords& end)
 {
-    short dRow = _destiRow - _startRow;
-    short dCol = _destiCol - _startCol;
+    short dRow = end.first - start.first;
+    short dCol = end.second - start.second;
 
     return ((dCol == 0) && (abs(dRow) == 1)) || ((abs(dCol) == 1) && (abs(dRow) == 1)) || ((dCol == 1) && (abs(dRow) == 0));
 }

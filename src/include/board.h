@@ -34,7 +34,7 @@ class board
      * @param fromPieceId piece to check the path and initial and final coordinates
      * @return true if there is a clear way                 
      */
-    bool clearPath(coords& start, coords& end, char& fromPieceId) const;
+    bool clearPath(const coords& start, const coords& end, const char& fromPieceId) const;
 
     /**
      * @brief   Check if the coordinates are within the board limits and whether in (toRow, toCol) there is either an opponent piece
@@ -107,7 +107,7 @@ class board
      * @param fromPieceColor  color of the piece to move
      * @return true  move executed
      */
-    std::pair<bool, coords> isEnpassant(coords& start, coords& end);
+    std::pair<bool, coords> isEnpassant(const coords& start, const coords& end) const;
 
 
     //returns 0 if tile is empty, otherwise returns piece id
@@ -129,11 +129,18 @@ class board
     std::vector<coords> blackSet;
     std::pair<coords, coords> lastMoveCoords;
 
-    unsigned short moveCounter;
-
     bool movePawn(unsigned short fromCol, unsigned short fromRow, unsigned short toCol, unsigned short toRow, bool fromPieceColor);
     void do_castling(coords& start, coords& end, coords& rook_to_move);
-    void do_enpassant(coords& start, coords& end, coords& pawn_to_be_eaten);
+    void do_enpassant(const coords& start, const coords& end, const coords& pawn_to_be_eaten);
+    bool PawnEating(const coords& start, const coords& end, bool& fromPieceColor) const;
+    bool attemptMove(std::vector<coords>& _vet, const bool& colorPiece, const coords& _tempCoords) const;
+    bool check_on_pawn(coords start, coords end, const char& fromPieceId, bool& fromPieceColor) const;
+    int number_possible_moves(const bool& fromPieceColor);
+    void removeFromSet(const coords &end, const bool& pieceEaten);
+    void updateCoordsInSet(const coords &end, const bool& pieceEaten); 
+
+    template<typename Type>
+    int howManyAlive(bool& requestColor) const; 
 
     std::vector<chessman*> copy_board();
 
@@ -144,15 +151,15 @@ class board
 
     template<typename Type>
     bool find(bool& requestColor) const;
-
     bool isBlack(const char& request) const;
-
-    bool isEatable(coords, bool toSacrificeColor);
-    
-    bool isVertical(coords& start, coords& end) const;
-    bool isHorizontal(coords& start, coords& end) const;
-    bool isDiagonal(coords& start, coords& end) const;
+    bool isVertical(const coords& start, const coords& end) const;
+    bool isHorizontal(const coords& start, const coords& end) const;
+    bool isDiagonal(const coords& start, const coords& end) const;
 };
+
+coords operator+(const coords& start, std::pair<short, short> offset) {
+    return std::make_pair(start.first + offset.first, start.second + offset.second);
+}
 
 template<typename Type>
 bool is(chessman &data) {

@@ -5,6 +5,8 @@
 #ifndef CHESSMAN_H
 #define CHESSMAN_H
 
+typedef std::pair<unsigned short, unsigned short> coords;
+
 class chessman
 {
     protected:
@@ -15,7 +17,7 @@ class chessman
     virtual ~chessman();
 
     //check if the move can be done by a specific chessman
-    virtual bool isLegalMove(unsigned short _startRow, unsigned short _startCol, unsigned short _destiRow, unsigned short _destiCol) = 0;
+    virtual bool isLegalMove(const coords& start, const coords& end) = 0;
 
     //idea : fare un metodo che sapendo la mia posizione, restituisce una lista con tutte le cordinate raggiungibili da quel pezzo in x,y cordinate
 

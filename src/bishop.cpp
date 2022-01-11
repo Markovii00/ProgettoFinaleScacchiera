@@ -8,7 +8,7 @@ bishop::bishop(char type) : chessman(type) {}
 
 bishop::~bishop() {}
 
-bool bishop::isLegalMove(unsigned short _startRow, unsigned short _startCol, unsigned short _destiRow, unsigned short _destiCol)
+bool bishop::isLegalMove(const coords& start, const coords& end)
 {
-    return (_destiRow - _startRow) == (_destiCol - _startCol);
+    return abs(end.second - start.second) == abs(end.first - start.first);
 }

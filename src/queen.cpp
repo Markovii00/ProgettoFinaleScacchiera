@@ -8,10 +8,10 @@ queen::queen(char type) : chessman(type) {}
 
 queen::~queen() {}
 
-bool queen::isLegalMove(unsigned short _startRow, unsigned short _startCol, unsigned short _destiRow, unsigned short _destiCol)
+bool queen::isLegalMove(const coords& start, const coords& end)
 {
-    short dRow = _destiRow - _startRow;
-    short dCol = _destiCol - _startCol;
+    short dRow = end.first - start.first;
+    short dCol = end.second - start.second;
 
-    return (dRow == dCol) || (dCol == 0) || (dRow == 0);
+    return (abs(dRow) == abs(dCol)) || (dCol == 0 && dRow != 0) || (dRow == 0 && dCol != 0);
 }

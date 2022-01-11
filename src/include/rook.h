@@ -17,10 +17,10 @@ class rook : public chessman
     ~rook();
 
     //Return true whether destination is legal for the rook's set of moves
-    bool isLegalMove(unsigned short _startRow, unsigned short _startCol, unsigned short _destiRow, unsigned short _destiCol) override;
+    bool isLegalMove(const coords& start, const coords& end) override;
 
     //true if the piece has moved
-    bool hasMoved(void) const ;
+    bool hasMoved(void) const;
 
     //If the piece makes a move, remember to change the parameter first_move
     void setMoved(void);
