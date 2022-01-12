@@ -11,8 +11,7 @@
 #include "include/board.h"
 
 //IL BOT POI PRENDERà A CASO UNA DI QUESTE COORDINATE, FARà IL GETALLMOVES, DOVRà VEDERE SE QUESTE SONO SAFE PER IL SUO RE 
-//TODO METODO CHE CREA UNA COPIA DELLA BOARD, APPLICA LA MOSSA CHE PUO ESSERE ENPASSANT CASTILING OPPURE MOSSA NORMALE
-//POI GUARDA SE IL RE è SOTTO SCACCO----> SI RETURN FALSE ALTRIMENTI TRUE
+//TODO RIFARE COSTRUTTORE DELLA COPIA
 //TODO NEL MOVE PUOI VA ESEGUITA QUESTA MOSSA 
 //TODO ALLA FINE DEL METODO MOVE GUARDARE SE IL NEMICO è SOTTO SCACCO MATTO 
 
@@ -218,6 +217,24 @@ int board::number_possible_moves(const bool& fromPieceColor) {
         }
     }
     return num_possible_moves;
+}
+
+bool board::isSafeMove(const coords& start, const coords& end, bool& pieceToMoveColor) const {
+    std::vector<chessman*> pieces = copy_board();
+    board copy(pieces, lastMoveCoords);
+
+    if(copy.isEnpassant(start, end).first) 
+        copy.do_enpassant(start, end, lastMoveCoords.second);
+    else if(copy.isCastling(start, end).first)
+        copy.do_castling(start, end, copy.isCastling(start, end).second);
+    else 
+        copy.executeMove(start, end);
+    
+    coords kingCoords = copy.search<king>(pieceToMoveColor);
+    if(!copy.kingInCheck(kingCoords, pieceToMoveColor))
+        return true;
+
+    return false;  
 }
 
 std::pair<bool,bool> board::move(coords& start, coords& end, bool& pieceToMoveColor)  { 
@@ -486,8 +503,6 @@ bool board::clearPath(const coords& start, const coords& end, const char& fromPi
     }
     return false;
 }
-
-
 
 //COSTRUCTORS AND DESTRUCTORS
 board::board(void) {

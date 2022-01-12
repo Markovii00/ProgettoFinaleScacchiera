@@ -51,6 +51,7 @@ private:
     bool isPawnEating(const coords& start, const coords& end, bool& fromPieceColor) const;
     bool attemptMove(std::vector<coords>& _vet, const bool& colorPiece, const coords& _tempCoords) const;
     bool check_on_pawn(const coords start, const coords end, const char& fromPieceId, bool& fromPieceColor) const;
+    bool isSafeMove(const coords& start, const coords& end, bool& pieceToMoveColor) const;
     
     void removeFromSet(const coords &coordsPieceEaten, const bool& pieceEaten);
     void updateCoordsInSet(const coords &start, const coords &end, const bool& pieceEaten); 
