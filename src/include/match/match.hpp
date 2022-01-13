@@ -11,12 +11,20 @@ class match {
     player& player_1;
     player& player_2;
     board& b;
+    int starter;
     int round = 0;
 
 public:
 
     //inizializza un match, prende in ingresso il player 1, player 2 e una board
-    match(player& player_1, player& player_2, board& b) : player_1(player_1), player_2(player_2), b(b) {};
+    match(player& player_1, player& player_2, board& b, int starter) : player_1(player_1), player_2(player_2), b(b), starter(starter) {
+        if(starter == 1){
+            round == 0;
+        }
+        else{
+            round == 1;
+        }
+    };
 
     ~match() {
          player_2.~player();
