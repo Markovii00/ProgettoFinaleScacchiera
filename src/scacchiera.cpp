@@ -3,8 +3,10 @@
  */ 
 
 #include "board.cpp"
-#include "include/match/player.hpp"
+#include "include/match/player.h"
 #include "include/match/match.hpp"
+#include "include/match/user.hpp"
+#include "include/match/bot.cpp"
 #include "include/log/logger.cpp"
 #include <iostream>
 #include <cctype>
@@ -34,9 +36,20 @@ void playerGame()
 {
     board b;
     string input;
+    
+    string to_log;
+    string writeTo = " to ";
+    short setSite;
+    
+    bool turn;
+    pair <bool, bool> moveOutput;
+    pair <bool,bool> ended = make_pair(false,false);
+    pair <bool, bool> invalidMove = make_pair(false, true);
+    pair <bool, bool> draw = make_pair(true, false);
     logger logger;
     regex input_filter("^([a-hA-H]){1}([1-8]){1} ([a-hA-H]){1}([1-8]){1}$");
     smatch coordinates;
+    vector<string> botNames = {"Zincalex", "Colla", "Markoovii", "Yasuo", "Yone", "MapBot"};
     pair<unsigned short, unsigned short> start;
     pair<unsigned short, unsigned short> end;
 
@@ -51,54 +64,126 @@ void playerGame()
     cin >> username;
     cin.ignore();
 
-    player p1(username, false);
-    player pc(computer, true);
+    user p1(username, false);
+    bot bot1(computer, true, b);
+    bot1.set_name(botNames);
     
     logger.log(console, "Initializing player 1 " + p1.get_name());
-    logger.log(console, "Initializing player 2 " + pc.get_name());
+    logger.log(console, "Initializing player 2 " + bot1.get_name());
 
     int starter = rand() % 2;
-    //PER MARKOVI SE STARTER = 0, DEVI SETTARE LA TUA VARIBILE ROUND = STARTER
-    //0 INIZIA IL PLAYER, 1 STARTA IL PC
-    match game(p1, pc, b, starter); 
+    
+    match game(p1, bot1, b, starter); 
     logger.log(console, "Creating match");
     logger.log(console, "Starting match");
 
     //game start
-    while(!b.endGame()) {   
+    while(moveOutput != ended) {
+        turn = game.whose_turn();   
         if(game.whose_turn()) { //player turn 
+            system("cls");
             b.printBoard();
-            do {
-                cout << "\n\nINSERT MOVE : ";
-                getline(cin, input);
-                regex_search(input, coordinates, input_filter);
-            } while(!regex_match(input, input_filter));
+            cout << '\n' << "Last move: " << to_log;
+            while(moveOutput == invalidMove){
+                do {
+                    cout << "\n\nINSERT MOVE : ";
+                    getline(cin, input);
+                    regex_search(input, coordinates, input_filter);
+                }while(!regex_match(input, input_filter));
             
-            short *mosse = conversion(coordinates);
-            start.first = *(mosse + 0);
-            start.second = *(mosse + 1);
-            end.first = *(mosse + 2);
-            end.second = *(mosse + 3);
+                short *mosse = conversion(coordinates);
+                start.first = *(mosse + 0);
+                start.second = *(mosse + 1);
+                end.first = *(mosse + 2);
+                end.second = *(mosse + 3);
 
-            b.move(start, end, game.whose_turn());
-            logger.log(game.get_player_turn().get_name(), Moving)
-
+                b.move(start, end, turn);
+            }
+            to_log = "Moving " + (char)start.first + (char)start.second + writeTo + (char)end.first + (char)end.second;
+            logger.log(game.get_player_turn().get_name(), to_log);
         }
-        else { //pc turn
-
-        }
-        
+        else {//pc turn
+             cout << '\n' << "Last move: " << to_log;
+             while(moveOutput == invalidMove){
+                 start = bot1.generateFromCoords();
+                 end = bot1.generateEndCoords(start);
+                 b.move(start, end, turn);
+            }
+            to_log = "Moving " + (char)start.first + (char)start.second + writeTo + (char)end.first + (char)end.second;
+            logger.log(game.get_player_turn().get_name(), to_log);
+        }  
     }
-   
-   
-
- 
     //METTERE UN IF PER VERIFICARE IL COLORE DELLE PEDINE CHE CHIAMANO IL MOVE PER NON MUOVERE PEZZI AVVERSARI 
-
-
+    //proponga
 }
     
-void computersGame() {}
+void computersGame() {
+    board b;
+    string to_log;
+    string writeTo = " to ";
+    bool turn;
+    pair <bool, bool> moveOutput;
+    pair <bool,bool>ended = make_pair(false,false);
+    pair <bool, bool>invalidMove = make_pair(false, true);
+    logger logger;
+    coords start;
+    coords end;
+
+    vector<string> botNames = {"Zincalex", "Colla", "Markoovii", "Yasuo", "Yone", "MapBot", ""};
+
+    bot bot1(writeTo , false, b);
+    bot bot2(writeTo , false, b);
+
+    bot1.set_name(botNames);
+    bot2.set_name(botNames);
+
+    logger.log(console, "Initializing player 1 " + bot1.get_name());
+    logger.log(console, "Initialising player 2 " + bot2.get_name());
+
+    int starter = rand() % 2;
+
+    match game(bot1, bot2, b, starter);
+
+    logger.log(console, "Creating match");
+    logger.log(console, "Starting match");
+
+    while(moveOutput!= ended){
+        turn = game.whose_turn();
+        if(turn){
+            system("cls");
+            b.printBoard();
+
+            while (moveOutput == invalidMove){
+            start = bot1.generateFromCoords();
+            end = bot1.generateEndCoords(start);
+            
+            b.move(start, end, turn);
+            }
+
+            to_log = "Moving " + (char)start.first + (char)start.second + writeTo + (char)end.first + (char)end.second;
+            logger.log(game.get_player_turn().get_name(), to_log);
+            
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        }
+        else{
+            system("cls");
+            b.printBoard();
+            while (moveOutput == invalidMove)
+            {
+                
+                start = bot2.generateFromCoords();
+                end = bot2.generateEndCoords(start);
+            
+                moveOutput = b.move(start, end, turn);
+            }
+            
+            to_log = "Moving " + (char)start.first + (char)start.second + writeTo + (char)end.first + (char)end.second;
+            logger.log(game.get_player_turn().get_name(), to_log);
+            
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        }
+    }
+}
 
 int main() 
 {
@@ -144,8 +229,3 @@ int main()
 
     return 0;
 }
-
-
-
-
-

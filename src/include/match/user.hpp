@@ -2,17 +2,18 @@
 // Created by Tommaso Gabrieli on 21/12/21.
 //
 
-#ifndef PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_PLAYER_HPP
-#define PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_PLAYER_HPP
+#ifndef PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_USER_HPP
+#define PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_USER_HPP
 
 #include <iostream>
+#include "player.h"
 #include "../chessman.h"
 #include <list>
 
 const std::string player_1_set{"ptcadr"};
 const std::string player_2_set{"PTCADR"};
 
-class player {
+class user : public player{
 private:
     std::string& name;
     std::list<std::string> moves;
@@ -20,10 +21,10 @@ private:
 
 public:
     //costruttore, prende in ingresso il nome del giocatore come riferimento e se ha il set in maiuscolo o minuscolo
-    explicit player(std::string& name, bool maiusc_set = false) : name(name), maiusc(maiusc_set) {};
+    explicit user(std::string& name, bool maiusc_set = false) : name(name), maiusc(maiusc_set) {};
 
     //distruttore
-    ~player() {
+    ~user() {
         moves.clear();
         name.clear();
     };
