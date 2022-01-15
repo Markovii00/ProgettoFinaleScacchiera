@@ -1,5 +1,5 @@
 #include "bot.hpp"
-#include "../../board.cpp"
+//#include "../../board.cpp"
 
 
 void bot::set_name(std::vector<std::string>names){
@@ -19,11 +19,15 @@ coords bot::generateFromCoords(){
     }
     indexFrom = rand() % updatedSet.size();
     start  = updatedSet.at(indexFrom);
+    
+    return start;
 }
 
 coords bot::generateEndCoords(coords start){
     allMoves = b.getAllMoves(start);
     indexTo = rand() % allMoves.size();
     end = allMoves.at(indexTo);
+
+    return end;
 }
 
