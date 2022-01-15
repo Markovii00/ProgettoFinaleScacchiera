@@ -1,4 +1,3 @@
-#include "board.cpp"
 #include <iostream>
 #include <cctype>
 #include <chrono>

@@ -7,12 +7,6 @@
 #define BOARD_H
 
 #include "../chessman.cpp"
-#include "../king.cpp"
-#include "../pawn.cpp"
-#include "../bishop.cpp"
-#include "../queen.cpp"
-#include "../rook.cpp"
-#include "../knight.cpp"
 #include <vector>
 #include <utility>
 #include <string>
