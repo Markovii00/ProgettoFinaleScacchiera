@@ -21,18 +21,23 @@ bool board::kingInCheck(const coords& king_coordinates, const bool& requestColor
         for(unsigned int i = 0; i < blackSet.size(); i++) {
             chessman* piece = chessboard[blackSet[i].first][blackSet[i].second];
             char pedina = piece->getChar();
-            if(piece->isLegalMove(blackSet[i], king_coordinates) && clearPath(blackSet[i], king_coordinates, pedina))
+            if(piece->isLegalMove(blackSet[i], king_coordinates) && clearPath(blackSet[i], king_coordinates, pedina)) {
+                std::cout << "errore in king in check1\n";
                 return true;
+            }    
         }
     }
     else { //king is black, look for white pieces that can eat it
         for(unsigned int i = 0; i < whiteSet.size(); i++) {
             chessman* piece = chessboard[whiteSet[i].first][whiteSet[i].second];
             char pedina = piece->getChar();
-            if(piece->isLegalMove(whiteSet[i], king_coordinates) && clearPath(whiteSet[i], king_coordinates, pedina))
+            if(piece->isLegalMove(whiteSet[i], king_coordinates) && clearPath(whiteSet[i], king_coordinates, pedina)) {
+                std::cout << "errore in king in check2\n";
                 return true;
+            }
         }
     }
+    std::cout << "king in check ok\n";
     return false;
 }
 
@@ -63,14 +68,17 @@ bool board::acceptableMove(const coords& start, const coords& end, const char& f
     if (fromPieceId == 0)
         return false;
 
-    if (end.first < 8 && end.second < 8) {
+    if (withinBoardLimits(end)) {
         if(is<pawn>(*chessboard[start.first][start.second])) 
             return check_on_pawn(start, end, fromPieceId, fromPieceColor);
+        else if(is<king>(*chessboard[start.first][start.second]) && abs(end.second - start.second) == 2 && isHorizontal(start, end))
+            return isCastling(start, end).first;
         else {
             char toId = getName(end.first, end.second);
             bool toColor = isBlack(toId); //true is black
-            if (toId == 0 || fromPieceColor != toColor) 
+            if (toId == '0' || fromPieceColor != toColor) {
                 return true;  
+            }     
         }
     }
     
@@ -126,7 +134,7 @@ std::vector<coords> board::getAllMoves(const coords& _pos) const {
             ret_.push_back(_pos + std::make_pair(1*dir, -1));
 
         if(isPawnEating(_pos, _pos + std::make_pair(1*dir, 1), colorPiece))
-            ret_.push_back(_pos + std::make_pair(1*dir, 1));
+            ret_.push_back(_pos + std::make_pair(1*dir, 1));  
         if(isPawnEating(_pos, _pos + std::make_pair(1*dir, -1), colorPiece))
             ret_.push_back(_pos + std::make_pair(1*dir, -1));
     }
@@ -173,13 +181,13 @@ std::vector<coords> board::getAllMoves(const coords& _pos) const {
                 West = attemptMove(ret_, colorPiece, _pos + std::make_pair(0, -counter));
 
             //Diagonal Moves
-            if(Nord_East && piece->isLegalMove(_pos, _pos + std::make_pair(-counter, counter)))   
+            if(Nord_East && piece->isLegalMove(_pos, _pos + std::make_pair(-counter, counter)) && withinBoardLimits(_pos + std::make_pair(-counter, counter)))   
                 Nord_East = attemptMove(ret_, colorPiece, _pos + std::make_pair(-counter, counter));
-            if(Nord_West && piece->isLegalMove(_pos, _pos + std::make_pair(-counter, -counter))) 
+            if(Nord_West && piece->isLegalMove(_pos, _pos + std::make_pair(-counter, -counter)) && withinBoardLimits(_pos + std::make_pair(-counter, counter))) 
                 Nord_West = attemptMove(ret_, colorPiece, _pos + std::make_pair(-counter, -counter));
-            if(Sud_East && piece->isLegalMove(_pos, _pos + std::make_pair(counter, counter))) 
+            if(Sud_East && piece->isLegalMove(_pos, _pos + std::make_pair(counter, counter)) && withinBoardLimits(_pos + std::make_pair(-counter, counter))) 
                 Sud_East = attemptMove(ret_, colorPiece, _pos + std::make_pair(counter, counter));
-            if(Sud_West && piece->isLegalMove(_pos, _pos + std::make_pair(counter, -counter))) 
+            if(Sud_West && piece->isLegalMove(_pos, _pos + std::make_pair(counter, -counter)) && withinBoardLimits(_pos + std::make_pair(-counter, counter))) 
                 Sud_West = attemptMove(ret_, colorPiece, _pos + std::make_pair(counter, -counter));
             
             counter++;
@@ -212,7 +220,7 @@ int board::number_possible_moves(const bool& fromPieceColor) const {
     }
     else {
         for(coords i : whiteSet) {
-            std::vector<coords> temp = getAllMoves(i);  
+            std::vector<coords> temp = getAllMoves(i); 
             num_possible_moves += temp.size();
         }
     }
@@ -274,21 +282,19 @@ bool board::isSafeMove(const coords& start, const coords& end, bool& pieceToMove
 }
 
 bool board::illegalMove(const coords& start, const coords& end, const char& fromPieceId, const bool& fromPieceColor, const bool& whoseturn) const {
-    return !acceptableMove(start, end, fromPieceId, fromPieceColor) || fromPieceColor != whoseturn || !chessboard[start.first][start.second]->isLegalMove(start, end) || !isCastling(start, end).first || !clearPath(start, end, fromPieceId); 
+    return !acceptableMove(start, end, fromPieceId, fromPieceColor) || fromPieceColor != whoseturn || !chessboard[start.first][start.second]->isLegalMove(start, end) || !clearPath(start, end, fromPieceId); 
 }
 
 std::pair<bool,bool> board::move(coords& start, coords& end, bool& whoseturn)  { 
-    char fromPieceId = chessboard[start.first][start.second]->getChar();
+    char fromPieceId = getName(start.first, start.second);
     bool fromPieceColor = isBlack(fromPieceId);
 
-    std::cout << "baka";
     int cond = isTie(whoseturn);
     switch (cond) {
     case 1 : return std::make_pair(false, false);
     case 0 : return std::make_pair(true, false); //ask for draw
     }
 
-    std::cout << "controlli su tie ok";
     if(illegalMove(start, end, fromPieceId, fromPieceColor, whoseturn)) {
         std::cout << "ILLEGAL MOVE \n";
         return std::make_pair(false,true);
@@ -299,12 +305,14 @@ std::pair<bool,bool> board::move(coords& start, coords& end, bool& whoseturn)  {
         std::cout << "King in danger, insert new move \n";
         return std::make_pair(false,true);
     }
-    std::cout << "controlli mossa safe per il re ok";
+    std::cout << "controlli mossa safe per il re ok \n"; 
+
+    std::pair<bool, coords> castlingVar = isCastling(start, end);
         
     if(isEnpassant(start, end).first) 
         do_enpassant(start, end, lastMoveCoords.second);
-    else if(isCastling(start, end).first)
-        do_castling(start, end, isCastling(start, end).second);
+    else if(castlingVar.first)
+        do_castling(start, end, castlingVar.second);
     else executeMove(start, end);
     
     std::cout << "controlli mossa eseguita";
@@ -334,13 +342,14 @@ std::vector<coords> board::KingPossibleMoves(coords& kCords, bool& fromPieceColo
 
 bool board::isPawnEating(const coords& start, const coords& end, const bool& fromPieceColor) const {
     //called when i'm sure the piece at start is a pawn
-    char toPieceId = chessboard[end.first][end.second]->getChar();
-    bool toPieceColor = isBlack(chessboard[end.first][end.second]->getChar());
-
-    if (isDiagonal(start, end)) 
-        if (toPieceColor != fromPieceColor && toPieceId != 0) //can eat diagonally?
-            return true;
+    if(withinBoardLimits(end)) {
+        char toPieceId = getName(end.first, end.second); 
+        bool toPieceColor = isBlack(toPieceId);
     
+        if (isDiagonal(start, end)) 
+            if (toPieceColor != fromPieceColor && toPieceId != 0) //can eat diagonally?
+                return true;
+    }  
     return false;
 }
 
@@ -580,8 +589,8 @@ board::board(void) {
     // allocating all black pawns and pieces
     for (unsigned short cCol = 0; cCol < 8; cCol++) {
         chessboard[1][cCol] = new pawn('P');
-        blackSet.push_back(std::make_pair(6,cCol)); //adding all pawn
-        blackSet.push_back(std::make_pair(7,cCol)); //adding all the other pieces
+        blackSet.push_back(std::make_pair(1,cCol)); //adding all pawn
+        blackSet.push_back(std::make_pair(0,cCol)); //adding all the other pieces
     }
 
     chessboard[0][0] = new rook('T');
@@ -621,9 +630,9 @@ board::board(std::vector<chessman*> copy, std::pair<coords, coords> lastMC) {
 }
 
 //COMPLETE METHODS
-char board::getName(unsigned short row,unsigned short col) const {
+char board::getName(short row, short col) const {
     if (chessboard[row][col] == nullptr)
-        return 0;
+        return '0';
     return chessboard[row][col]->getChar();
 }
 std::vector<chessman*> board::copy_board(void) const{
@@ -649,7 +658,7 @@ void board::insertBoardInMap(void) {
 }
 int board::isTie(const bool& pieceToMoveColor) const {
     coords kingCoords = search<king>(pieceToMoveColor);
-
+    
     if(tables.at(boardToString()) >= 3) {
         std::cout << "Draw? : ";
         return 0;
@@ -677,7 +686,7 @@ bool board::draw_for_pieces() const {
     ret |= whiteSet.size() == 1 && blackSet.size() == 2 && find<king>(isBlack) && find<knight>(isBlack);
     ret |= whiteSet.size() == 2 && blackSet.size() == 2 && find<bishop>(isBlack) && find<bishop>(isWhite) && ((b_bishop.first + b_bishop.second) % 2 == (B_bishop.first + B_bishop.second) % 2);
     ret |= whiteSet.size() == 1 && blackSet.size() == 3 && blackKnights == 2;        
-    ret |= whiteSet.size() == 3 && blackSet.size() == 1 && whiteKnights == 2;                                              
+    ret |= whiteSet.size() == 3 && blackSet.size() == 1 && whiteKnights == 2;                                       
     return ret;
 }
 
@@ -928,6 +937,9 @@ bool board::isBlack(const char& request) const {
 bool board::isVertical(const coords& start, const coords& end) const { return start.second == end.second && start.first != start.second; }
 bool board::isHorizontal(const coords& start, const coords& end) const { return start.first == end.first &&  start.second != end.second; }
 bool board::isDiagonal(const coords& start, const coords& end) const { return abs(end.first - start.first) == abs(end.second - start.second); }
+bool board::withinBoardLimits(const coords& end) const {
+    return end.first >= 0 && end.first < 8 && end.second >= 0 && end.second < 8;
+}
 
 //GET METHODS
 std::vector<coords> board::getWhiteSet(void) const { return whiteSet; }

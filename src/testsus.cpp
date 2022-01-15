@@ -18,9 +18,7 @@ short* conversion(smatch& m)
 
     short ret[4] = {fromRow, fromCol, toRow, toCol};
     short *array = &ret[0];
-    cout << "funziona\n";
     return array; 
-    
 }
 
 int main(){
@@ -33,14 +31,14 @@ int main(){
 
     regex input_filter("^([a-hA-H]){1}([1-8]){1} ([a-hA-H]){1}([1-8]){1}$");
 
-    pair<unsigned short, unsigned short> start;
-    pair<unsigned short, unsigned short> end;
+    coords start;
+    coords end;
 
-    bool black = true;
+    bool white = false;
 
     board b {};
 
-    while(true){
+    while(true) {
         b.printBoard();
         
 
@@ -50,13 +48,13 @@ int main(){
             regex_search(input, coordinates, input_filter);
         }while(!regex_match(input, input_filter));
 
-        cout << "funziona\n";
         short *mosse = conversion(coordinates);
                 start.first = *(mosse);
                 start.second = *(mosse + 1);
                 end.first = *(mosse + 2);
                 end.second = *(mosse + 3);
-        moveOutput = b.move(start, end, black);
+        moveOutput = b.move(start, end, white);
+        white = !white;
     }
     return 0;
 }
