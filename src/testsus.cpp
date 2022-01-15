@@ -5,6 +5,7 @@
 #include <string>
 #include <algorithm>
 #include <regex>
+#include "board.h"
 
 using namespace std;
 
@@ -37,23 +38,6 @@ int main(){
 
     board b {};
 
-    while(true) {
-        b.printBoard();
-        
-
-        do {
-            cout << "\n\nINSERT MOVE : ";
-            getline(cin, input); 
-            regex_search(input, coordinates, input_filter);
-        }while(!regex_match(input, input_filter));
-
-        short *mosse = conversion(coordinates);
-                start.first = *(mosse);
-                start.second = *(mosse + 1);
-                end.first = *(mosse + 2);
-                end.second = *(mosse + 3);
-        moveOutput = b.move(start, end, white);
-        white = !white;
-    }
+    b.printBoard();
     return 0;
 }
