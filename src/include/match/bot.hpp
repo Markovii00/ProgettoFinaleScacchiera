@@ -5,13 +5,11 @@
 #include <iostream>
 #include "player.h"
 #include "../chessman.h"
-#include "../../board.cpp"
+#include "../board.h"
 #include <list>
 #include <vector>
 #include <string>
 
-const std::string player_1_set{"ptcadr"};
-const std::string player_2_set{"PTCADR"};
 
 class bot : public player{
 private:
@@ -28,7 +26,11 @@ private:
 
 public:
     //costruttore, prende in ingresso il nome del giocatore come riferimento e se ha il set in maiuscolo o minuscolo
-    explicit bot(std::string& name,bool maiusc_set, board& (b)) : name(name), maiusc(maiusc_set), b(b) {};
+    explicit bot(std::string& namevar,bool maiusc_set, board& bvar){
+        name = namevar;
+        maiusc_set = false;
+        b = bvar;
+    };
 
     //distruttore
     ~bot() {
@@ -49,9 +51,6 @@ public:
 
 
     //ritorna il nome del giocatore
-    std::string& get_name() const {
-        return name;
-    }
 
     //cambia il nome al giocatore
     void set_name(std::vector<std::string>names);

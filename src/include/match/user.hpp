@@ -10,18 +10,20 @@
 #include "../chessman.h"
 #include <list>
 
-const std::string player_1_set{"ptcadr"};
-const std::string player_2_set{"PTCADR"};
 
 class user : public player{
 private:
     std::string& name;
     std::list<std::string> moves;
     bool maiusc;
+    std::string& namevar;
 
 public:
     //costruttore, prende in ingresso il nome del giocatore come riferimento e se ha il set in maiuscolo o minuscolo
-    explicit user(std::string& name, bool maiusc_set = false) : name(name), maiusc(maiusc_set) {};
+    explicit user(std::string& namevar, bool maiusc_set){
+        name = namevar;
+        maiusc_set = false;
+    };
 
     //distruttore
     ~user() {

@@ -49,7 +49,7 @@ void playerGame()
     logger logger;
     regex input_filter("^([a-hA-H]){1}([1-8]){1} ([a-hA-H]){1}([1-8]){1}$");
     smatch coordinates;
-    vector<string> botNames = {"Zincalex", "Colla", "Markoovii", "Yasuo", "Yone", "MapBot"};
+    vector<string> botNames = {"Zincalex", "Colla", "Markovii", "Yasuo", "Yone", "MapBot"};
     pair<unsigned short, unsigned short> start;
     pair<unsigned short, unsigned short> end;
 

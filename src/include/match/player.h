@@ -4,8 +4,6 @@
 #include <string>
 #include <list>
 
-const std::string player_1_set{"ptcadr"};
-const std::string player_2_set{"PTCADR"};
 
 class player {
 protected:
@@ -13,9 +11,13 @@ protected:
     std::list<std::string> moves;
     bool maiusc;
 
+    const std::string player_1_set{"ptcadr"};
+    const std::string player_2_set{"PTCADR"};
+
 public:
     //costruttore, prende in ingresso il nome del giocatore come riferimento e se ha il set in maiuscolo o minuscolo
-    player(std::string& name, bool maiusc_set = false) : name(name), maiusc(maiusc_set) {};
+    player(std::string& name, bool maiusc_set);
+    player(std::string& name,bool maiusc_set, board& b);
 
     //distruttore
     virtual ~player() {
