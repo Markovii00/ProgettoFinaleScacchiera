@@ -18,7 +18,7 @@
 #include <string>
 #include <map>
 
-typedef std::pair<unsigned short, unsigned short> coords;
+typedef std::pair<short, short> coords;
 
 class board {
 public:
@@ -70,11 +70,12 @@ private:
 
     int isTie(const bool& fromPieceColor) const;
     
-    char getName(unsigned short row, unsigned short col) const;
+    char getName(short row, short col) const;
     void promotion(const coords& pawnPos, const bool& pawnColor);
      
 
     bool endGame();
+    bool withinBoardLimits(const coords& end) const;
     
     bool checkKing(coords& start, coords& end, bool& fromPieceColor);
 

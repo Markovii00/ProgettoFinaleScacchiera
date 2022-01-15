@@ -5,7 +5,7 @@
 #ifndef CHESSMAN_H
 #define CHESSMAN_H
 
-typedef std::pair<unsigned short, unsigned short> coords;
+typedef std::pair<short, short> coords;
 
 class chessman
 {
