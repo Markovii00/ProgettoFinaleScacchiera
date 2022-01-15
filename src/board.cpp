@@ -280,23 +280,26 @@ bool board::illegalMove(const coords& start, const coords& end, const char& from
 std::pair<bool,bool> board::move(coords& start, coords& end, bool& whoseturn)  { 
     char fromPieceId = chessboard[start.first][start.second]->getChar();
     bool fromPieceColor = isBlack(fromPieceId);
-    
+
+    std::cout << "baka";
     int cond = isTie(whoseturn);
     switch (cond) {
     case 1 : return std::make_pair(false, false);
     case 0 : return std::make_pair(true, false); //ask for draw
-    default: 
     }
 
+    std::cout << "controlli su tie ok";
     if(illegalMove(start, end, fromPieceId, fromPieceColor, whoseturn)) {
         std::cout << "ILLEGAL MOVE \n";
         return std::make_pair(false,true);
     }
+    std::cout << "controlli mosse safe ok";
     
     if(!isSafeMove(start, end, fromPieceColor)) {
         std::cout << "King in danger, insert new move \n";
         return std::make_pair(false,true);
     }
+    std::cout << "controlli mossa safe per il re ok";
         
     if(isEnpassant(start, end).first) 
         do_enpassant(start, end, lastMoveCoords.second);
@@ -304,10 +307,13 @@ std::pair<bool,bool> board::move(coords& start, coords& end, bool& whoseturn)  {
         do_castling(start, end, isCastling(start, end).second);
     else executeMove(start, end);
     
+    std::cout << "controlli mossa eseguita";
     if(isPromotion(end, fromPieceColor)) 
         promotion(end, fromPieceColor);
 
     //the enemy is under scacco matto?
+
+    return std::make_pair(true,true);
 }
 
 std::vector<coords> board::KingPossibleMoves(coords& kCords, bool& fromPieceColor) const {
@@ -345,6 +351,7 @@ bool board::isPromotion(const coords& end, const bool& fromPieceColor) const {
 }
 
 void board::promotion(const coords& pawnPos, const bool& pawnColor) {
+    /*
     char _p;
     bool isValid = false;
 
@@ -377,6 +384,7 @@ void board::promotion(const coords& pawnPos, const bool& pawnColor) {
         else if (isRook(newPiece))
             chessboard[pawnRow][pawnCol] = new rook('t');
     }
+    */
 }
 
 bool board::clearPath(const coords& start, const coords& end, const char& fromPieceId) const {
@@ -584,6 +592,8 @@ board::board(void) {
     chessboard[0][5] = new bishop('A');
     chessboard[0][6] = new knight('C');
     chessboard[0][7] = new rook('T');
+
+    tables.insert(std::pair<std::string, short>("TCADRACTPPPPPPPP00000000000000000000000000000000pppppppptcadract", 1));
 }
 board::~board() {
     for (unsigned short cCol = 0; cCol < 8; ++cCol) {
@@ -778,6 +788,7 @@ std::pair<bool, coords> board::isCastling(const coords& start, const coords& end
             }
         }
     }
+    return std::make_pair(false, std::make_pair(0, 0));
 }
 void board::do_castling(const coords& start, const coords& end, const coords& rook_to_move) { 
     bool set = isBlack(chessboard[start.first][start.second]->getChar());
