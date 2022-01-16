@@ -31,3 +31,18 @@ coords bot::generateEndCoords(coords start){
     return end;
 }
 
+bool bot::handledraw(){
+    short randchoice = rand() % 100 + 1;
+    if(randchoice < 25)
+        return true;
+    else
+        return false;
+}
+
+bool bot::requestDraw(){
+    short randchoice = rand() % 100 + 1;
+    if(randchoice < 5)
+        return true;
+    else
+        return false;
+}

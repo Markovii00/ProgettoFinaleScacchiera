@@ -3,6 +3,7 @@
 
 #include <string>
 #include <list>
+#include "../board.h"
 
 
 class player {

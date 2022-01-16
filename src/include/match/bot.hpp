@@ -60,6 +60,10 @@ public:
         return moves;
     }
 
+    bool handledraw();
+
+    bool requestDraw();
+
     //duplicato in board.h, ricordarsi di cancellare uno dei due
     bool is_in_set(const char* chess_str_representation) const {
         if (!maiusc)
@@ -76,6 +80,7 @@ public:
     void import_moves(std::list<std::string>& new_moves) {
         moves.assign(new_moves.begin(), new_moves.end());
     }
+
 };
 
 #endif
