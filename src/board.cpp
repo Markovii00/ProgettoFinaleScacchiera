@@ -562,60 +562,61 @@ bool board::clearPath(const coords& start, const coords& end, const char& fromPi
 
 //COSTRUCTORS AND DESTRUCTORS
 board::board(void) {
-    lastMoveCoords.first = std::make_pair(0,0);
-    lastMoveCoords.second = std::make_pair(0,0);
+    lastMoveCoords.first = std::make_pair(-1,-1);
+    lastMoveCoords.second = std::make_pair(-1,-1);
     moveRule50 = 0;
-
-    for (unsigned short cCol = 0; cCol < 8; ++cCol) 
-        for (unsigned short cRow = 0; cRow < 8; ++cRow) 
-            chessboard[cRow][cCol] = nullptr;
 
     // allocating all white pawns and pieces
     for (unsigned short cCol = 0; cCol < 8; ++cCol) {
-        chessboard[6][cCol] = new pawn('p');
-        whiteSet.push_back(std::make_pair(6,cCol)); //adding all pawn
-        whiteSet.push_back(std::make_pair(7,cCol)); //adding all the other pieces
+        chessboard[6][cCol] = new pawn('p', std::make_pair(6, cCol), false);
+        whiteSet.emplace_back(6,cCol); //adding all pawn
+        whiteSet.emplace_back(7,cCol); //adding all the other pieces
     }
 
-    chessboard[7][0] = new rook('t');
-    chessboard[7][1] = new knight('c');
-    chessboard[7][2] = new bishop('a');
-    chessboard[7][3] = new queen('d');
-    chessboard[7][4] = new king('r');
-    chessboard[7][5] = new bishop('a');
-    chessboard[7][6] = new knight('c');
-    chessboard[7][7] = new rook('t');
+    chessboard[7][0] = new rook('t', std::make_pair(7,0), false);
+    chessboard[7][1] = new knight('c', std::make_pair(7,1), false);
+    chessboard[7][2] = new bishop('a', std::make_pair(7,2), false);
+    chessboard[7][3] = new queen('d', std::make_pair(7,3), false);
+    chessboard[7][4] = new king('r', std::make_pair(7,4), false);
+    chessboard[7][5] = new bishop('a', std::make_pair(7,5), false);
+    chessboard[7][6] = new knight('c', std::make_pair(7,6), false);
+    chessboard[7][7] = new rook('t', std::make_pair(7,7), false);
 
     // allocating all black pawns and pieces
     for (unsigned short cCol = 0; cCol < 8; cCol++) {
-        chessboard[1][cCol] = new pawn('P');
-        blackSet.push_back(std::make_pair(1,cCol)); //adding all pawn
-        blackSet.push_back(std::make_pair(0,cCol)); //adding all the other pieces
+        chessboard[1][cCol] = new pawn('P', std::make_pair(1,0), true);
+        blackSet.emplace_back(1,cCol); //adding all pawn
+        blackSet.emplace_back(0,cCol); //adding all the other pieces
     }
 
-    chessboard[0][0] = new rook('T');
-    chessboard[0][1] = new knight('C');
-    chessboard[0][2] = new bishop('A');
-    chessboard[0][3] = new queen('D');
-    chessboard[0][4] = new king('R');
-    chessboard[0][5] = new bishop('A');
-    chessboard[0][6] = new knight('C');
-    chessboard[0][7] = new rook('T');
+    chessboard[0][0] = new rook('T', std::make_pair(0,0), true);
+    chessboard[0][1] = new knight('C', std::make_pair(0,1), true);
+    chessboard[0][2] = new bishop('A', std::make_pair(0,2), true);
+    chessboard[0][3] = new queen('D', std::make_pair(0,3), true);
+    chessboard[0][4] = new king('R', std::make_pair(0,4), true);
+    chessboard[0][5] = new bishop('A', std::make_pair(0,5), true);
+    chessboard[0][6] = new knight('C', std::make_pair(0,6), true);
+    chessboard[0][7] = new rook('T', std::make_pair(0,7), true);
 
+    for (int iRow = 2;  iRow < 5; iRow++) {
+        for (int iCol = 0;  iCol < 7; iCol++) {
+            chessboard[iRow][iCol] = new emptyTile(' ', std::make_pair(iRow,iCol), true); // @TODO In caso creare classe set
+
+        }
+    }
+
+    //Create string
     tables.insert(std::pair<std::string, short>("TCADRACTPPPPPPPP00000000000000000000000000000000pppppppptcadract", 1));
 }
 board::~board() {
     for (unsigned short cCol = 0; cCol < 8; ++cCol) {
         for (unsigned short cRow = 0; cRow < 8; ++cRow) {
-            // This if avoid the segfault in case chessman is null
-            if (chessboard[cRow][cCol] not_eq nullptr) {
-                delete (chessboard[cRow][cCol]);
-                chessboard[cRow][cCol] = nullptr;
-            }
+            delete (chessboard[cRow][cCol]);
         }
     }
 }
-board::board(std::vector<chessman*> copy, std::pair<coords, coords> lastMC) {
+
+/*board::board(std::vector<chessman*> copy, std::pair<coords, coords> lastMC) {
     lastMoveCoords.first = lastMC.first;
     lastMoveCoords.second = lastMC.second;
     for(unsigned int i = 0; i < 64; i++) {
@@ -627,10 +628,10 @@ board::board(std::vector<chessman*> copy, std::pair<coords, coords> lastMC) {
                 whiteSet.push_back(std::make_pair(i/8, i%8));
         } 
     }       
-}
+}*/
 
 //COMPLETE METHODS
-char board::getName(short row, short col) const {
+/*char board::getName(short row, short col) const {
     if (chessboard[row][col] == nullptr)
         return '0';
     return chessboard[row][col]->getChar();
@@ -815,11 +816,11 @@ void board::do_castling(const coords& start, const coords& end, const coords& ro
     ((king*)chessboard[end.first][end.second])->setMoved(); 
 
     insertBoardInMap();
-}
+}*/
 void board::executeMove(const coords& start, const coords& end) {
-    if (getName(end.first, end.second) != 0) {
-        removeFromSet(end, isBlack(chessboard[end.first][end.second]->getChar()));
-        delete chessboard[end.first][end.second];  
+    if (chessboard[end.first][end.second]->getChar() != ' ') {
+        removeFromSet(end, chessboard[end.first][end.second]->getSet());
+        delete chessboard[end.first][end.second];
         moveRule50 = 0; 
     }
     else if(is<pawn>(*chessboard[start.first][start.second]))
@@ -827,18 +828,17 @@ void board::executeMove(const coords& start, const coords& end) {
     else  moveRule50++;
     
     chessboard[end.first][end.second] = chessboard[start.first][start.second];
-    chessboard[start.first][start.second] = nullptr;
-    updateCoordsInSet(start, end, isBlack(chessboard[end.first][end.second]->getChar()));
+    chessboard[start.first][start.second] = new emptyTile(' ', std::make_pair(start.first, start.second), true);
+    updateCoordsInSet(start, end, chessboard[end.first][end.second]->getSet());
 
-    if(is<rook>(*chessboard[end.first][end.second]) && !((rook*)chessboard[start.first][start.second])->hasMoved()) 
-        ((rook*)chessboard[end.first][end.second])->setMoved();
-    else if(is<king>(*chessboard[end.first][end.second]) && !((king*)chessboard[start.first][start.second])->hasMoved()) 
-        ((king*)chessboard[end.first][end.second])->setMoved();
-    else if(is<pawn>(*chessboard[end.first][end.second]) && !((pawn*)chessboard[start.first][start.second])->hasMoved()) 
-        ((pawn*)chessboard[end.first][end.second])->setMoved();
+    if (!chessboard[start.first][start.second]->hasMoved())
+        chessboard[start.first][start.second]->setMoved();
 
+    lastMoveCoords.first = start;
+    lastMoveCoords.second = end;
     insertBoardInMap();
 }
+
 
 //PRINT
 void board::printBoard(void) const {
@@ -847,18 +847,13 @@ void board::printBoard(void) const {
         std::cout << 8 - iRow << "    ";
         for (unsigned short iCol = 0; iCol < 8; ++iCol)
         {
-            if (chessboard[iRow][iCol] not_eq nullptr)
                 std::cout << " " << chessboard[iRow][iCol]->getChar() << (iCol == 7 ? "": " |");
-            else
-            {
-                std::cout << (iCol == 7 ? "": "   |");
-            }
         }
         std::cout << "\n" << (iRow == 7 ? "\n" : "     -------------------------------\n");
     }
     std::cout << "      A   B   C   D   E   F   G   H";
 }
-std::string board::to_string(bool fixed_allignment = false) const{
+/*std::string board::to_string(bool fixed_allignment = false) const{
     std::string bb;
     for (unsigned short iRow = 0; iRow < 8; ++iRow)
     {
@@ -883,12 +878,12 @@ std::string board::to_string(bool fixed_allignment = false) const{
     bb += "      A   B   C   D   E   F   G   H";
 
     return bb;
-}
+}*/
+
 std::string board::boardToString(void) const {
     std::string ret = "";
-    int sideLength = 8;
     for(unsigned short i = 0; i < 64; i++) {
-        ret += getName(i/8, i%8);
+        ret += chessboard[i/8][i%8]->getChar();
     }
     return ret;
 } 
@@ -896,23 +891,24 @@ std::string board::boardToString(void) const {
 //VARIABLE UPDATE
 void board::updateCoordsInSet(const coords& start, const coords& end, const bool& pieceMoved) {
     if(pieceMoved) { //black
-        for(coords i : blackSet) {
-            if(i == start) 
-                i = end;  
-        }    
+        for (int i = 0; i < blackSet.size(); ++i) {
+            if (blackSet.at(i) == start) {
+                blackSet.at(i) = end;
+            }
+        }
     }
     else {
-        for(coords i : whiteSet) {
-            if(i == start) 
-                i = end;  
-        }  
+        for (int i = 0; i < whiteSet.size(); ++i) {
+            if (whiteSet.at(i) == start) {
+                whiteSet.at(i) = end;
+            }
+        }
     }
-    lastMoveCoords.first = start;
-    lastMoveCoords.second = end;
 }
-void board::removeFromSet(const coords &coordsPieceEaten, const bool& pieceEaten) {
+
+void board::removeFromSet(const coords &coordsPieceEaten, const bool& setPieceEaten) {
     bool startRemoving = false;
-    if(pieceEaten) { //black
+    if(setPieceEaten) { //black
         for(unsigned short i = 0; i < blackSet.size() - 1; i++) {
             if(blackSet.at(i) == coordsPieceEaten) startRemoving = true;
             if(startRemoving) blackSet.at(i) = blackSet.at(i+1);
@@ -927,7 +923,7 @@ void board::removeFromSet(const coords &coordsPieceEaten, const bool& pieceEaten
         whiteSet.pop_back();
     }
 }
-
+/*
 //BOOL METHODS
 bool board::isBlack(const char& request) const {
     if (request >= 'A' && request <= 'Z')
@@ -936,7 +932,7 @@ bool board::isBlack(const char& request) const {
 }
 bool board::isVertical(const coords& start, const coords& end) const { return start.second == end.second && start.first != start.second; }
 bool board::isHorizontal(const coords& start, const coords& end) const { return start.first == end.first &&  start.second != end.second; }
-bool board::isDiagonal(const coords& start, const coords& end) const { return abs(end.first - start.first) == abs(end.second - start.second); }
+bool board::isDiagonal(const coords& start, const coords& end) const { return abs(end.first - start.first) == abs(end.second - start.second); }*/
 bool board::withinBoardLimits(const coords& end) const {
     return end.first >= 0 && end.first < 8 && end.second >= 0 && end.second < 8;
 }
