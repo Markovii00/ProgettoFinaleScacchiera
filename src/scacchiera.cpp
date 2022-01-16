@@ -37,11 +37,17 @@ void playerGame()
     board b;
     string input;
     
+    string drawCondition = "FF";
     string to_log;
     string writeTo = " to ";
     short setSite;
     
     bool turn;
+    bool userRequestedDraw = false;
+    bool botAcceptedDraw = false;
+    bool userAccpetedDraw = false;
+    bool botRquestedDraw = false;
+
     pair <bool, bool> moveOutput;
     pair <bool,bool> ended = make_pair(false,false);
     pair <bool, bool> invalidMove = make_pair(false, true);
@@ -50,8 +56,8 @@ void playerGame()
     regex input_filter("^([a-hA-H]){1}([1-8]){1} ([a-hA-H]){1}([1-8]){1}$");
     smatch coordinates;
     vector<string> botNames = {"Zincalex", "Colla", "Markovii", "Yasuo", "Yone", "MapBot"};
-    pair<unsigned short, unsigned short> start;
-    pair<unsigned short, unsigned short> end;
+    coords start;
+    coords end;
 
 
     logger.log(console, "Welcome");
@@ -86,35 +92,73 @@ void playerGame()
             cout << '\n' << "Last move: " << to_log;
             while(moveOutput == invalidMove){
                 do {
+                    if(botRquestedDraw == true){
+                        cout << bot1.get_name() << " ha richiesto la patta, vuoi accettarla? Y/N";
+                        getline(cin, input);
+                        if(input == "Y" || input == "y"){
+                            moveOutput = draw;
+                            logger.log(game.get_player_turn().get_name(), "Accepted the draw");
+                        }
+                    }
+                    if(moveOutput == draw){
+                        cout << "The game ended with a draw!";
+                        logger.log(console, "Draw, game is ended");
+                        logger.log(console, "Ending log session");
+                        return;
+                    }
                     cout << "\n\nINSERT MOVE : ";
                     getline(cin, input);
+                    if(input == drawCondition){
+                        userRequestedDraw = true;
+                        break;
+                    }
                     regex_search(input, coordinates, input_filter);
                 }while(!regex_match(input, input_filter));
-            
-                short *mosse = conversion(coordinates);
-                start.first = *(mosse + 0);
-                start.second = *(mosse + 1);
-                end.first = *(mosse + 2);
-                end.second = *(mosse + 3);
+                if(userRequestedDraw == false) {
 
-                b.move(start, end, turn);
+                    short *mosse = conversion(coordinates);
+                    start.first = *(mosse + 0);
+                    start.second = *(mosse + 1);
+                    end.first = *(mosse + 2);
+                    end.second = *(mosse + 3);
+
+                    b.move(start, end, turn);
+                }
             }
-            to_log = "Moving " + (char)start.first + (char)start.second + writeTo + (char)end.first + (char)end.second;
-            logger.log(game.get_player_turn().get_name(), to_log);
+            if(userRequestedDraw == false) {
+                to_log = "Moving " + (char) start.first + (char) start.second + writeTo + (char) end.first +
+                         (char) end.second;
+                logger.log(game.get_player_turn().get_name(), to_log);
+            } else
+                logger.log(game.get_player_turn().get_name(), "requested draw");
         }
         else {//pc turn
              cout << '\n' << "Last move: " << to_log;
-             while(moveOutput == invalidMove){
-                 start = bot1.generateFromCoords();
-                 end = bot1.generateEndCoords(start);
-                 b.move(start, end, turn);
-            }
-            to_log = "Moving " + (char)start.first + (char)start.second + writeTo + (char)end.first + (char)end.second;
-            logger.log(game.get_player_turn().get_name(), to_log);
+             if(userRequestedDraw == false){
+                while(moveOutput == invalidMove){
+
+                     botRquestedDraw = bot1.requestDraw();
+                    if(botRquestedDraw == false){
+                        start = bot1.generateFromCoords();
+                        end = bot1.generateEndCoords(start);
+                        b.move(start, end, turn);
+                    }else{
+                        logger.log(game.get_player_turn().get_name(), "requested draw");
+                        break;
+                    }
+                }
+             }else botAcceptedDraw=bot1.handledraw();
+
+             if(botAcceptedDraw){
+                 logger.log(game.get_player_turn().get_name(), "Accepted the draw");
+                 moveOutput = draw;
+             }
+             to_log = "Moving " + (char)start.first + (char)start.second + writeTo + (char)end.first + (char)end.second;
+             logger.log(game.get_player_turn().get_name(), to_log);
         }  
     }
-    //METTERE UN IF PER VERIFICARE IL COLORE DELLE PEDINE CHE CHIAMANO IL MOVE PER NON MUOVERE PEZZI AVVERSARI 
-    //proponga
+    return;
+    //METTERE UN IF PER VERIFICARE IL COLORE DELLE PEDINE CHE CHIAMANO IL MOVE PER NON MUOVERE PEZZI AVVERSAR//proponga
 }
     
 void computersGame() {
@@ -183,6 +227,7 @@ void computersGame() {
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
     }
+    return;
 }
 
 int main() 
