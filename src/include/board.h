@@ -16,7 +16,7 @@ typedef std::pair<short, short> coords;
 
 class board {
 public:
-    board(std::vector<chessman*> copy, std::pair<coords, coords> lastMC); 
+    //board(std::vector<chessman*> copy, std::pair<coords, coords> lastMC);
     board(void);
     ~board(void);
 
@@ -46,9 +46,9 @@ private:
     void do_castling(const coords& start, const coords& end, const coords& rook_to_move);
     void do_enpassant(const coords& start, const coords& end, const coords& pawn_to_be_eaten);
 
-    //int number_possible_moves(const bool& fromPieceColor) const;
+    int number_possible_moves(const bool& fromPieceColor) const;
 
-    //void insertBoardInMap(void);
+    void insertBoardInMap(void);
 
     bool illegalMove(const coords& start, const coords& end,const char& fromPieceId, const bool& pieceToMoveColor, const bool& whoseturn) const;
 
@@ -57,17 +57,17 @@ private:
     bool isPawnEating(const coords& start, const coords& end, const bool& fromPieceColor) const;
     //bool attemptMove(std::vector<coords>& _vet, const bool& colorPiece, const coords& _tempCoords) const;
     bool check_on_pawn(const coords& start, const coords& end, const char& fromPieceId, const bool& fromPieceColor) const;
-    //bool isSafeMove(const coords& start, const coords& end, bool& pieceToMoveColor) const;
+    bool isSafeMove(const coords& start, const coords& end, bool& pieceToMoveColor) const;
 
     //bool isPromotion(const coords& end, const bool& fromPieceColor) const;
     
 
-    // -> void fakeExecuteMove(const coords& start, const coords& end, const int& typeMove, const coords& pawn_to_be_eaten, const coords& rook_to_move);
+    void fakeExecuteMove(const coords& start, const coords& end, const int& typeMove, const coords& pawn_to_be_eaten, const coords& rook_to_move);
 
     void removeFromSet(const coords &coordsPieceEaten, const bool& pieceEaten);
     void updateCoordsInSet(const coords &start, const coords &end, const bool& pieceEaten);
     void executeMove(const coords& start, const coords& end);
-    //int isTie(const bool& fromPieceColor) const;
+    int isTie(const bool& fromPieceColor) const;
     
     // eclissiamo void promotion(const coords& pawnPos, const bool& pawnColor);
     
@@ -86,9 +86,9 @@ private:
 
 
 
-    // da rivedere std::vector<chessman*> copy_board(void) const;
+    std::vector<chessman*> copy_board(void) const;
 
-    //bool draw_for_pieces(void) const;
+    bool draw_for_pieces(void) const;
 
     bool isVertical(const coords& start, const coords& end) const;
     bool isHorizontal(const coords& start, const coords& end) const;
@@ -99,10 +99,18 @@ private:
     coords search(const bool& requestColor) const;
 
     template<typename Type>
-    bool find(const bool& requestColor) const;
+    bool contains(const bool& requestColor) const;
 
     template<typename Type>
-    int howManyAlive(const bool& requestColor) const; 
+    int howManyAlive(const bool& requestColor) const;
+
+
+    void addCoordsInSet(const coords &position, const bool &colorSet);
+
+    void
+    undoMove(const coords &start, const coords &end, const bool &fromPieceColor, const int &typeOfMove,
+             char &pieceAtEnd,
+             const int &old_moveRule50, const std::pair<coords, coords> &old_lastMovedCoords);
 };
 
 coords operator+(const coords& start, std::pair<short, short> offset);

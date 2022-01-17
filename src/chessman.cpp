@@ -195,19 +195,19 @@ std::vector<coords> knight::possibleMoves(void) const {
     
     if(position.first + 2 < 8 && position.second + 1 < 8)
         ret_.push_back(std::make_pair(position.first + 2, position.second + 1));
-    if(position.first + 2 < 8 && position.second - 1 >= 8)
+    if(position.first + 2 < 8 && position.second - 1 >= 0)
         ret_.push_back(std::make_pair(position.first + 2, position.second - 1));
     if(position.first - 2 >= 0 && position.second + 1 < 8)
         ret_.push_back(std::make_pair(position.first - 2, position.second + 1));
-    if(position.first - 2 >= 0 && position.second - 1 >= 8)
+    if(position.first - 2 >= 0 && position.second - 1 >= 0)
         ret_.push_back(std::make_pair(position.first - 2, position.second - 1));
     if(position.first + 1 < 8 && position.second + 2 < 8)
         ret_.push_back(std::make_pair(position.first + 1, position.second + 2));
-    if(position.first + 1 < 8 && position.second - 2 >= 8)
+    if(position.first + 1 < 8 && position.second - 2 >= 0)
         ret_.push_back(std::make_pair(position.first + 1, position.second - 2));
     if(position.first - 1 >= 0 && position.second + 2 < 8)
         ret_.push_back(std::make_pair(position.first - 1, position.second + 2));
-    if(position.first - 1 >= 0 && position.second - 2 >= 8)
+    if(position.first - 1 >= 0 && position.second - 2 >= 0)
         ret_.push_back(std::make_pair(position.first - 1, position.second - 2));
 
     return ret_;
