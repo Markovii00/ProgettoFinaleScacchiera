@@ -46,3 +46,11 @@ bool bot::requestDraw(){
     else
         return false;
 }
+
+char bot::handlePromotion(){
+    short randPromotion = rand() % 4;
+    if(maiusc)
+        return blackPromotionSet.at(randPromotion);
+    else
+        return blackPromotionSet.at(randPromotion);
+}
