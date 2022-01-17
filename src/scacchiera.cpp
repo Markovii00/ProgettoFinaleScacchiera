@@ -41,17 +41,20 @@ void playerGame()
     string to_log;
     string writeTo = " to ";
     short setSite;
+    char promotionChar;
     
     bool turn;
     bool userRequestedDraw = false;
     bool botAcceptedDraw = false;
-    bool userAccpetedDraw = false;
-    bool botRquestedDraw = false;
+    bool userAccepetedDraw = false;
+    bool botRequestedDraw = false;
 
     pair <bool, bool> moveOutput;
     pair <bool,bool> ended = make_pair(false,false);
     pair <bool, bool> invalidMove = make_pair(false, true);
     pair <bool, bool> draw = make_pair(true, false);
+    pair <bool, bool> promozione = make_pair(false, false);
+
     logger logger;
     regex input_filter("^([a-hA-H]){1}([1-8]){1} ([a-hA-H]){1}([1-8]){1}$");
     smatch coordinates;
@@ -92,7 +95,7 @@ void playerGame()
             cout << '\n' << "Last move: " << to_log;
             while(moveOutput == invalidMove){
                 do {
-                    if(botRquestedDraw == true){
+                    if(botRequestedDraw == true){
                         cout << bot1.get_name() << " ha richiesto la patta, vuoi accettarla? Y/N";
                         getline(cin, input);
                         if(input == "Y" || input == "y"){
@@ -123,6 +126,12 @@ void playerGame()
                     end.second = *(mosse + 3);
 
                     b.move(start, end, turn);
+
+                    if(moveOutput == promozione){
+                        cout << "A pawn can be promoted, select a new piece";
+                        getline(cin, input);
+                        b.promotion(end, turn, input.at(0));
+                    }
                 }
             }
             if(userRequestedDraw == false) {
@@ -135,12 +144,17 @@ void playerGame()
         else {//pc turn
              cout << '\n' << "Last move: " << to_log;
              if(userRequestedDraw == false){
-                 botRquestedDraw = bot1.requestDraw();
-                 if(botRquestedDraw == false){
+                 botRequestedDraw = bot1.requestDraw();
+                 if(botRequestedDraw == false){
                  while(moveOutput == invalidMove) {
                      start = bot1.generateFromCoords();
                      end = bot1.generateEndCoords(start);
                      b.move(start, end, turn);
+
+                     if(moveOutput == promozione){
+                         promotionChar = bot1.handlePromotion();
+                         b.promotion(end, turn, promotionChar);
+                     }
                  }
                      to_log = "Moving " + (char)start.first + (char)start.second + writeTo + (char)end.first + (char)end.second;
                      logger.log(game.get_player_turn().get_name(), to_log);
@@ -164,22 +178,25 @@ void computersGame() {
     string to_log;
     string writeTo = " to ";
     bool turn;
-    pair <bool, bool> moveOutput;
-    pair <bool,bool>ended = make_pair(false,false);
-    pair <bool, bool>invalidMove = make_pair(false, true);
-    pair <bool,bool>draw = make_pair(true, false);
+    pair<bool, bool> moveOutput;
+    pair<bool, bool> ended = make_pair(false, false);
+    pair<bool, bool> invalidMove = make_pair(false, true);
+    pair<bool, bool> draw = make_pair(true, false);
+    pair<bool, bool> promozione = make_pair(false, false);
+
     logger logger;
     coords start;
     coords end;
+    char promotionChar;
     bool bot1requestedDraw = false;
-    bool bot1acpetedDraw = false;
+    bool bot1acceptedDraw = false;
     bool bot2requestedDraw = false;
     bool bot2acceptedDraw = false;
 
-    vector<string> botNames = {"Zincalex", "Colla", "Markoovii", "Yasuo", "Yone", "MapBot", ""};
+    vector<string> botNames = {"Zincalex", "Colla", "Markoovii", "Yasuo", "Yone", "MapBot", "NiBot"};
 
-    bot bot1(writeTo , false, b);
-    bot bot2(writeTo , false, b);
+    bot bot1(writeTo, false, b);
+    bot bot2(writeTo, false, b);
 
     bot1.set_name(botNames);
     bot2.set_name(botNames);
@@ -194,70 +211,92 @@ void computersGame() {
     logger.log(console, "Creating match");
     logger.log(console, "Starting match");
 
-    while(moveOutput!= ended){
-        if((bot1requestedDraw == bot2acceptedDraw) || (bot2requestedDraw == bot2acceptedDraw)){
+    while (moveOutput != ended) {
+        if ((bot1requestedDraw == bot2acceptedDraw) || (bot2requestedDraw == bot2acceptedDraw)) {
             moveOutput = draw;
         }
         turn = game.whose_turn();
-        if(turn){
+        if (turn) {
             system("cls");
             b.printBoard();
-            if(moveOutput == draw){
+            if (moveOutput == draw) {
                 cout << "The game ended with a draw!";
                 logger.log(console, "Draw, game is ended");
                 logger.log(console, "Ending log session");
                 return;
             }
-            bot1requestedDraw = bot1.requestDraw();
-            if(bot1requestedDraw == false) {
-                while (moveOutput == invalidMove) {
-                    start = bot1.generateFromCoords();
-                    end = bot1.generateEndCoords(start);
+            if (bot2requestedDraw) {
+                bot1acceptedDraw = bot1.handledraw();
+                if (bot2acceptedDraw == bot1requestedDraw) {
+                    moveOutput == draw;
+                    logger.log(game.get_player_turn().get_name(), "accepted the draw!");
+                } else {
+                    bot1requestedDraw = bot1.requestDraw();
+                    if (bot1requestedDraw == false) {
+                        while (moveOutput == invalidMove) {
+                            start = bot1.generateFromCoords();
+                            end = bot1.generateEndCoords(start);
 
-                    b.move(start, end, turn);
+                            moveOutput = b.move(start, end, turn);
+
+                            if (moveOutput == promozione) {
+                                promotionChar = bot1.handlePromotion();
+                                b.promotion(end, turn, promotionChar);
+                            }
+                        }
+
+                        to_log = &"Moving "[(char) start.first] + (char) start.second + writeTo + (char) end.first +
+                                 (char) end.second;
+                        logger.log(game.get_player_turn().get_name(), to_log);
+                    } else
+
+                        logger.log(game.get_player_turn().get_name(), "requested draw");
                 }
 
-                to_log = &"Moving " [ (char)start.first] + (char)start.second + writeTo + (char)end.first + (char)end.second;
-                logger.log(game.get_player_turn().get_name(), to_log);
-            } else
 
-            logger.log(game.get_player_turn().get_name(), "requested draw");
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            } else {
+                system("cls");
+                b.printBoard();
+                if (bot1requestedDraw) {
+                    bot2acceptedDraw = bot2.handledraw();
+                    if (bot2acceptedDraw == bot1requestedDraw) {
+                        moveOutput == draw;
+                        logger.log(game.get_player_turn().get_name(), "accepted the draw!");
+                    }
+                } else {
 
-            
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                    bot2requestedDraw = bot2.requestDraw();
+                    if (bot2requestedDraw == false) {
+                        while (moveOutput == invalidMove) {
+
+                            start = bot2.generateFromCoords();
+                            end = bot2.generateEndCoords(start);
+
+                            moveOutput = b.move(start, end, turn);
+
+                            if (moveOutput == promozione) {
+                                promotionChar = bot1.handlePromotion();
+                                b.promotion(end, turn, promotionChar);
+                            }
+
+                        }
+                        to_log = &"Moving "[(char) start.first] + (char) start.second + writeTo + (char) end.first +
+                                 (char) end.second;
+                        logger.log(game.get_player_turn().get_name(), to_log);
+                    } else
+                        logger.log(game.get_player_turn().get_name(), "requested draw");
+
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                }
+            }
         }
-        else{
-            system("cls");
-            b.printBoard();
-            if(bot1requestedDraw){
-                bot2acceptedDraw = bot2.handledraw();
-                if(bot2acceptedDraw == bot1requestedDraw){
-                    moveOutput == tie;
-                    logger.log(game.get_player_turn().get_name(), "accepted the draw!")
-                }
-            } else
-
-            bot2requestedDraw = bot2.requestDraw();
-            if(bot2requestedDraw == false) {
-                while (moveOutput == invalidMove) {
-
-                    start = bot2.generateFromCoords();
-                    end = bot2.generateEndCoords(start);
-
-                    moveOutput = b.move(start, end, turn);
-                }
-                to_log = &"Moving " [ (char)start.first] + (char)start.second + writeTo + (char)end.first + (char)end.second;
-                logger.log(game.get_player_turn().get_name(), to_log);
-            }else
-            logger.log(game.get_player_turn().get_name(), "requested draw");
-
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        }
+        logger.log(console, "The game is ended");
+        logger.log(console, "Ending log session");
+        return;
     }
-    logger.log(console, "The game is ended");
-    logger.log(console, "Ending log session");
-    return;
 }
+
 
 int main() 
 {

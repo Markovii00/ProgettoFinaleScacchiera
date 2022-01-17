@@ -23,12 +23,15 @@ private:
     short indexFrom;
     short indexTo;
     bool maiusc;
+    short randPromotion;
+    std::vector<char>whitePromotionSet = {'d', 't', 'a', 'c'};
+    std::vector<char>blackPromotionSet = {'D', 'T', 'A', 'C'};
 
 public:
     //costruttore, prende in ingresso il nome del giocatore come riferimento e se ha il set in maiuscolo o minuscolo
-    explicit bot(std::string& namevar,bool maiusc_set, board& bvar){
+    explicit bot(std::string& namevar,bool set, board& bvar) : name(namevar), b(bvar){
         name = namevar;
-        maiusc_set = false;
+        maiusc = set;
         b = bvar;
     };
 
@@ -63,6 +66,8 @@ public:
     bool handledraw();
 
     bool requestDraw();
+
+    char handlePromotion();
 
     //duplicato in board.h, ricordarsi di cancellare uno dei due
     bool is_in_set(const char* chess_str_representation) const {

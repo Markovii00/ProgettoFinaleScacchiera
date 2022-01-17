@@ -17,6 +17,7 @@ protected:
 
 public:
     //costruttore, prende in ingresso il nome del giocatore come riferimento e se ha il set in maiuscolo o minuscolo
+    player();
     player(std::string& name, bool maiusc_set);
     //player(std::string& name,bool maiusc_set, board& b);
 
