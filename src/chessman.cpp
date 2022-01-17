@@ -2,6 +2,7 @@
  * @author Alessandro Viespoli - 2009659 (alessandro.viespoli@studentiunipd.it)
  */
 
+#include <iostream>
 #include "include/chessman.h"
 
 chessman::chessman(char p, coords pos, bool side) : piece{p}, position{pos}, set{side} { first_move = false; }
@@ -24,8 +25,9 @@ bool king::isLegalMove(const coords& start, const coords& end) const {
 
     short dRow = end.first - start.first;
     short dCol = end.second - start.second;
-    if(!first_move) 
-        return (abs(dCol == 2) && dRow == 0) || ((dCol == 0) && (abs(dRow) == 1)) || ((abs(dCol) == 1) && (abs(dRow) == 1)) || (abs(dCol == 1) && dRow == 0);
+
+    if(!first_move)
+        return (abs(dCol) == 2 && dRow == 0) || ((dCol == 0) && (abs(dRow) == 1)) || ((abs(dCol) == 1) && (abs(dRow) == 1)) || (abs(dCol == 1) && dRow == 0);
 
     return ((dCol == 0) && (abs(dRow) == 1)) || ((abs(dCol) == 1) && (abs(dRow) == 1)) || (abs(dCol == 1) && dRow == 0);
 }
@@ -141,12 +143,12 @@ bool pawn::isLegalMove(const coords& start, const coords& end) const {
     short dRow = end.first - start.first;
     short dCol = end.second - start.second;
     
-    if (set && !first_move) 
+    if (set && !first_move)
         return ((dCol == 0) && (dRow == 2)) || ((dCol == 0) && (dRow == 1)) || ((dRow == 1) && (abs(dCol) == 1));
     else if (set && first_move)
         return ((dCol == 0) && (dRow == 1)) || ((dRow == 1) && (abs(dCol) == 1));
     else if (!set && !first_move)
-        return ((dCol == 0) && (dRow == -2)) || ((dCol == 0) && (dRow == -1)) || ((dRow == 1) && (abs(dCol) == 1));
+        return ((dCol == 0) && (dRow == -2)) || ((dCol == 0) && (dRow == -1)) || ((dRow == -1) && (abs(dCol) == 1));
     else if (!set && first_move)
         return ((dCol == 0) && (dRow == -1)) || ((dRow == -1) && (abs(dCol) == 1));
     

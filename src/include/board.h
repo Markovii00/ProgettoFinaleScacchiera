@@ -6,7 +6,7 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include "../chessman.cpp"
+#include "../chessman.h"
 #include <vector>
 #include <utility>
 #include <string>
@@ -43,20 +43,20 @@ private:
     //Counts moves number made without eating a chessman or moving a pawn
     int moveRule50;
 
-    //void do_castling(const coords& start, const coords& end, const coords& rook_to_move);
-    //void do_enpassant(const coords& start, const coords& end, const coords& pawn_to_be_eaten);
+    void do_castling(const coords& start, const coords& end, const coords& rook_to_move);
+    void do_enpassant(const coords& start, const coords& end, const coords& pawn_to_be_eaten);
 
     //int number_possible_moves(const bool& fromPieceColor) const;
 
     //void insertBoardInMap(void);
 
-    //bool illegalMove(const coords& start, const coords& end,const char& fromPieceId, const bool& pieceToMoveColor, const bool& whoseturn) const;
+    bool illegalMove(const coords& start, const coords& end,const char& fromPieceId, const bool& pieceToMoveColor, const bool& whoseturn) const;
 
-    //std::pair<bool, coords> isCastling(const coords& start, const coords& end) const;
-    //std::pair<bool, coords> isEnpassant(const coords& start, const coords& end) const;
-    // -> bool isPawnEating(const coords& start, const coords& end, const bool& fromPieceColor) const;
+    std::pair<bool, coords> isCastling(const coords& start, const coords& end) const;
+    std::pair<bool, coords> isEnpassant(const coords& start, const coords& end) const;
+    bool isPawnEating(const coords& start, const coords& end, const bool& fromPieceColor) const;
     //bool attemptMove(std::vector<coords>& _vet, const bool& colorPiece, const coords& _tempCoords) const;
-    //bool check_on_pawn(const coords& start, const coords& end, const char& fromPieceId, const bool& fromPieceColor) const;
+    bool check_on_pawn(const coords& start, const coords& end, const char& fromPieceId, const bool& fromPieceColor) const;
     //bool isSafeMove(const coords& start, const coords& end, bool& pieceToMoveColor) const;
 
     //bool isPromotion(const coords& end, const bool& fromPieceColor) const;
@@ -66,34 +66,33 @@ private:
 
     void removeFromSet(const coords &coordsPieceEaten, const bool& pieceEaten);
     void updateCoordsInSet(const coords &start, const coords &end, const bool& pieceEaten);
-
+    void executeMove(const coords& start, const coords& end);
     //int isTie(const bool& fromPieceColor) const;
     
-    // eclissiamo char getName(short row, short col) const;
     // eclissiamo void promotion(const coords& pawnPos, const bool& pawnColor);
-
-    // eclissiamo bool withinBoardLimits(const coords& end) const;
     
     // bool checkKing(coords& start, coords& end, bool& fromPieceColor);
 
     
     //std::vector<coords> KingPossibleMoves(coords& kCords, bool& fromPieceColor) const;
-    void executeMove(const coords& start, const coords& end);
 
-  
-    // ----> bool kingInCheck(const coords& kingCords, const bool& requestColor) const;
-    // ----------->bool clearPath(const coords& start, const coords& end, const char& fromPieceId) const;
 
-    // ------------->bool acceptableMove(const coords& start, const coords& end, const char& fromPieceId, const bool& fromPieceColor) const;
+    bool withinBoardLimits(const coords& end) const;
+    bool acceptableMove(const coords& start, const coords& end, const char& fromPieceId, const bool& fromPieceColor) const;
+
+    bool clearPath(const coords& start, const coords& end, const char& fromPieceId) const;
+    bool kingInCheck(const coords& kingCords, const bool& requestColor) const;
+
+
+
 
     // da rivedere std::vector<chessman*> copy_board(void) const;
 
     //bool draw_for_pieces(void) const;
 
-    //bool isBlack(const char& request) const;
-    //bool isVertical(const coords& start, const coords& end) const;
-    //bool isHorizontal(const coords& start, const coords& end) const;
-    //bool isDiagonal(const coords& start, const coords& end) const;
+    bool isVertical(const coords& start, const coords& end) const;
+    bool isHorizontal(const coords& start, const coords& end) const;
+    bool isDiagonal(const coords& start, const coords& end) const;
 
 
     template<typename Type>
@@ -106,9 +105,7 @@ private:
     int howManyAlive(const bool& requestColor) const; 
 };
 
-coords operator+(const coords& start, std::pair<short, short> offset) {
-    return std::make_pair(start.first + offset.first, start.second + offset.second);
-}
+coords operator+(const coords& start, std::pair<short, short> offset);
 
 template<typename Type>
 bool is(chessman &data) {
