@@ -41,7 +41,6 @@ int main(){
 
     while(true) {
         b.printBoard();
-
         do {
             cout << "\n\nINSERT MOVE : ";
             getline(cin, input);
@@ -53,7 +52,8 @@ int main(){
         start.second = *(mosse + 1);
         end.first = *(mosse + 2);
         end.second = *(mosse + 3);
-        moveOutput = b.move(start, end, white);
+        moveOutput = b.move(start, end, white, false);
+
         if (moveOutput.first == true)
             white = !white;
     }

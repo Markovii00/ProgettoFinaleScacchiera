@@ -32,6 +32,14 @@ bool board::kingInCheck(const coords& king_coordinates, const bool& requestColor
     return false;
 }
 
+
+bool board::kingInMate(bool setToCheck, const coords& kingPos) {
+    if (kingInCheck(kingPos, setToCheck)) {
+        if(getSetPossibleMoves(setToCheck).empty())
+            return true;
+    }
+    return false;
+}
 bool board::check_on_pawn(const coords& start, const coords& end, const char& fromPieceId, const bool& fromPieceColor) const {
     //the piece in start is a pawn, already checked
     short dir = (fromPieceColor)? 1 : -1;
@@ -56,7 +64,7 @@ bool board::check_on_pawn(const coords& start, const coords& end, const char& fr
     return false;
 }
 
-bool board::acceptableMove(const coords& start, const coords& end, const char& fromPieceId, const bool& fromPieceColor) const {\
+bool board::acceptableMove(const coords& start, const coords& end, const char& fromPieceId, const bool& fromPieceColor) const {
     if (fromPieceId == ' ')
         return false;
 
@@ -76,220 +84,72 @@ bool board::acceptableMove(const coords& start, const coords& end, const char& f
     return false;
 }
 
-/*std::vector<coords> board::getAllMoves(const coords& _pos) const {
+std::vector<std::pair<coords, coords>> board::getSetPossibleMoves(bool setColor) {
 
-    chessman* piece = chessboard[_pos.first][_pos.second];
-    char namePiece = piece->getChar();
-    bool colorPiece = piece->getSet();
+    std::vector<std::pair<coords, coords>> possibleMoves;
 
-    bool Nord = true;
-    bool Sud = true;
-    bool East = true;
-    bool West = true;
-    bool Nord_East = true;
-    bool Nord_West = true;
-    bool Sud_West = true;
-    bool Sud_East = true;
+    //black
+    if (setColor) {
+        for (coords piece : blackSet) {
+            std::vector<coords> allMovesOfChessman = chessboard[piece.first][piece.second]->possibleMoves();
 
-    short counter = 1;
-    std::vector<coords> ret_ = piece->possibleMoves();
+            for (coords movePosition : allMovesOfChessman) {
+                //std::cout << "[" << piece.first << piece.second << "] -> [" << movePosition.first << movePosition.second << "]\n";
+                char fromPieceId = chessboard[piece.first][piece.second]->getChar();
+                bool fromPieceColor = chessboard[piece.first][piece.second]->getSet();
 
-    if(is<king>(*piece)) {
-        //see if the special move castling is avaiable.
-        if(isCastling(_pos, std::make_pair(_pos.first, _pos.second + 2)).first)
-            ret_.push_back(std::make_pair(_pos.first, _pos.second + 2));
-        if(isCastling(_pos, std::make_pair(_pos.first, _pos.second - 2)).first)
-            ret_.push_back(std::make_pair(_pos.first, _pos.second - 2));
+                std::pair<bool, coords> castlingVar = isCastling(piece, movePosition);
+                if(!illegalMove(piece, movePosition, fromPieceId, fromPieceColor, setColor) || isEnpassant(piece, movePosition).first || castlingVar.first) {
+                    bool res = move(piece, movePosition, setColor, true).first;
+                    if (res)
+                        possibleMoves.emplace_back(piece, movePosition);
+                }
+            }
+        }
+    } else {
+        for (coords piece : whiteSet) {
+            std::vector<coords> allMovesOfChessman = chessboard[piece.first][piece.second]->possibleMoves();
+            for (coords movePosition : allMovesOfChessman) {
+                //std::cout << "[" << piece.first << piece.second << "] -> [" << movePosition.first << movePosition.second << "]\n";
+                char fromPieceId = chessboard[piece.first][piece.second]->getChar();
+                bool fromPieceColor = chessboard[piece.first][piece.second]->getSet();
 
-        for (coords i : ret_) {
-
+                std::pair<bool, coords> castlingVar = isCastling(piece, movePosition);
+                if(!illegalMove(piece, movePosition, fromPieceId, fromPieceColor, setColor) || isEnpassant(piece, movePosition).first || castlingVar.first) {
+                    bool res = move(piece, movePosition, setColor, true).first;
+                    if (res)
+                        possibleMoves.emplace_back(piece, movePosition);
+                }
+            }
         }
     }
-    else if(is<pawn>(*piece)) {
-        short dir = (colorPiece) ? 1 : -1;
-
-        if(!((pawn *)piece)->hasMoved() && acceptableMove(_pos, _pos + std::make_pair(2*dir, 0), namePiece, colorPiece))
-            ret_.push_back(_pos + std::make_pair(2*dir, 0));
-        if(acceptableMove(_pos, _pos + std::make_pair(1*dir, 0), namePiece, colorPiece))
-            ret_.push_back(_pos + std::make_pair(1*dir, 0));
-
-        if(isEnpassant(_pos, _pos + std::make_pair(1*dir, 1)).first)
-            ret_.push_back(_pos + std::make_pair(1*dir, 1));
-        if(isEnpassant(_pos, _pos + std::make_pair(1*dir, -1)).first)
-            ret_.push_back(_pos + std::make_pair(1*dir, -1));
-
-        if(isPawnEating(_pos, _pos + std::make_pair(1*dir, 1), colorPiece))
-            ret_.push_back(_pos + std::make_pair(1*dir, 1));
-        if(isPawnEating(_pos, _pos + std::make_pair(1*dir, -1), colorPiece))
-            ret_.push_back(_pos + std::make_pair(1*dir, -1));
-    }
-    else if(is<knight>(*piece)) {
-        if(acceptableMove(_pos, _pos + std::make_pair(2, 1), namePiece, colorPiece))
-            ret_.push_back(_pos + std::make_pair(2, 1));
-        if(acceptableMove(_pos, _pos + std::make_pair(2, -1), namePiece, colorPiece))
-            ret_.push_back(_pos + std::make_pair(2, -1));
-        if(acceptableMove(_pos, _pos + std::make_pair(1, 2), namePiece, colorPiece))
-            ret_.push_back(_pos + std::make_pair(1, 2));
-        if(acceptableMove(_pos, _pos + std::make_pair(1, -2), namePiece, colorPiece))
-            ret_.push_back(_pos + std::make_pair(1, -2));
-        if(acceptableMove(_pos, _pos + std::make_pair(-2, 1), namePiece, colorPiece))
-            ret_.push_back(_pos + std::make_pair(-2, 1));
-        if(acceptableMove(_pos, _pos + std::make_pair(-2, -1), namePiece, colorPiece))
-            ret_.push_back(_pos + std::make_pair(-2, -1));
-        if(acceptableMove(_pos, _pos + std::make_pair(-1, -2), namePiece, colorPiece))
-            ret_.push_back(_pos + std::make_pair(-1, -2));
-        if(acceptableMove(_pos, _pos + std::make_pair(-1, 2), namePiece, colorPiece))
-            ret_.push_back(_pos + std::make_pair(-1, 2));
-    }
-    else { //Queen Rook Bishop
-        while (counter < 8 && (Nord || Sud || East || West || Nord_East || Nord_West || Sud_East || Sud_West)) {
-
-            if(Nord) Nord = _pos.first - counter >= 0;
-            if(Sud) Sud = _pos.first + counter < 8;
-            if(East) East = _pos.second + counter < 8;
-            if(West) West = _pos.second - counter >= 0;
-            if(Nord_East) Nord_East = _pos.first - counter >= 0 && _pos.second + counter < 8;
-            if(Nord_West) Nord_West = _pos.first - counter >= 0 && _pos.second - counter >= 0;
-            if(Sud_East) Sud_East = _pos.first + counter < 8 && _pos.second + counter < 8;
-            if(Sud_West) Sud_West = _pos.first + counter < 8 && _pos.second - counter >= 0;
-
-            //Vertical Moves
-            if(Nord && piece->isLegalMove(_pos, _pos + std::make_pair(-counter,0)))
-                Nord = attemptMove(ret_, colorPiece, _pos + std::make_pair(-counter,0));
-            if(Sud && piece->isLegalMove(_pos, _pos + std::make_pair(counter,0)))
-                Sud = attemptMove(ret_, colorPiece, _pos + std::make_pair(counter,0));
-
-            //Horizontal Moves
-            if(East && piece->isLegalMove(_pos, _pos + std::make_pair(0, counter)))
-                East = attemptMove(ret_, colorPiece, _pos + std::make_pair(0, counter));
-            if(West && piece->isLegalMove(_pos, _pos + std::make_pair(0, -counter)))
-                West = attemptMove(ret_, colorPiece, _pos + std::make_pair(0, -counter));
-
-            //Diagonal Moves
-            if(Nord_East && piece->isLegalMove(_pos, _pos + std::make_pair(-counter, counter)) && withinBoardLimits(_pos + std::make_pair(-counter, counter)))
-                Nord_East = attemptMove(ret_, colorPiece, _pos + std::make_pair(-counter, counter));
-            if(Nord_West && piece->isLegalMove(_pos, _pos + std::make_pair(-counter, -counter)) && withinBoardLimits(_pos + std::make_pair(-counter, counter)))
-                Nord_West = attemptMove(ret_, colorPiece, _pos + std::make_pair(-counter, -counter));
-            if(Sud_East && piece->isLegalMove(_pos, _pos + std::make_pair(counter, counter)) && withinBoardLimits(_pos + std::make_pair(-counter, counter)))
-                Sud_East = attemptMove(ret_, colorPiece, _pos + std::make_pair(counter, counter));
-            if(Sud_West && piece->isLegalMove(_pos, _pos + std::make_pair(counter, -counter)) && withinBoardLimits(_pos + std::make_pair(-counter, counter)))
-                Sud_West = attemptMove(ret_, colorPiece, _pos + std::make_pair(counter, -counter));
-
-            counter++;
-        }
-    }
-    return ret_;
+    return possibleMoves;
 }
-
-bool board::attemptMove(std::vector<coords>& _vet, const bool& colorPiece, const coords& _tempCoords) const {
-    bool statement = true;
-
-    if(chessboard[_tempCoords.first][_tempCoords.second] == nullptr)
-        _vet.push_back(_tempCoords);
-    else if(chessboard[_tempCoords.first][_tempCoords.second] not_eq nullptr && colorPiece != isBlack(chessboard[_tempCoords.first][_tempCoords.second]->getChar())) {
-        _vet.push_back(_tempCoords);
-        statement = false; //the piece cant go further
-    }
-    else statement = false;
-
-    return statement;
-}
-
-int board::number_possible_moves(const bool& fromPieceColor) const {
-    int num_possible_moves = 0;
-    if(fromPieceColor) {
-        for(coords i : blackSet) {
-            std::vector<coords> temp = getAllMoves(i);
-            num_possible_moves += temp.size();
-        }
-    }
-    else {
-        for(coords i : whiteSet) {
-            std::vector<coords> temp = getAllMoves(i);
-            num_possible_moves += temp.size();
-        }
-    }
-    return num_possible_moves;
-}
-*/
-void board::fakeExecuteMove(const coords& start, const coords& end, const int& typeMove, const coords& pawn_to_be_eaten, const coords& rook_to_move) {
-    switch (typeMove) {
-        case 2: {
-            bool set = chessboard[start.first][start.second]->getSet();
-            //Tower Movement
-            short col_rook_move = (rook_to_move.second == 0) ? 3 : 5;
-            chessboard[rook_to_move.first][col_rook_move] = chessboard[rook_to_move.first][rook_to_move.second];
-            chessboard[rook_to_move.first][rook_to_move.second] = new emptyTile(' ', rook_to_move, true);
-            updateCoordsInSet(rook_to_move, std::make_pair(rook_to_move.first, col_rook_move), set);
-
-            //King movement
-            chessboard[end.first][end.second] = chessboard[start.first][start.second];
-            chessboard[start.first][start.second] = new emptyTile(' ', start, true);
-            updateCoordsInSet(start, end, set); //king put here cause call for update change the lastMoveCoords variable
-        }
-        case 1: {
-            bool pieceEaten = chessboard[pawn_to_be_eaten.first][pawn_to_be_eaten.second]->getSet();
-
-            chessboard[end.first][end.second] = chessboard[start.first][start.second];
-            chessboard[start.first][start.second] = new emptyTile(' ', start, true);
-            updateCoordsInSet(start, end, !pieceEaten);
-
-            chessboard[pawn_to_be_eaten.first][pawn_to_be_eaten.second] = new emptyTile(' ', pawn_to_be_eaten, true);
-            removeFromSet(pawn_to_be_eaten, pieceEaten);
-        }
-        default: {
-            if (chessboard[end.first][end.second]->getChar() != ' ')
-                removeFromSet(end, chessboard[end.first][end.second]->getSet());
-
-            chessboard[end.first][end.second] = chessboard[start.first][start.second];
-            chessboard[start.first][start.second] = new emptyTile(' ', start, true);
-            updateCoordsInSet(start, end, chessboard[end.first][end.second]->getSet());
-        }
-    }
-}
-
-/*bool board::isSafeMove(const coords& start, const coords& end, bool& pieceToMoveColor) const {
-    std::vector<chessman*> pieces = copy_board();
-    board copy(pieces, lastMoveCoords);
-    std::pair<bool, coords> copyCastling = copy.isCastling(start, end);
-
-    if(copy.isEnpassant(start, end).first)
-        copy.fakeExecuteMove(start, end, 1, lastMoveCoords.second, std::make_pair(-1, -1));
-    else if(copyCastling.first)
-        copy.fakeExecuteMove(start, end, 2, std::make_pair(-1, -1), copyCastling.second);
-    else
-        copy.fakeExecuteMove(start, end, 0, std::make_pair(-1, -1), std::make_pair(-1, -1));
-
-    coords kingCoords = copy.search<king>(pieceToMoveColor);
-    if(!copy.kingInCheck(kingCoords, pieceToMoveColor))
-        return true;
-
-    return false;
-}*/
 
 bool board::illegalMove(const coords& start, const coords& end, const char& fromPieceId, const bool& fromPieceColor, const bool& whoseturn) const {
-    //std::cout << !acceptableMove(start, end, fromPieceId, fromPieceColor) << (fromPieceColor != whoseturn) << !chessboard[start.first][start.second]->isLegalMove(start, end) << !clearPath(start, end, fromPieceId) << "\n";
     return !acceptableMove(start, end, fromPieceId, fromPieceColor) || fromPieceColor != whoseturn || !chessboard[start.first][start.second]->isLegalMove(start, end) || !clearPath(start, end, fromPieceId);
 }
 
-std::pair<bool,bool> board::move(coords& start, coords& end, bool& whoseturn) {
+std::pair<bool,bool> board::move(coords& start, coords& end, bool& whoseturn, bool attemptMove = false) {
     char fromPieceId = chessboard[start.first][start.second]->getChar();
     bool fromPieceColor = chessboard[start.first][start.second]->getSet();
 
-    /*int cond = isTie(whoseturn);
-    switch (cond) {
-    case 1 : return std::make_pair(false, false);
-    case 0 : return std::make_pair(true, false); //ask for draw
-    }*/
+    if (!attemptMove) {
+        int cond = isTie(whoseturn);
+        switch (cond) {
+            case 1 : return std::make_pair(false, false);
+            case 0 : return std::make_pair(true, false); //ask for draw
+        }
+    }
 
     if(illegalMove(start, end, fromPieceId, fromPieceColor, whoseturn)) {
-        std::cout << "Bonk, go to move jail! \n";
         return std::make_pair(false,true);
     }
 
     std::pair<bool, coords> castlingVar = isCastling(start, end);
     int typeOfMove = 0;
     int old_moveRule50 = moveRule50;
+    bool old_hasMovedBefore = chessboard[start.first][start.second]->hasMoved();
     std::pair<coords, coords> old_lastMovedCoords = lastMoveCoords;
     char pieceAtEnd = chessboard[end.first][end.second]->getChar();
 
@@ -305,24 +165,32 @@ std::pair<bool,bool> board::move(coords& start, coords& end, bool& whoseturn) {
 
     coords kingPos = search<king>(fromPieceColor);
     if (kingInCheck(kingPos, fromPieceColor)) {
-        undoMove(start, end, fromPieceColor, typeOfMove, pieceAtEnd, old_moveRule50, old_lastMovedCoords);
-        std::cout << "mossa non fatta";
+        undoMove(start, end, fromPieceColor, typeOfMove, pieceAtEnd, old_moveRule50, old_lastMovedCoords, old_hasMovedBefore);
         return std::make_pair(false,true);
     }
 
+    if (attemptMove)
+        undoMove(start, end, fromPieceColor, typeOfMove, pieceAtEnd, old_moveRule50, old_lastMovedCoords, old_hasMovedBefore);
     //std::cout << "controlli mossa eseguita";
     //if(isPromotion(end, fromPieceColor))
     //    promotion(end, fromPieceColor);
 
-    //the enemy is under scacco matto?*/
+    //the enemy is under scacco matto?
+
+    if (!attemptMove) {
+        if (kingInMate(!whoseturn, search<king>(!whoseturn))) {
+            std::cout << "Scacco matto!\n";
+            return std::make_pair(false, false);
+        }
+    }
 
     return std::make_pair(true, true);
 }
 
-void board::undoMove(const coords& start, const coords& end, const bool& fromPieceColor, const int& typeOfMove, char &pieceAtEnd, const int& old_moveRule50, const std::pair<coords, coords>& old_lastMovedCoords) {
-    //removeBoardInMap();
+void board::undoMove(const coords& start, const coords& end, const bool& fromPieceColor, const int& typeOfMove, char &pieceAtEnd, const int& old_moveRule50, const std::pair<coords, coords>& old_lastMovedCoords, const bool& oldMovedVal) {
     moveRule50 = old_moveRule50;
     lastMoveCoords = old_lastMovedCoords;
+    removeBoardFromMap();
 
     switch (typeOfMove) {
         case 1: {
@@ -332,7 +200,6 @@ void board::undoMove(const coords& start, const coords& end, const bool& fromPie
             chessboard[start.first][start.second]->setPosition(start);
 
             char pawnEaten = (fromPieceColor) ? 'p' : 'P';
-            delete chessboard[start.first][end.second]; // deleting empty tile
 
             chessboard[start.first][end.second] = new pawn(pawnEaten, std::make_pair(start.first, end.second), !fromPieceColor);
             addCoordsInSet(std::make_pair(start.first, end.second), !fromPieceColor);
@@ -355,17 +222,17 @@ void board::undoMove(const coords& start, const coords& end, const bool& fromPie
 
         default: {
             if (pieceAtEnd != ' ') {
-                pieceAtEnd = tolower(pieceAtEnd);
+                short pieceAtEndIf = tolower(pieceAtEnd);
                 chessboard[start.first][start.second] = chessboard[end.first][end.second];
-                if (pieceAtEnd == 'p')
+                if (pieceAtEndIf == 'p')
                     chessboard[end.first][end.second] = new pawn(pieceAtEnd, end, !fromPieceColor);
-                else if (pieceAtEnd == 'd')
+                else if (pieceAtEndIf == 'd')
                     chessboard[end.first][end.second] = new queen(pieceAtEnd, end, !fromPieceColor);
-                else if (pieceAtEnd == 'c')
+                else if (pieceAtEndIf == 'c')
                     chessboard[end.first][end.second] = new knight(pieceAtEnd, end, !fromPieceColor);
-                else if (pieceAtEnd == 'a')
+                else if (pieceAtEndIf == 'a')
                     chessboard[end.first][end.second] = new bishop(pieceAtEnd, end, !fromPieceColor);
-                else if (pieceAtEnd == 't')
+                else if (pieceAtEndIf == 't')
                     chessboard[end.first][end.second] = new rook(pieceAtEnd, end, !fromPieceColor);
 
                 addCoordsInSet(end, !fromPieceColor);
@@ -382,24 +249,12 @@ void board::undoMove(const coords& start, const coords& end, const bool& fromPie
             }
         }
     }
-}
-/*
-std::vector<coords> board::KingPossibleMoves(coords& kCords, bool& fromPieceColor) const {
-    char king = fromPieceColor ? 'k' : 'K' ;
-    std::vector<coords> PMoves;
-    for (short i = -1; i < 2; i++) {
-        for (short j = -1; j < 2; j++) {
-            if (i == 0 && j == 0)
-                continue;
-            coords temp_king_pos = std::make_pair(kCords.first + i, kCords.second + j);
-            if (acceptableMove(kCords, temp_king_pos, king, fromPieceColor) && !kingInCheck(temp_king_pos, fromPieceColor)) {
-                PMoves.push_back(temp_king_pos);
-            }
-        }
+
+    if (!oldMovedVal){
+        chessboard[start.first][start.second]->unsetMoved();
     }
-    return PMoves;
 }
-*/
+
 bool board::isPawnEating(const coords& start, const coords& end, const bool& fromPieceColor) const {
     //called when i'm sure the piece at start is a pawn
     if(withinBoardLimits(end)) {
@@ -499,9 +354,13 @@ board::board(void) {
         }
     }
 
+    //blackSetMoves = getSetPossibleMoves(true);
+    //whiteSetMoves = getSetPossibleMoves(false);
+
     //Create string
-    tables.insert(std::pair<std::string, short>("TCADRACTPPPPPPPP00000000000000000000000000000000pppppppptcadract", 1));
+    tables.insert(std::pair<std::string, short>("TCADRACTPPPPPPPP                                pppppppptcadract", 1));
 }
+
 board::~board() {
     for (unsigned short cCol = 0; cCol < 8; ++cCol) {
         for (unsigned short cRow = 0; cRow < 8; ++cRow) {
@@ -510,57 +369,51 @@ board::~board() {
     }
 }
 
-/*board::board(std::vector<chessman*> copy, std::pair<coords, coords> lastMC) {
-    lastMoveCoords.first = lastMC.first;
-    lastMoveCoords.second = lastMC.second;
-    for(unsigned int i = 0; i < 64; i++) {
-        chessboard[i/8][i%8] = copy.at(i);
-        if(chessboard[i/8][i%8]->getChar() not_eq ' ') {
-            if(chessboard[i/8][i%8]->getSet())
-                blackSet.push_back(std::make_pair(i/8, i%8));
-            else
-                whiteSet.push_back(std::make_pair(i/8, i%8));
-        }
-    }
-    moveRule50 = 0;
-}*/
-
-std::vector<chessman*> board::copy_board(void) const{
-    std::vector<chessman*> ret;
-    for(unsigned int i = 0; i < 64; i++) 
-        ret.push_back(chessboard[i/8][i%8]);
-    return ret;   
-}
-
-/*DRAW METHODS
 void board::insertBoardInMap(void) {
     std::string boardInserted = boardToString();
 
     std::map<std::string, short>::iterator it;
-    it = tables.contains(boardInserted);
+    it = tables.find(boardInserted);
 
     if(it == tables.end()) { //configuration never seen
-        tables.insert(std::pair<std::string, short>(boardInserted, 1));
+        tables.insert(tables.begin(),std::pair<std::string, short>(boardInserted, 1));
     }
     else { //configuration already in the map
         (it->second)++;
     }
-} */
-/*
-int board::isTie(const bool& pieceToMoveColor) const {
-    coords kingCoords = search<king>(pieceToMoveColor);
-    
-    if(tables.at(boardToString()) >= 3) {
-        std::cout << "Draw? : ";
-        return 0;
+}
+
+void board::removeBoardFromMap(void) {
+    std::string boardInserted = boardToString();
+
+    std::map<std::string, short>::iterator it;
+    it = tables.find(boardInserted);
+
+    if(it->second == 1) { //configuration almost added
+        tables.erase(boardInserted);
     }
-    else if(draw_for_pieces() || (!kingInCheck(kingCoords, pieceToMoveColor) && number_possible_moves(pieceToMoveColor) == 0) || moveRule50 >= 50) {
+    else { //configuration already in the map before
+        (it->second)--;
+    }
+}
+
+int board::isTie(const bool& pieceToMoveColor) {
+    coords kingCoords = search<king>(pieceToMoveColor);
+
+    auto it = tables.find(boardToString());
+    if (it != tables.end()) {
+        if(tables.at(boardToString()) >= 3) {
+            std::cout << "Draw? : ";
+            return 0;
+        }
+    } else if(draw_for_pieces() || (!kingInCheck(kingCoords, pieceToMoveColor) && getSetPossibleMoves(pieceToMoveColor).empty()) || moveRule50 >= 50) {
         std::cout << "Is a tie, GG\n";
         return 1;
     }
+
     return -1;
 }
-*/
+
 bool board::draw_for_pieces() const {
     bool isBlack = true;
     bool isWhite = false;
@@ -578,7 +431,8 @@ bool board::draw_for_pieces() const {
     ret |= whiteSet.size() == 1 && blackSet.size() == 2 && contains<knight>(isBlack);
     ret |= whiteSet.size() == 2 && blackSet.size() == 2 && contains<bishop>(isBlack) && contains<bishop>(isWhite) && ((b_bishop.first + b_bishop.second) % 2 == (B_bishop.first + B_bishop.second) % 2);
     ret |= whiteSet.size() == 1 && blackSet.size() == 3 && blackKnights == 2;        
-    ret |= whiteSet.size() == 3 && blackSet.size() == 1 && whiteKnights == 2;                                       
+    ret |= whiteSet.size() == 3 && blackSet.size() == 1 && whiteKnights == 2;
+
     return ret;
 }
 
@@ -656,7 +510,6 @@ void board::do_enpassant(const coords& start, const coords& end, const coords& p
 
     chessboard[end.first][end.second]->setPosition(end);
     
-    delete chessboard[pawn_to_be_eaten.first][pawn_to_be_eaten.second];
     chessboard[pawn_to_be_eaten.first][pawn_to_be_eaten.second] = new emptyTile(' ', pawn_to_be_eaten, true);
     removeFromSet(pawn_to_be_eaten, pieceEaten);
 
@@ -664,7 +517,7 @@ void board::do_enpassant(const coords& start, const coords& end, const coords& p
     lastMoveCoords.first = start;
     lastMoveCoords.second = end;
 
-    //insertBoardInMap();
+    insertBoardInMap();
 }
 std::pair<bool, coords> board::isCastling(const coords& start, const coords& end) const {
     bool castlingSide = chessboard[start.first][start.second]->getSet();
@@ -701,7 +554,7 @@ std::pair<bool, coords> board::isCastling(const coords& start, const coords& end
     }
     return std::make_pair(false, std::make_pair(-1, -1));
 }
-void board::do_castling(const coords& start, const coords& end, const coords& rook_to_move) { 
+void board::do_castling(const coords& start, const coords& end, const coords& rook_to_move) {
     bool set = chessboard[start.first][start.second]->getSet();
     //Tower Movement
     short col_rook_move = (rook_to_move.second == 0) ? 3 : 5;
@@ -723,18 +576,17 @@ void board::do_castling(const coords& start, const coords& end, const coords& ro
     moveRule50++;
     lastMoveCoords.first = start;
     lastMoveCoords.second = end;
-    //insertBoardInMap();
+    insertBoardInMap();
 }
 void board::executeMove(const coords& start, const coords& end) {
     if (chessboard[end.first][end.second]->getChar() != ' ') {
         removeFromSet(end, chessboard[end.first][end.second]->getSet());
-        delete chessboard[end.first][end.second];
-        moveRule50 = 0; 
+        moveRule50 = 0;
     }
     else if(is<pawn>(*chessboard[start.first][start.second]))
         moveRule50 = 0;
     else  moveRule50++;
-    
+
     chessboard[end.first][end.second] = chessboard[start.first][start.second];
     chessboard[start.first][start.second] = new emptyTile(' ', std::make_pair(start.first, start.second), true);
     updateCoordsInSet(start, end, chessboard[end.first][end.second]->getSet());
@@ -745,14 +597,14 @@ void board::executeMove(const coords& start, const coords& end) {
 
     lastMoveCoords.first = start;
     lastMoveCoords.second = end;
-     //insertBoardInMap();
+    insertBoardInMap();
 }
 
 //PRINT
 void board::printBoard(void) const {
     for (unsigned short iRow = 0; iRow < 8; ++iRow)
     {
-        std::cout << 8 - iRow << "    ";
+        std::cout << 8 - iRow << "   ";
         for (unsigned short iCol = 0; iCol < 8; ++iCol)
         {
                 std::cout << " " << chessboard[iRow][iCol]->getChar() << (iCol == 7 ? "": " |");
@@ -761,6 +613,7 @@ void board::printBoard(void) const {
     }
     std::cout << "      A   B   C   D   E   F   G   H";
 }
+
 /*std::string board::to_string(bool fixed_allignment = false) const{
     std::string bb;
     for (unsigned short iRow = 0; iRow < 8; ++iRow)
@@ -791,7 +644,11 @@ void board::printBoard(void) const {
 std::string board::boardToString(void) const {
     std::string ret = "";
     for(unsigned short i = 0; i < 64; i++) {
-        ret += chessboard[i/8][i%8]->getChar();
+        if (chessboard[i/8][i%8] == nullptr) {
+            std::cout << "null";
+            ret += ' ';
+        } else
+            ret += chessboard[i/8][i%8]->getChar();
     }
     return ret;
 } 
@@ -836,14 +693,6 @@ void board::removeFromSet(const coords &coordsPieceEaten, const bool& setPieceEa
         whiteSet.pop_back();
     }
 }
-
-/*
-//BOOL METHODS
-bool board::isBlack(const char& request) const {
-    if (request >= 'A' && request <= 'Z')
-        return true;
-    return false;
-}*/
 
 bool board::isVertical(const coords& start, const coords& end) const {
     return start.second == end.second && start.first != end.first;

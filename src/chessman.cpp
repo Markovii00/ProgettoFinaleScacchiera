@@ -16,6 +16,7 @@ bool chessman::getSet() const { return set; }
 
 void chessman::setPosition(const coords& newPos) { position = newPos; }
 void chessman::setMoved(void) { first_move = true; }
+void chessman::unsetMoved(void) { first_move = false; }
 
 king::king(char p, coords pos, bool side) : chessman(p, pos, side) {}
 

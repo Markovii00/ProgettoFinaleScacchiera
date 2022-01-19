@@ -33,6 +33,7 @@ class chessman {
 
     void setPosition(const coords& newPos);
     void setMoved(void);
+    void unsetMoved(void);
 
     chessman(const chessman &other) = delete;
     chessman &operator=(const chessman &other) = delete;
