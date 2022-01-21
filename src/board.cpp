@@ -29,7 +29,7 @@ std::pair<bool,int> board::move(coords& start, coords& end, bool whoseturn, bool
 
     //Safe variables before making a move, in case there is the need to undo the move
     int old_moveRule50 = moveRule50;
-    bool old_hasMovedBefore = chessboard[start.first][start.second]->hasMoved();
+    std::pair<bool, bool> old_hasMovedBefore = std::make_pair(chessboard[start.first][start.second]->hasMoved(), chessboard[end.first][end.second]->hasMoved());
     std::pair<coords, coords> old_lastMovedCoords = lastMoveCoords;
     char pieceAtEnd = chessboard[end.first][end.second]->getChar();
 
@@ -383,7 +383,7 @@ void board::executeMove(const coords& start, const coords& end) {
     lastMoveCoords.second = end;
     insertBoardInMap();
 }
-void board::undoMove(const coords& start, const coords& end, const bool& fromPieceColor, const int& typeOfMove, char &pieceAtEnd, const int& old_moveRule50, const std::pair<coords, coords>& old_lastMovedCoords, const bool& oldMovedVal) {
+void board::undoMove(const coords& start, const coords& end, const bool& fromPieceColor, const int& typeOfMove, char &pieceAtEnd, const int& old_moveRule50, const std::pair<coords, coords>& old_lastMovedCoords, const std::pair<bool,bool>& oldMovedVal) {
     moveRule50 = old_moveRule50;
     lastMoveCoords = old_lastMovedCoords;
     removeBoardFromMap();
@@ -398,6 +398,7 @@ void board::undoMove(const coords& start, const coords& end, const bool& fromPie
             char pawnEaten = (fromPieceColor) ? 'p' : 'P';
 
             chessboard[start.first][end.second] = new pawn(pawnEaten, std::make_pair(start.first, end.second), !fromPieceColor);
+            chessboard[start.first][end.second]->setMoved();
             addCoordsInSet(std::make_pair(start.first, end.second), !fromPieceColor);
             return;
         }
@@ -453,9 +454,13 @@ void board::undoMove(const coords& start, const coords& end, const bool& fromPie
                 
             }
 
-            if (!oldMovedVal) 
+            if (!oldMovedVal.first)
                 chessboard[start.first][start.second]->unsetMoved();
-                
+
+            if (!oldMovedVal.second)
+                chessboard[end.first][end.second]->unsetMoved();
+            else
+                chessboard[end.first][end.second]->setMoved();
             return;
         }
     }

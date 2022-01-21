@@ -6,7 +6,7 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include "../chessman.h"
+#include "chessman.h"
 #include <vector>
 #include <utility>
 #include <string>
@@ -87,11 +87,10 @@ private:
     std::string boardToString(void) const;
 
     void undoMove(const coords &start, const coords &end, const bool &fromPieceColor, const int &typeOfMove, char &pieceAtEnd, 
-                  const int &old_moveRule50, const std::pair<coords, coords> &old_lastMovedCoords, const bool &oldMovedVal);
+                  const int &old_moveRule50, const std::pair<coords, coords> &old_lastMovedCoords, const std::pair<bool,bool> &oldMovedVal);
     void removeBoardFromMap(void);
     void addCoordsInSet(const coords &position, const bool &colorSet);
     
-    bool kingInCheck(const coords &king_coordinates, const bool &requestColor) const;
     bool illegalMove(const coords& start, const coords& end,const char& fromPieceId, const bool& pieceToMoveColor, const bool& whoseturn) const;
     bool acceptableMove(const coords& start, const coords& end, const char& fromPieceId, const bool& fromPieceColor) const;
     bool withinBoardLimits(const coords& end) const;
