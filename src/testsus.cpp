@@ -10,7 +10,7 @@
 
 using namespace std;
 
-short* conversion(smatch& m) 
+short* conversion(smatch& m)
 {
     short fromCol = toupper(m.str(1)[0]) - 65;
     short fromRow = 8 - stoi(m.str(2));
@@ -19,7 +19,7 @@ short* conversion(smatch& m)
 
     short ret[4] = {fromRow, fromCol, toRow, toCol};
     short *array = &ret[0];
-    return array; 
+    return array;
 }
 
 int main(){
@@ -28,7 +28,7 @@ int main(){
     pair<bool,bool> mossaNonValida = make_pair(false, true);
     pair<bool,bool> partitaInCulo = make_pair(false, false);
     pair<bool,bool> mossaEseguita = make_pair(true, true);
-    pair<bool,bool> moveOutput;
+    pair<bool,int> moveOutput;
 
     regex input_filter("^([a-hA-H]){1}([1-8]){1} ([a-hA-H]){1}([1-8]){1}$");
 
@@ -40,7 +40,36 @@ int main(){
     board b {};
 
 
-    vector<short> promotion_rand{'d', 'a', 't', 'c'};
+    while(true) {
+        b.printBoard();
+        do {
+            cout << "\n\nINSERT MOVE : ";
+            getline(cin, input);
+            regex_search(input, coordinates, input_filter);
+        }while(!regex_match(input, input_filter));
+
+        short *mosse = conversion(coordinates);
+        start.first = *(mosse);
+        start.second = *(mosse + 1);
+        end.first = *(mosse + 2);
+        end.second = *(mosse + 3);
+        moveOutput = b.move(start, end, white, false);
+
+        if (moveOutput.first == true) {
+            if (moveOutput.second == 2) {
+                bool promotionRes = false;
+                do {
+                    string pedinaDaPromuovere;
+                    getline(cin, pedinaDaPromuovere);
+                    promotionRes = b.promotion(pedinaDaPromuovere.front(), white);
+                    cout << promotionRes << "\n" << pedinaDaPromuovere << "\n";
+                } while (!promotionRes);
+            }
+            white = !white;
+        }
+    }
+
+    /*vector<short> promotion_rand{'d', 'a', 't', 'c'};
     bool game = false;
     while (!game) {
         b.printBoard();
@@ -113,7 +142,6 @@ int main(){
                 }
             }
         }
-    }
-
+    }*/
     return 0;
 }

@@ -50,7 +50,7 @@ public:
      * @param pawnColor true for black piece, false for white piece
      * @return true promotion method went smoothly, false in case promotion isn't needed 
      */
-    bool promotion(short &promotionChess, const bool &pawnColor);
+    bool promotion(short promotionChess, const bool &pawnColor);
 
     /**
      * @brief print the board

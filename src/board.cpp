@@ -284,7 +284,7 @@ bool board::isPromotion(const coords& end, const bool& fromPieceColor) const {
 
     return is<pawn>(*chessboard[end.first][end.second]) && end.first == rightRow;
 }
-bool board::promotion(short &promotionChess, const bool& pawnColor) {
+bool board::promotion(short promotionChess, const bool& pawnColor) {
     if (!needPromotion)
         return false;
 
