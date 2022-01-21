@@ -42,15 +42,19 @@ public:
      * @param setColor   true for BlackSet, false for WhiteSet
      * @return vector of pair of coords. Inside the pair there are the start and final position
      */
-    std::vector<std::pair<coords, coords>> getSetPossibleMoves(bool& setColor);
+    std::vector<std::pair<coords, coords>> getSetPossibleMoves(bool setColor);
 
     /**
      * @brief recive a character, which is the piece the pawn is promoted. Apply the changes to the board
      * @param promotionChess might be a queen, rook, knight or bishop 
      * @param pawnColor true for black piece, false for white piece
-     * @return true promotion method went smoothly, false in case promotion isn't needed 
+     * @return first parameter: true  -> promotion executed with success
+     *                          false -> promotion not done: invalid argument or promotion not asked
+     *
+     *         second parameter: true  -> enemy king in mate, game ends
+     *                           false -> enemy has moves left, the game will resume
      */
-    bool promotion(short promotionChess, const bool &pawnColor);
+    std::pair<bool, bool> promotion(short promotionChess, bool pawnColor);
 
     /**
      * @brief print the board

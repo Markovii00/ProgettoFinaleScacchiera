@@ -71,7 +71,7 @@ std::pair<bool,int> board::move(coords& start, coords& end, bool whoseturn, bool
 
     return std::make_pair(true, 1);
 }
-std::vector<std::pair<coords, coords>> board::getSetPossibleMoves(bool& setColor) {
+std::vector<std::pair<coords, coords>> board::getSetPossibleMoves(bool setColor) {
     std::vector<std::pair<coords, coords>> possibleMoves;
     //black
     if (setColor) {
@@ -284,36 +284,49 @@ bool board::isPromotion(const coords& end, const bool& fromPieceColor) const {
 
     return is<pawn>(*chessboard[end.first][end.second]) && end.first == rightRow;
 }
-bool board::promotion(short promotionChess, const bool& pawnColor) {
+std::pair<bool, bool> board::promotion(short promotionChess, bool pawnColor) {
     if (!needPromotion)
-        return false;
+        return std::make_pair(false, false);
 
     promotionChess = tolower(promotionChess);
+
+    bool hasDonePromotion = false;
     switch (promotionChess) {
         case 'd': {
             chessboard[toBePromoted.first][toBePromoted.second] = new queen((pawnColor) ? 'D' : 'd', toBePromoted, pawnColor);
             needPromotion = false;
-            return true;
+            hasDonePromotion = true;
+            break;
         }
         case 't': {
             chessboard[toBePromoted.first][toBePromoted.second] = new rook((pawnColor) ? 'T' : 't', toBePromoted, pawnColor);
             needPromotion = false;
-            return true;
+            hasDonePromotion = true;
+            break;
         }
         case 'a': {
             chessboard[toBePromoted.first][toBePromoted.second] = new bishop((pawnColor) ? 'A' : 'a', toBePromoted, pawnColor);
             needPromotion = false;
-            return true;
+            hasDonePromotion = true;
+            break;
         }
         case 'c': {
             chessboard[toBePromoted.first][toBePromoted.second] = new knight((pawnColor) ? 'C' : 'c', toBePromoted, pawnColor);
             needPromotion = false;
-            return true;
+            hasDonePromotion = true;
+            break;
         }
         default: {
-            return false;
+            hasDonePromotion = false;
+            break;
         }
     }
+
+    if (getSetPossibleMoves(!pawnColor).empty()) {
+        std::cout << "Scacco matto!\n";
+        return std::make_pair(hasDonePromotion, false);
+    } else
+        return std::make_pair(hasDonePromotion, true);
 }
 
 
