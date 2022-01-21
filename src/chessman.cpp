@@ -28,9 +28,9 @@ bool king::isLegalMove(const coords& start, const coords& end) const {
     short dCol = end.second - start.second;
 
     if(!first_move)
-        return (abs(dCol) == 2 && dRow == 0) || ((dCol == 0) && (abs(dRow) == 1)) || ((abs(dCol) == 1) && (abs(dRow) == 1)) || (abs(dCol == 1) && dRow == 0);
+        return (abs(dCol) == 2 && dRow == 0) || ((dCol == 0) && (abs(dRow) == 1)) || ((abs(dCol) == 1) && (abs(dRow) == 1)) || (abs(dCol) == 1 && dRow == 0);
 
-    return ((dCol == 0) && (abs(dRow) == 1)) || ((abs(dCol) == 1) && (abs(dRow) == 1)) || (abs(dCol == 1) && dRow == 0);
+    return ((dCol == 0) && (abs(dRow) == 1)) || ((abs(dCol) == 1) && (abs(dRow) == 1)) || (abs(dCol) == 1 && dRow == 0);
 }
 
 std::vector<coords> king::possibleMoves(void) const {

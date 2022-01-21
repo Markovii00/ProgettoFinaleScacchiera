@@ -15,16 +15,11 @@ std::pair<bool,int> board::move(coords& start, coords& end, bool whoseturn, bool
     char fromPieceId = chessboard[start.first][start.second]->getChar();
     bool fromPieceColor = chessboard[start.first][start.second]->getSet();
 
-    /*if (needPromotion) {  ricordarsi di metterno nel main!!!
-        std::cout << "Mossa non fatta, devi prima specificare in cosa promuovere il pedone! \n";
-        return std::make_pair(false, false);
-    } */
-    
     if (!attemptMove) {
         int cond = isTie(whoseturn);
         switch (cond) {
-            case 1 : return std::make_pair(false, 4);
-            case 0 : return std::make_pair(false, 3); //ask for draw
+            case 1 : return std::make_pair(false, 4); break;
+            case 0 : return std::make_pair(false, 3); break; //ask for draw
         }
     }
 
@@ -40,6 +35,7 @@ std::pair<bool,int> board::move(coords& start, coords& end, bool whoseturn, bool
 
     std::pair<bool, coords> castlingVar = isCastling(start, end);
     int typeOfMove = 0;
+
     if(isEnpassant(start, end).first) {
         typeOfMove = 1;
         do_enpassant(start, end, lastMoveCoords.second);
@@ -89,9 +85,11 @@ std::vector<std::pair<coords, coords>> board::getSetPossibleMoves(bool& setColor
 
                 std::pair<bool, coords> castlingVar = isCastling(piece, movePosition);
                 if(!illegalMove(piece, movePosition, fromPieceId, fromPieceColor, setColor) || isEnpassant(piece, movePosition).first || castlingVar.first) {
-                    bool res = move(piece, movePosition, setColor, true).first;
-                    if (res)
+                    std::pair<bool, int> res = move(piece, movePosition, setColor, true);
+                    if (res.first && (res.second == 1 || res.second == 2)) {
+                        //std::cout << "[" << piece.first << piece.second << "] -> [" << movePosition.first << movePosition.second << "]\n";
                         possibleMoves.emplace_back(piece, movePosition);
+                    }
                 }
             }
         }
@@ -105,9 +103,12 @@ std::vector<std::pair<coords, coords>> board::getSetPossibleMoves(bool& setColor
 
                 std::pair<bool, coords> castlingVar = isCastling(piece, movePosition);
                 if(!illegalMove(piece, movePosition, fromPieceId, fromPieceColor, setColor) || isEnpassant(piece, movePosition).first || castlingVar.first) {
-                    bool res = move(piece, movePosition, setColor, true).first;
-                    if (res)
+                    std::pair<bool, int> res = move(piece, movePosition, setColor, true);
+                    if (res.first && (res.second == 1 || res.second == 2)) {
+                        //std::cout << "[" << piece.first << piece.second << "] -> [" << movePosition.first << movePosition.second << "]\n";
                         possibleMoves.emplace_back(piece, movePosition);
+                    }
+
                 }
             }
         }
@@ -247,10 +248,10 @@ int board::isTie(bool& pieceToMoveColor) {
         if(tables.at(boardToString()) >= 3) {
             std::cout << "Draw? : ";
             return 0;
+        } else if(draw_for_pieces() || (!kingInCheck(kingCoords, pieceToMoveColor) && getSetPossibleMoves(pieceToMoveColor).empty()) || moveRule50 >= 50) {
+            std::cout << "\nTIE DEBUG: [" << draw_for_pieces() << (!kingInCheck(kingCoords, pieceToMoveColor) && getSetPossibleMoves(pieceToMoveColor).empty()) << (moveRule50 >= 50) << "]\n";
+            return 1;
         }
-    } else if(draw_for_pieces() || (!kingInCheck(kingCoords, pieceToMoveColor) && getSetPossibleMoves(pieceToMoveColor).empty()) || moveRule50 >= 50) {
-        std::cout << "Is a tie, GG\n";
-        return 1;
     }
 
     return -1;
@@ -295,7 +296,7 @@ bool board::promotion(short &promotionChess, const bool& pawnColor) {
             return true;
         }
         case 't': {
-            chessboard[toBePromoted.first][toBePromoted.second] = new rook((pawnColor) ? 'R' : 'r', toBePromoted, pawnColor);
+            chessboard[toBePromoted.first][toBePromoted.second] = new rook((pawnColor) ? 'T' : 't', toBePromoted, pawnColor);
             needPromotion = false;
             return true;
         }
@@ -338,23 +339,24 @@ void board::do_enpassant(const coords& start, const coords& end, const coords& p
 }
 void board::do_castling(const coords& start, const coords& end, const coords& rook_to_move) {
     bool set = chessboard[start.first][start.second]->getSet();
-    //Tower Movement
     short col_rook_move = (rook_to_move.second == 0) ? 3 : 5;
-    chessboard[rook_to_move.first][col_rook_move] = chessboard[rook_to_move.first][rook_to_move.second];
-    chessboard[rook_to_move.first][rook_to_move.second] = new emptyTile(' ', std::make_pair(rook_to_move.first, rook_to_move.second), true);
 
+    //Tower Movement
+    chessboard[rook_to_move.first][col_rook_move] = chessboard[rook_to_move.first][rook_to_move.second];
+    chessboard[rook_to_move.first][rook_to_move.second] = new emptyTile(' ', rook_to_move, true);
     updateCoordsInSet(rook_to_move, std::make_pair(rook_to_move.first, col_rook_move), set);
+
     chessboard[rook_to_move.first][col_rook_move]->setMoved();
+    chessboard[rook_to_move.first][col_rook_move]->setPosition(std::make_pair(rook_to_move.first, col_rook_move));
 
     //King movement
     chessboard[end.first][end.second] = chessboard[start.first][start.second];
-    chessboard[start.first][start.second] = new emptyTile(' ', std::make_pair(start.first, start.second), true);
+    chessboard[start.first][start.second] = new emptyTile(' ', start, true);
     updateCoordsInSet(start, end, set); //king put here cause call for update change the lastMoveCoords variable
+
     chessboard[end.first][end.second]->setMoved();
-
     chessboard[end.first][end.second]->setPosition(end);
-    chessboard[rook_to_move.first][col_rook_move]->setPosition(std::make_pair(rook_to_move.first, col_rook_move));
-
+    
     moveRule50++;
     lastMoveCoords.first = start;
     lastMoveCoords.second = end;
@@ -397,21 +399,28 @@ void board::undoMove(const coords& start, const coords& end, const bool& fromPie
 
             chessboard[start.first][end.second] = new pawn(pawnEaten, std::make_pair(start.first, end.second), !fromPieceColor);
             addCoordsInSet(std::make_pair(start.first, end.second), !fromPieceColor);
+            return;
         }
 
         case 2: {
-            short originalRookColumn = (end.second == 6) ? 7 : 0;
+            short originalRookColumn = (end.second == 6) ? 7 : 0; //look king final column to guess original rook position
             short actualRookColumn = (originalRookColumn == 7) ? 5 : 3;
 
+            //Undoing king movement
             chessboard[start.first][start.second] = chessboard[end.first][end.second];
             chessboard[end.first][end.second] = new emptyTile(' ', end, true);
-            updateCoordsInSet(end,start, fromPieceColor);
+            updateCoordsInSet(end, start, fromPieceColor);
             chessboard[start.first][start.second]->setPosition(start);
+            chessboard[start.first][start.second]->unsetMoved();
 
+            //Undoing rook movement
             chessboard[start.first][originalRookColumn] = chessboard[start.first][actualRookColumn];
             chessboard[start.first][actualRookColumn] = new emptyTile(' ', std::make_pair(start.first, actualRookColumn), true);
             updateCoordsInSet(std::make_pair(start.first, actualRookColumn), std::make_pair(start.first, originalRookColumn), fromPieceColor);
             chessboard[start.first][originalRookColumn]->setPosition(std::make_pair(start.first, originalRookColumn));
+            chessboard[start.first][originalRookColumn]->unsetMoved();
+            
+            return;
         }
 
         default: {
@@ -433,19 +442,22 @@ void board::undoMove(const coords& start, const coords& end, const bool& fromPie
                 updateCoordsInSet(end, start, fromPieceColor);
 
                 chessboard[start.first][start.second]->setPosition(start);
-        } else {
+
+            } else {
                 chessboard[start.first][start.second] = chessboard[end.first][end.second];
                 chessboard[end.first][end.second] = new emptyTile(' ', end, true);
 
                 updateCoordsInSet(end, start, fromPieceColor);
 
                 chessboard[start.first][start.second]->setPosition(start);
+                
             }
-        }
-    }
 
-    if (!oldMovedVal){
-        chessboard[start.first][start.second]->unsetMoved();
+            if (!oldMovedVal) 
+                chessboard[start.first][start.second]->unsetMoved();
+                
+            return;
+        }
     }
 }
 
@@ -598,7 +610,7 @@ bool board::clearPath(const coords& start, const coords& end, const char& fromPi
     bool diagonal = isDiagonal(start, end);
 
     switch (piece) {
-        case 'c' : return true;
+        case 'c' : return true; 
         case 'a' : {
             if(dR > 0 && dC > 0) { //movement Sud-Est
                 rMov += 1;
