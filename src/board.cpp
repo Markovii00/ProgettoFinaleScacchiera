@@ -84,8 +84,7 @@ bool board::acceptableMove(const coords& start, const coords& end, const char& f
     return false;
 }
 
-std::vector<std::pair<coords, coords>> board::getSetPossibleMoves(bool setColor) {
-
+std::vector<std::pair<coords, coords>> board::getSetPossibleMoves(bool& setColor) {
     std::vector<std::pair<coords, coords>> possibleMoves;
 
     //black
@@ -130,7 +129,7 @@ bool board::illegalMove(const coords& start, const coords& end, const char& from
     return !acceptableMove(start, end, fromPieceId, fromPieceColor) || fromPieceColor != whoseturn || !chessboard[start.first][start.second]->isLegalMove(start, end) || !clearPath(start, end, fromPieceId);
 }
 
-std::pair<bool,int> board::move(coords& start, coords& end, bool& whoseturn, bool attemptMove = false) {
+std::pair<bool,int> board::move(coords& start, coords& end, bool whoseturn, bool attemptMove = false) {
     char fromPieceId = chessboard[start.first][start.second]->getChar();
     bool fromPieceColor = chessboard[start.first][start.second]->getSet();
 
@@ -321,7 +320,6 @@ bool board::promotion(short &promotionChess, const bool& pawnColor) {
 board::board(void) {
     lastMoveCoords.first = std::make_pair(0,0);
     lastMoveCoords.second = std::make_pair(0,0);
-    moveRule50 = 0;
 
     // allocating all white pawns and pieces
     for (unsigned short cCol = 0; cCol < 8; ++cCol) {
@@ -357,12 +355,9 @@ board::board(void) {
 
     for (int iRow = 2;  iRow < 6; iRow++) {
         for (int iCol = 0;  iCol < 8; iCol++) {
-            chessboard[iRow][iCol] = new emptyTile(' ', std::make_pair(iRow,iCol), true); // @TODO In caso creare classe set
+            chessboard[iRow][iCol] = new emptyTile(' ', std::make_pair(iRow,iCol), true); 
         }
     }
-
-    //blackSetMoves = getSetPossibleMoves(true);
-    //whiteSetMoves = getSetPossibleMoves(false);
 
     //Create string
     tables.insert(std::pair<std::string, short>("TCADRACTPPPPPPPP                                pppppppptcadract", 1));
@@ -404,7 +399,7 @@ void board::removeBoardFromMap(void) {
     }
 }
 
-int board::isTie(const bool& pieceToMoveColor) {
+int board::isTie(bool& pieceToMoveColor) {
     coords kingCoords = search<king>(pieceToMoveColor);
 
     auto it = tables.find(boardToString());
