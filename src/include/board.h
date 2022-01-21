@@ -57,7 +57,6 @@ public:
      */
     void printBoard(void) const;
 
-    
      /**
      * @return a vector of all the white pieces coordinates
      */
@@ -92,7 +91,6 @@ private:
     void removeBoardFromMap(void);
     void addCoordsInSet(const coords &position, const bool &colorSet);
     
-
     bool kingInCheck(const coords &king_coordinates, const bool &requestColor) const;
     bool illegalMove(const coords& start, const coords& end,const char& fromPieceId, const bool& pieceToMoveColor, const bool& whoseturn) const;
     bool acceptableMove(const coords& start, const coords& end, const char& fromPieceId, const bool& fromPieceColor) const;
