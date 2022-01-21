@@ -54,7 +54,16 @@ int main(){
         end.second = *(mosse + 3);
         moveOutput = b.move(start, end, white, false);
 
-        if (moveOutput.first == true)
+        if (moveOutput.first == true) {
+            if (moveOutput.second == false) {
+                bool promotionRes = false;
+                do {
+                    short pedinaDaPromuovere;
+                    cin >> pedinaDaPromuovere;
+                    promotionRes = b.promotion(pedinaDaPromuovere, white);
+                } while (!promotionRes);
+            }
+        }
             white = !white;
     }
      return 0;

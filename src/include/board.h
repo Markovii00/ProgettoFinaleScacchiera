@@ -26,9 +26,9 @@ public:
     std::vector<coords> getWhiteSet(void) const;
     std::vector<coords> getBlackSet(void) const;
 
-    std::pair<bool, bool> move(coords &start, coords &end, bool &whoseturn, bool attemptMove);
+    std::pair<bool, int> move(coords &start, coords &end, bool &whoseturn, bool attemptMove);
     std::vector<std::pair<coords, coords>> getSetPossibleMoves(bool setColor);
-
+    bool promotion(short &promotionChess, const bool &pawnColor);
 
 private:
     chessman* chessboard[8][8];
@@ -38,6 +38,10 @@ private:
     //Makes more efficient KingInCheck, Verify Tie conditions and keeps updated chessman sets
     std::vector<coords> whiteSet;
     std::vector<coords> blackSet;
+
+    // Promotion case
+    bool needPromotion = false;
+    coords toBePromoted;
 
     //Keeps saved last made move, useful for enpassant
     std::pair<coords, coords> lastMoveCoords;
@@ -53,7 +57,6 @@ private:
 
     std::pair<bool, coords> isEnpassant(const coords& start, const coords& end) const;
     bool isPawnEating(const coords& start, const coords& end, const bool& fromPieceColor) const;
-    //bool attemptMove(std::vector<coords>& _vet, const bool& colorPiece, const coords& _tempCoords) const;
     bool check_on_pawn(const coords& start, const coords& end, const char& fromPieceId, const bool& fromPieceColor) const;
     //bool isPromotion(const coords& end, const bool& fromPieceColor) const;
     
@@ -109,6 +112,8 @@ private:
     bool kingInCheck(const coords &king_coordinates, const bool &requestColor) const;
 
     bool kingInMate(bool setToCheck, const coords &kingPos);
+
+    bool isPromotion(const coords &end, const bool &fromPieceColor) const;
 };
 
 coords operator+(const coords& start, std::pair<short, short> offset);

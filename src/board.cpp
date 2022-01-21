@@ -130,20 +130,25 @@ bool board::illegalMove(const coords& start, const coords& end, const char& from
     return !acceptableMove(start, end, fromPieceId, fromPieceColor) || fromPieceColor != whoseturn || !chessboard[start.first][start.second]->isLegalMove(start, end) || !clearPath(start, end, fromPieceId);
 }
 
-std::pair<bool,bool> board::move(coords& start, coords& end, bool& whoseturn, bool attemptMove = false) {
+std::pair<bool,int> board::move(coords& start, coords& end, bool& whoseturn, bool attemptMove = false) {
     char fromPieceId = chessboard[start.first][start.second]->getChar();
     bool fromPieceColor = chessboard[start.first][start.second]->getSet();
 
+    /*if (needPromotion) {  ricordarsi di metterno nel main!!!
+        std::cout << "Mossa non fatta, devi prima specificare in cosa promuovere il pedone! \n";
+        return std::make_pair(false, false);
+    } */
+    
     if (!attemptMove) {
         int cond = isTie(whoseturn);
         switch (cond) {
-            case 1 : return std::make_pair(false, false);
-            case 0 : return std::make_pair(true, false); //ask for draw
+            case 1 : return std::make_pair(false, 4);
+            case 0 : return std::make_pair(false, 3); //ask for draw
         }
     }
 
     if(illegalMove(start, end, fromPieceId, fromPieceColor, whoseturn)) {
-        return std::make_pair(false,true);
+        return std::make_pair(false,1);
     }
 
     std::pair<bool, coords> castlingVar = isCastling(start, end);
@@ -166,25 +171,31 @@ std::pair<bool,bool> board::move(coords& start, coords& end, bool& whoseturn, bo
     coords kingPos = search<king>(fromPieceColor);
     if (kingInCheck(kingPos, fromPieceColor)) {
         undoMove(start, end, fromPieceColor, typeOfMove, pieceAtEnd, old_moveRule50, old_lastMovedCoords, old_hasMovedBefore);
-        return std::make_pair(false,true);
+        return std::make_pair(false,2);
     }
 
     if (attemptMove)
         undoMove(start, end, fromPieceColor, typeOfMove, pieceAtEnd, old_moveRule50, old_lastMovedCoords, old_hasMovedBefore);
+    
     //std::cout << "controlli mossa eseguita";
-    //if(isPromotion(end, fromPieceColor))
-    //    promotion(end, fromPieceColor);
+    if(isPromotion(end, fromPieceColor) && !attemptMove) {
+        std::cout << "Inserire in che pedina promuovere il pedone!";
+        toBePromoted = end;
+        needPromotion = true;
+        return std::make_pair(true, 2);
+    }
+        
 
     //the enemy is under scacco matto?
 
     if (!attemptMove) {
         if (kingInMate(!whoseturn, search<king>(!whoseturn))) {
             std::cout << "Scacco matto!\n";
-            return std::make_pair(false, false);
+            return std::make_pair(true, 3);
         }
     }
 
-    return std::make_pair(true, true);
+    return std::make_pair(true, 1);
 }
 
 void board::undoMove(const coords& start, const coords& end, const bool& fromPieceColor, const int& typeOfMove, char &pieceAtEnd, const int& old_moveRule50, const std::pair<coords, coords>& old_lastMovedCoords, const bool& oldMovedVal) {
@@ -267,48 +278,44 @@ bool board::isPawnEating(const coords& start, const coords& end, const bool& fro
     }
     return false;
 }
-/*
+
 bool board::isPromotion(const coords& end, const bool& fromPieceColor) const {
     short rightRow = (fromPieceColor) ? 7 : 0;
 
     return is<pawn>(*chessboard[end.first][end.second]) && end.first == rightRow;
 }
 
-void board::promotion(const coords& pawnPos, const bool& pawnColor) {
-    /*
-    char _p;
-    bool isValid = false;
+bool board::promotion(short &promotionChess, const bool& pawnColor) {
+    if (!needPromotion)
+        return false;
 
-    std::cout << "Your pawn can be promoted, insert new piece : ";
-    while (!isValid) {
-        std::cin >> _p;
-        isValid |= _p == ;
+    promotionChess = tolower(promotionChess);
+    switch (promotionChess) {
+        case 'd': {
+            chessboard[toBePromoted.first][toBePromoted.second] = new queen((pawnColor) ? 'D' : 'd', toBePromoted, pawnColor);
+            needPromotion = false;
+            return true;
+        }
+        case 't': {
+            chessboard[toBePromoted.first][toBePromoted.second] = new rook((pawnColor) ? 'R' : 'r', toBePromoted, pawnColor);
+            needPromotion = false;
+            return true;
+        }
+        case 'a': {
+            chessboard[toBePromoted.first][toBePromoted.second] = new bishop((pawnColor) ? 'A' : 'a', toBePromoted, pawnColor);
+            needPromotion = false;
+            return true;
+        }
+        case 'c': {
+            chessboard[toBePromoted.first][toBePromoted.second] = new knight((pawnColor) ? 'C' : 'c', toBePromoted, pawnColor);
+            needPromotion = false;
+            return true;
+        }
+        default: {
+            return false;
+        }
     }
-
-    delete chessboard[pawnRow][pawnCol];
-    if (isPawnBlack == true)
-    {
-        if ()
-            chessboard[pawnRow][pawnCol] = new queen('D');
-        else if (isBishop(newPiece))
-            chessboard[pawnRow][pawnCol] = new bishop('A');
-        else if (isKnight(newPiece))
-            chessboard[pawnRow][pawnCol] = new knight('C');
-        else if (isRook(newPiece))
-            chessboard[pawnRow][pawnCol] = new rook('T');
-    }
-    else if (isPawnBlack == false)
-    {
-        if (isQueen(newPiece))
-            chessboard[pawnRow][pawnCol] = new queen('d');
-        else if (isBishop(newPiece))
-            chessboard[pawnRow][pawnCol] = new bishop('a');
-        else if (isKnight(newPiece))
-            chessboard[pawnRow][pawnCol] = new knight('c');
-        else if (isRook(newPiece))
-            chessboard[pawnRow][pawnCol] = new rook('t');
-    }
-    */
+}
 
 //COSTRUCTORS AND DESTRUCTORS
 board::board(void) {
