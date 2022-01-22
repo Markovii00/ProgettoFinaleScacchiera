@@ -1,14 +1,10 @@
-#include "bot.hpp"
-//#include "../../board.cpp"
+#include "bot.h"
 
+bot::bot(std::string &n, bool set, board &bVar) : b(bVar), maiusc(set), name(n) {}
 
-void bot::set_name(std::vector<std::string>names){
-    short namesLenght = names.size();
-    short nameindex = rand() % namesLenght;
-    std::string nameToSet = names.at(nameindex);
-    name.assign(nameToSet.begin(), nameToSet.end());
-    names.erase(names.begin()+nameindex);
-}
+bot::~bot() {}
+
+std::string& bot::get_name() const { return name; }
 
 std::pair<coords, coords> bot::generateRandomMove(){
     std::vector<std::pair<coords, coords>> moves = b.getSetPossibleMoves(maiusc);

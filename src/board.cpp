@@ -11,7 +11,7 @@
 #include "include/board.h"
 
 //KEY METHODS IN SCACCHIERA.CPP AND BOT MANAGEMENT
-std::pair<bool,int> board::move(coords& start, coords& end, bool whoseturn, bool attemptMove = false) {
+std::pair<bool,int> board::move(coords& start, coords& end, bool whoseturn, bool attemptMove = false, bool bypassDraftAsk) {
     char fromPieceId = chessboard[start.first][start.second]->getChar();
     bool fromPieceColor = chessboard[start.first][start.second]->getSet();
 
@@ -19,7 +19,13 @@ std::pair<bool,int> board::move(coords& start, coords& end, bool whoseturn, bool
         int cond = isTie(whoseturn);
         switch (cond) {
             case 1 : return std::make_pair(false, 4); break;
-            case 0 : return std::make_pair(false, 3); break; //ask for draw
+            case 0 : {
+                if (!bypassDraftAsk) {
+                    return std::make_pair(false, 3); 
+                    break; //ask for draw
+                }
+                break;
+            }
         }
     }
 
@@ -245,13 +251,10 @@ int board::isTie(bool& pieceToMoveColor) {
 
     auto it = tables.find(boardToString());
     if (it != tables.end()) {
-        if(tables.at(boardToString()) >= 3) {
-            std::cout << "Draw? : ";
+        if(tables.at(boardToString()) >= 3) 
             return 0;
-        } else if(draw_for_pieces() || (!kingInCheck(kingCoords, pieceToMoveColor) && getSetPossibleMoves(pieceToMoveColor).empty()) || moveRule50 >= 50) {
-            std::cout << "\nTIE DEBUG: [" << draw_for_pieces() << (!kingInCheck(kingCoords, pieceToMoveColor) && getSetPossibleMoves(pieceToMoveColor).empty()) << (moveRule50 >= 50) << "]\n";
+        else if(draw_for_pieces() || (!kingInCheck(kingCoords, pieceToMoveColor) && getSetPossibleMoves(pieceToMoveColor).empty()) || moveRule50 >= 50) 
             return 1;
-        }
     }
 
     return -1;

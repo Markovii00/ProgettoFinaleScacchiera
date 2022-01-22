@@ -3,11 +3,8 @@
  */ 
 
 #include "board.cpp"
-#include "include/match/player.h"
-#include "include/match/match.hpp"
-#include "include/match/user.hpp"
-#include "include/match/bot.cpp"
 #include "include/log/logger.cpp"
+#include "bot.cpp"
 #include <iostream>
 #include <cctype>
 #include <chrono>
@@ -18,6 +15,15 @@
 
 using namespace std; 
 string const console = "console";
+
+string randomName(){
+    vector<string> names = {"AMOGUS", "Baymax", "MarkoviiIsAFurry", "BakaBot", "Wall-E", "MapBot", "OwOBot", "SUSBot", "Bixby", "Cortana", "Alexa"};
+    short namesLenght = names.size();
+    short nameindex = rand() % namesLenght;
+    std::string nameToSet = names.at(nameindex);
+
+    return nameToSet;
+}
 
 //Convert input regex in matrix coordinates
 short* conversion(smatch& m) 
@@ -32,26 +38,22 @@ short* conversion(smatch& m)
     return array; 
 }
 
-void playerGame() 
-{
+void playerGame() {
+    //INIZIALIZING VARIABLES
     board b;
-    string input;
-    
-    string drawCondition = "FF";
-    string to_log;
-    string writeTo = " to ";
-    short setSite;
-    char promotionChar;
-    
+    coords start;
+    coords end;
     bool turn;
-    bool userRequestedDraw = false;
-    bool botAcceptedDraw = false;
-    bool userAccepetedDraw = false;
-    bool botRequestedDraw = false;
-    pair<coords, coords> botMove;
-
-    //all move possibilities
     pair <bool, int> moveOutput;
+    pair<coords, coords> botMove;
+    logger logger;
+    string input;
+    regex input_filter("^([a-hA-H]){1}([1-8]){1} ([a-hA-H]){1}([1-8]){1}$");
+    smatch coordinates;
+    char promotionChar;
+
+
+    //All move possibilities, go look board.h file in order to see all return conditions
     //executed move
     pair <bool, int> succesfulMove = make_pair(true, 1);
     pair <bool, int> promotionCondition = make_pair(true, 2);
@@ -62,118 +64,218 @@ void playerGame()
     pair <bool, int> threeFoldDrawCondition = make_pair(false, 3);
     pair <bool, int> drawGameOver = make_pair(false, 4);
     
+    string drawCondition = "FF";
+    string to_log = " ";
+    string writeTo = " to ";
 
-    logger logger;
-    regex input_filter("^([a-hA-H]){1}([1-8]){1} ([a-hA-H]){1}([1-8]){1}$");
-    smatch coordinates;
-    vector<string> botNames = {"Zincalex", "Colla", "Markovii", "Yasuo", "Yone", "MapBot"};
-    coords start;
-    coords end;
-
-
+    bool userRequestedDraw = false;
+    bool botAcceptedDraw = false;
+    bool userAccepetedDraw = false;
+    bool botRequestedDraw = false;
+    
+    //STARTING THE PROGRAM
     logger.log(console, "Welcome");
     logger.log(console, "Starting new log session");
-    //continuo del log
 
-    string username;
-    string computer{"computer"};
+    string p1;
     cout << "Enter a username : ";
-    cin >> username;
+    cin >> p1;
     cin.ignore();
 
-    user p1(username, false);
-    bot bot1(computer, true, b);
-    bot1.set_name(botNames);
-    
-    logger.log(console, "Initializing player 1 " + p1.get_name());
-    logger.log(console, "Initializing player 2 " + bot1.get_name());
-
     int starter = rand() % 2;
+    if(starter = 1) turn = false; //bot will make first move
+    else turn = true; //player will make first move
     
-    match game(p1, bot1, b, starter); 
-    logger.log(console, "Creating match");
+    string botname = randomName();
+
+    bot bot(botname, true, b);
+    
+    logger.log(console, "Initializing player 1 \"" + p1 + "\"");
+    logger.log(console, "Initializing player 2 \"" + bot.get_name() + "\"");
+    
     logger.log(console, "Starting match");
 
-    //game start
-    while(moveOutput != checkMate) {
-        turn = game.whose_turn();   
-        if(game.whose_turn()) { //player turn 
-            system("cls");
+    //GAME START
+    while(moveOutput != checkMate) {    //TODO BO MIGLIORABILE
+        turn = !turn; //TODO CAMBIA SUBITO TURNO ALL'INIZIO   
+        if(turn) { //player turn 
+            system("cls"); //TODO METTERE LA COSA DEL SYSTEM OS FOSAFSJAFSA
             b.printBoard();
-            cout << '\n' << "Last move: " << to_log;
-            while(moveOutput == invalidMove){
-                do {
-                    if(botRequestedDraw == true){
-                        cout << bot1.get_name() << " ha richiesto la patta, vuoi accettarla? Y/N";
-                        getline(cin, input);
-                        if(input == "Y" || input == "y"){
-                            moveOutput = drawGameOver;
-                            logger.log(game.get_player_turn().get_name(), "Accepted the draw");
+            cout << "\n\n" << "Last move: " << to_log;    
+            do {
+                cout << "\n\nINSERT MOVE : ";
+                getline(cin, input);
+                if(input == drawCondition) {
+                    userRequestedDraw = true;
+                    break; //exit from do while
+                }
+                regex_search(input, coordinates, input_filter);
+
+            } while(!regex_match(input, input_filter));
+
+            short *mosse = conversion(coordinates);
+            start.first = *(mosse + 0);
+            start.second = *(mosse + 1);
+            end.first = *(mosse + 2);
+            end.second = *(mosse + 3);
+
+            moveOutput = b.move(start, end, turn, false, false);
+            
+            if(botRequestedDraw) {
+                logger.log(bot.get_name(), "Asking for a draw...");
+                cout << bot.get_name() << " ha richiesto la patta, vuoi accettarla? [Y/N] : ";
+                cin >> input;
+                if(input == "Y" || input == "y") {
+                    moveOutput = drawGameOver;
+                    logger.log(p1, "Draw accepted.");
+                } 
+                else{
+                    botRequestedDraw = false;
+                    logger.log(p1, "Draw declined.");
+                }
+            }
+
+            while(!moveOutput.first) { //invalid move, asking for draw, king still in check, ....
+                int what = moveOutput.second;
+                switch (what) {
+                    case 3 : {
+                        logger.log(console, "Threefold draw has been requested");
+                        cout << "Draw for threefold repetition rule, accept it? [Y/N] : ";
+                        cin >> input;
+                        if(input == "Y" || input == "y") {
+                            logger.log(p1, "Draw accepted.");
+                            logger.log(console, "Draw, game is ended");
+                            logger.log(console, "Ending log session");
+                            return;
                         }
+                        else{
+                            logger.log(p1, "Draw declined."); 
+                            moveOutput = b.move(start, end, turn, false, true);
+                        }
+                        break;
                     }
-                    if(moveOutput == drawGameOver){
+
+                    case 4 : {  
                         cout << "The game ended with a draw!";
                         logger.log(console, "Draw, game is ended");
                         logger.log(console, "Ending log session");
                         return;
                     }
+
+                    default: { 
+                        do {
+                            cout << "\n\nINSERT MOVE : ";
+                            getline(cin, input);
+                            if(input == drawCondition) { //TODO CHECK THIS
+                                userRequestedDraw = true;
+                                break; //exit from do while
+                            }
+                            regex_search(input, coordinates, input_filter);
+
+                        } while(!regex_match(input, input_filter));
+
+                        short *mosse = conversion(coordinates);
+                        start.first = *(mosse + 0);
+                        start.second = *(mosse + 1);
+                        end.first = *(mosse + 2);
+                        end.second = *(mosse + 3);
+
+                        moveOutput = b.move(start, end, turn, false, false);             
+                    }   
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+                
+                do {
+                    if(moveOutput == drawGameOver) {
+                        cout << "The game ended with a draw!";
+                        logger.log(console, "Draw, game is ended");
+                        logger.log(console, "Ending log session");
+                        return;
+                    }
+
                     cout << "\n\nINSERT MOVE : ";
                     getline(cin, input);
-                    if(input == drawCondition){
+                    if(input == drawCondition) {
                         userRequestedDraw = true;
-                        break;
+                        break; //exit from do while
                     }
                     regex_search(input, coordinates, input_filter);
-                }while(!regex_match(input, input_filter));
-                if(userRequestedDraw == false) {
 
+                } while(!regex_match(input, input_filter));
+
+
+                if(!userRequestedDraw) {
                     short *mosse = conversion(coordinates);
                     start.first = *(mosse + 0);
                     start.second = *(mosse + 1);
                     end.first = *(mosse + 2);
                     end.second = *(mosse + 3);
 
-                    b.move(start, end, turn);
+                    moveOutput = b.move(start, end, turn, false);
 
-                    if(moveOutput == promotionCondition){
+                    if(moveOutput == promotionCondition) {
                         cout << "A pawn can be promoted, select a new piece";
-                        getline(cin, input);
+                        getline(cin, input); //TODO inserire un controllo sull'input
                         b.promotion(input.at(0), turn);
                     }
-                }
+                } else break;
             }
+
+
+
             if(userRequestedDraw == false) {
                 to_log = "Moving " + (char) start.first + (char) start.second + writeTo + (char) end.first +
                          (char) end.second;
-                logger.log(game.get_player_turn().get_name(), to_log);
-            } else
-                logger.log(game.get_player_turn().get_name(), "requested draw");
+                logger.log(p1, to_log);
+            } else logger.log(p1, " requested draw");
+
+
+
+
+
+
+
+
+
+
+
         }
         else {//pc turn
-             cout << '\n' << "Last move: " << to_log;
-             if(userRequestedDraw == false){
-                 botRequestedDraw = bot1.requestDraw();
-                 if(botRequestedDraw == false){
-                 while(moveOutput == invalidMove) {
-                     botMove = bot1.generateRandomMove();
-                     start = botMove.first;
-                     end = botMove.second;
-                     b.move(start, end, turn);
+            cout << '\n' << "Last move: " << to_log;
+            if(userRequestedDraw == false) {
+                botRequestedDraw = bot.requestDraw();
+                if(botRequestedDraw == false){
+                while(moveOutput == invalidMove) {
+                    botMove = bot.generateRandomMove();
+                    start = botMove.first;
+                    end = botMove.second;
+                    moveOutput = b.move(start, end, turn, false);
 
-                     if(moveOutput == promotionCondition){
-                         promotionChar = bot1.handlePromotion();
-                         b.promotion(promotionChar, turn);
-                     }
-                 }
-                     to_log = "Moving " + (char)start.first + (char)start.second + writeTo + (char)end.first + (char)end.second;
-                     logger.log(game.get_player_turn().get_name(), to_log);
+                    if(moveOutput == promotionCondition){
+                        promotionChar = bot.handlePromotion();
+                        b.promotion(promotionChar, turn);
+                    }
                 }
-             }else botAcceptedDraw=bot1.handledraw();
+                    to_log = "Moving " + (char)start.first + (char)start.second + writeTo + (char)end.first + (char)end.second;
+                    logger.log(bot.get_name(), to_log);
+            }
+            }else botAcceptedDraw=bot.handledraw();
 
-             if(botAcceptedDraw) {
-                 logger.log(game.get_player_turn().get_name(), "Accepted the draw");
-                 moveOutput = drawGameOver;
-             }
+            if(botAcceptedDraw) {
+                logger.log(bot.get_name(), "Accepted the draw");
+                moveOutput = drawGameOver;
+            }
         }  
     }
     logger.log(console, "The game is ended");
@@ -210,29 +312,30 @@ void computersGame() {
     bool bot2requestedDraw = false;
     bool bot2acceptedDraw = false;
 
-    vector<string> botNames = {"Zincalex", "Colla", "Markoovii", "Yasuo", "Yone", "MapBot", "NiBot"};
 
-    bot bot1(writeTo, false, b);
-    bot bot2(writeTo, false, b);
+    string bot1name = randomName();
+    bot bot1(bot1name, false, b);
+    string bot2name = randomName();
+    while(bot1name == bot2name){
+        bot2name = randomName();
+    }
+    bot bot2(bot2name, false, b);
 
-    bot1.set_name(botNames);
-    bot2.set_name(botNames);
 
     logger.log(console, "Initializing player 1 " + bot1.get_name());
     logger.log(console, "Initialising player 2 " + bot2.get_name());
 
     int starter = rand() % 2;
+    if(starter = 1) turn = false;
+    else turn = true;
 
-    match game(bot1, bot2, b, starter);
-
-    logger.log(console, "Creating match");
     logger.log(console, "Starting match");
 
     while (moveOutput != checkMate) {
         if ((bot1requestedDraw == bot2acceptedDraw) || (bot2requestedDraw == bot2acceptedDraw)) {
             moveOutput = drawGameOver;
         }
-        turn = game.whose_turn();
+        turn = !turn;
         if (turn) {
             system("cls");
             b.printBoard();
@@ -246,7 +349,7 @@ void computersGame() {
                 bot1acceptedDraw = bot1.handledraw();
                 if (bot2acceptedDraw == bot1requestedDraw) {
                     moveOutput == drawGameOver;
-                    logger.log(game.get_player_turn().get_name(), "accepted the draw!");
+                    logger.log(bot1.get_name(), "accepted the draw!");
                 } else {
                     bot1requestedDraw = bot1.requestDraw();
                     if (bot1requestedDraw == false) {
@@ -257,7 +360,7 @@ void computersGame() {
                             start = botMove.first;
                             end = botMove.second;
 
-                            moveOutput = b.move(start, end, turn);
+                            moveOutput = b.move(start, end, turn, false);
 
                             if (moveOutput == promotionCondition) {
                                 promotionChar = bot1.handlePromotion();
@@ -267,10 +370,10 @@ void computersGame() {
 
                         to_log = &"Moving "[(char) start.first] + (char) start.second + writeTo + (char) end.first +
                                  (char) end.second;
-                        logger.log(game.get_player_turn().get_name(), to_log);
+                        logger.log(bot1.get_name(), to_log);
                     } else
 
-                        logger.log(game.get_player_turn().get_name(), "requested draw");
+                        logger.log(bot1.get_name(), "requested draw");
                 }
 
 
@@ -282,7 +385,7 @@ void computersGame() {
                     bot2acceptedDraw = bot2.handledraw();
                     if (bot2acceptedDraw == bot1requestedDraw) {
                         moveOutput == drawGameOver;
-                        logger.log(game.get_player_turn().get_name(), "accepted the draw!");
+                        logger.log(bot2.get_name(), "accepted the draw!");
                     }
                 } else {
 
@@ -295,7 +398,7 @@ void computersGame() {
                             start = botMove.first;
                             end = botMove.second;
 
-                            moveOutput = b.move(start, end, turn);
+                            moveOutput = b.move(start, end, turn, false);
 
                             if (moveOutput == promotionCondition) {
                                 promotionChar = bot1.handlePromotion();
@@ -305,9 +408,9 @@ void computersGame() {
                         }
                         to_log = &"Moving "[(char) start.first] + (char) start.second + writeTo + (char) end.first +
                                  (char) end.second;
-                        logger.log(game.get_player_turn().get_name(), to_log);
+                        logger.log(bot2.get_name(), to_log);
                     } else
-                        logger.log(game.get_player_turn().get_name(), "requested draw");
+                        logger.log(bot2.get_name(), "requested draw");
 
                     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                 }
@@ -319,48 +422,42 @@ void computersGame() {
     }
 }
 
+int main(int argc, char *argv[]) {
 
-int main() 
-{
+    if (argc not_eq 2) {
+        cout << "Please enter a valid argument!";
+        return 1;
+    }
+
     srand(time(NULL));
     bool start = false;
-    char enter;
+    string enter;
     cout << "  ______  __    __   _______      _______.     _______. \n" << 
             " /      ||  |  |  | |   ____|    /       |    /       | \n" << 
             "|  ,----'|  |__|  | |  |__      |   (----`   |   (----` \n" << 
             "|  |     |   __   | |   __|      \\   \\        \\   \\ \n" << 
             "|  `----.|  |  |  | |  |____ .----)   |   .----)   |    \n" << 
             " \\______||__|  |__| |_______||_______/    |_______/    \n" <<
-            "\n   WELCOME! PRESS X TO START THE GAME, 1 TO EXIT      \n";
-    do 
-    {
-        cin >> enter;
-        if(enter == 'X' || enter == 'x')
-            system("cls"); 
-        else if(enter == '1')
-            exit(1);
-        else cout << "Invalid command! PRESS X TO PLAY, 1 TO EXIT" << endl;
-    } while(((enter != 'X') && !(enter != 'X')) || (!(enter != 'X') && (enter != 'X')));
-    
-    cout << "1: Simulate a match (PC vs PC) \n" <<
-            "2: Play a real time match (You vs PC) \n";
-    do 
-    {
-        cin >> enter;
-        if(enter == '1')
+            "           Starting the game, please wait....             ";
+
+
+            
+    std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+
+    enter = argv[1];
+        if(enter == "cc")
         {
             system("cls");
             computersGame();
             start = true;
         }    
-        else if(enter == '2')
+        else if(enter == "pc")
         {
             system("cls");
             playerGame();
             start = true;
         }
-        else cout << "You can do it! 1 or 2 : ";   
-    } while(!start);
+        else cout << "Invalid selection for [" << enter << "], please provide a valid argument.\n";
 
-    return 0;
+        return 0;
 }

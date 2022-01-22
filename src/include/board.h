@@ -35,7 +35,7 @@ public:
      *                              # 3 ask for draw, only when the threefold repetion rule occurs
      *                              # 4 the game is over for draw
      */
-    std::pair<bool, int> move(coords &start, coords &end, bool whoseturn, bool attemptMove);
+    std::pair<bool, int> move(coords &start, coords &end, bool whoseturn, bool attemptMove, bool bypassDraftAsk);
 
     /**
      * @brief ask for all the possible and applicable moves a set can make
