@@ -16,35 +16,21 @@ std::pair<bool,int> board::move(coords& start, coords& end, bool whoseturn, bool
     bool fromPieceColor = chessboard[start.first][start.second]->getSet();
 
     if (!attemptMove) {
-        int cond = isTie(whoseturn);
-        switch (cond) {
-            case 1 : return std::make_pair(false, 4); break;
-            case 0 : {
-                if (!bypassDraftAsk) {
-                    return std::make_pair(false, 3); 
-                    break; //ask for draw
+        std::pair<bool, int> cond = isTie(whoseturn);
+        if (cond.first) {
+            switch (cond.second) {
+                case 3 : return std::make_pair(false, 6);
+                case 2 : return std::make_pair(false, 5);
+                case 1 : return std::make_pair(false, 4);
+                case 0 : {
+                    if (!bypassDraftAsk) {
+                        return std::make_pair(false, 3); //ask for draw
+                    }
+                    break;
                 }
-                break;
             }
         }
     }
-    /*
-void board::printBoard(void) const {
-    std::cout << "┌───┐ ┌───┬───┬───┬───┬───┬───┬───┬───┐";
-    for (unsigned short iRow = 0; iRow < 8; ++iRow)
-    {
-        std::cout << "│ " << 8 - iRow << " ├─┤";
-        for (unsigned short iCol = 0; iCol < 8; ++iCol)
-        {
-                std::cout << " " << chessboard[iRow][iCol]->getChar() << " │";
-        }
-        std::cout << "\n" << (iRow == 7 ? "\n" : "├───┤ ├───┼───┼───┼───┼───┼───┼───┼───┤\n");
-    }
-    std::cout << "└───┘ └─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┘" <<
-                 "      ┌─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┐" <<
-                 "      │ A │ B │ C │ D │ E │ F │ G │ H │" <<
-                 "      └───┴───┴───┴───┴───┴───┴───┴───┘";
-} */
 
     if(illegalMove(start, end, fromPieceId, fromPieceColor, whoseturn)) {
         return std::make_pair(false,1);
@@ -263,18 +249,23 @@ void board::removeFromSet(const coords &coordsPieceEaten, const bool& setPieceEa
 }
 
 //DRAW
-int board::isTie(bool& pieceToMoveColor) {
+std::pair<bool, int> board::isTie(bool& pieceToMoveColor) {
     coords kingCoords = search<king>(pieceToMoveColor);
 
     auto it = tables.find(boardToString());
     if (it != tables.end()) {
         if(tables.at(boardToString()) >= 3) 
-            return 0;
-        else if(draw_for_pieces() || (!kingInCheck(kingCoords, pieceToMoveColor) && getSetPossibleMoves(pieceToMoveColor).empty()) || moveRule50 >= 50) 
-            return 1;
+            return std::make_pair(true, 0);
+        else if(draw_for_pieces()) {
+            return std::make_pair(true, 1);
+        } else if (!kingInCheck(kingCoords, pieceToMoveColor) && getSetPossibleMoves(pieceToMoveColor).empty())  {
+            return std::make_pair(true, 2);
+        } else if (moveRule50 >= 50) {
+            return std::make_pair(true, 3);
+        }
     }
 
-    return -1;
+    return std::make_pair(false, -1);
 }
 bool board::draw_for_pieces() const {
     bool isBlack = true;
@@ -826,17 +817,20 @@ bool board::isDiagonal(const coords& start, const coords& end) const { return ab
 
 //PRINT
 void board::printBoard(void) const {
-    std::cout << "\n";
+    std::cout << "┌───┐ ┌───┬───┬───┬───┬───┬───┬───┬───┐";
     for (unsigned short iRow = 0; iRow < 8; ++iRow)
     {
-        std::cout << 8 - iRow << "   ";
+        std::cout << "│ " << 8 - iRow << " ├─┤";
         for (unsigned short iCol = 0; iCol < 8; ++iCol)
         {
-                std::cout << " " << chessboard[iRow][iCol]->getChar() << (iCol == 7 ? "": " |");
+            std::cout << " " << chessboard[iRow][iCol]->getChar() << " │";
         }
-        std::cout << "\n" << (iRow == 7 ? "\n" : "     -------------------------------\n");
+        std::cout << "\n" << (iRow == 7 ? "\n" : "├───┤ ├───┼───┼───┼───┼───┼───┼───┼───┤\n");
     }
-    std::cout << "      A   B   C   D   E   F   G   H\n";
+    std::cout << "└───┘ └─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┘" <<
+              "      ┌─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┐" <<
+              "      │ A │ B │ C │ D │ E │ F │ G │ H │" <<
+              "      └───┴───┴───┴───┴───┴───┴───┴───┘";
 }
 /*std::string board::to_string(bool fixed_allignment = false) const{
     std::string bb;

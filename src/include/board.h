@@ -115,7 +115,7 @@ private:
     bool isHorizontal(const coords& start, const coords& end) const;
     bool isDiagonal(const coords& start, const coords& end) const;
 
-    int isTie(bool& pieceToMoveColor);
+    std::pair<bool, int> isTie(bool& pieceToMoveColor);
     bool draw_for_pieces(void) const;
 
     template<typename Type>
