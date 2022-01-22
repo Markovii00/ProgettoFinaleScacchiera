@@ -163,10 +163,13 @@ void playerGame() {
     cin >> p1;
     cin.ignore();
 
-    int starter = rand() % 2;
+    /*int starter = rand() % 2;
     if(starter = 1) turn = false; //bot will make first move
     else turn = true; //player will make first move
-    
+     */
+
+    turn = false;
+
     string botname = randomName();
 
     bot bot(botname, true, b);
@@ -983,13 +986,13 @@ int main(int argc, char *argv[]) {
     enter = argv[1];
     if(enter == "cc")
     {
-        system("cls");
+        system("clear");
         computersGame();
         start = true;
     }
     else if(enter == "pc")
     {
-        system("cls");
+        system("clear");
         playerGame();
         start = true;
     }
