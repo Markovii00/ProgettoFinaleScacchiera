@@ -490,9 +490,7 @@ void board::undoMove(const coords& start, const coords& end, const bool& fromPie
             if (!oldMovedVal.first)
                 chessboard[start.first][start.second]->unsetMoved();
 
-            if (!oldMovedVal.second)
-                chessboard[end.first][end.second]->unsetMoved();
-            else
+            if (oldMovedVal.second)
                 chessboard[end.first][end.second]->setMoved();
             return;
         }
@@ -502,7 +500,7 @@ void board::undoMove(const coords& start, const coords& end, const bool& fromPie
 
 //INPUT AND GAME CHECKS
 bool board::illegalMove(const coords& start, const coords& end, const char& fromPieceId, const bool& fromPieceColor, const bool& whoseturn) const {
-    return !acceptableMove(start, end, fromPieceId, fromPieceColor) || fromPieceColor != whoseturn || !chessboard[start.first][start.second]->isLegalMove(start, end) || !clearPath(start, end, fromPieceId);
+    return !acceptableMove(start, end, fromPieceId, fromPieceColor) || fromPieceColor != whoseturn || !chessboard[start.first][start.second]->isLegalMove(start, end) || !clearPath(start, end, fromPieceId) || is<king>(*chessboard[end.first][end.second]);
 }
 bool board::acceptableMove(const coords& start, const coords& end, const char& fromPieceId, const bool& fromPieceColor) const {
     if (fromPieceId == ' ')
