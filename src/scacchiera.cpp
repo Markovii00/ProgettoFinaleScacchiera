@@ -51,8 +51,6 @@ void playerGame() {
     regex input_filter("^([a-hA-H]){1}([1-8]){1} ([a-hA-H]){1}([1-8]){1}$");
     smatch coordinates;
     char promotionChar;
-    vector<char> promotionSet{'d', 'a', 't', 'c'};
-    
 
 
     //All move possibilities, go look board.h file in order to see all return conditions
@@ -98,32 +96,17 @@ void playerGame() {
     logger.log(console, "Starting match");
 
     //GAME START
-    while(moveOutput != checkMate) {    //TODO BO MIGLIORABILE   
+    while(moveOutput != checkMate) {    //TODO BO MIGLIORABILE
+        turn = !turn; //TODO CAMBIA SUBITO TURNO ALL'INIZIO   
         if(turn) { //player turn 
             system("cls"); //TODO METTERE LA COSA DEL SYSTEM OS FOSAFSJAFSA
             b.printBoard();
-
-            if(botRequestedDraw) {
-                logger.log(bot.get_name(), "Asking for a draw...");
-                cout << bot.get_name() << " ha richiesto la patta, vuoi accettarla? [Y/N] : ";
-                cin >> input;
-                if(input == "Y" || input == "y") {
-                    moveOutput = drawGameOver;
-                    logger.log(p1, "Draw accepted.");
-                } 
-                else{
-                    botRequestedDraw = false;
-                    logger.log(p1, "Draw declined.");
-                }
-            }
-
             cout << "\n\n" << "Last move: " << to_log;    
             do {
                 cout << "\n\nINSERT MOVE : ";
                 getline(cin, input);
                 if(input == drawCondition) {
                     userRequestedDraw = true;
-                    logger.log(p1, " requested draw");
                     break; //exit from do while
                 }
                 regex_search(input, coordinates, input_filter);
@@ -138,6 +121,19 @@ void playerGame() {
 
             moveOutput = b.move(start, end, turn, false, false);
             
+            if(botRequestedDraw) {
+                logger.log(bot.get_name(), "Asking for a draw...");
+                cout << bot.get_name() << " ha richiesto la patta, vuoi accettarla? [Y/N] : ";
+                cin >> input;
+                if(input == "Y" || input == "y") {
+                    moveOutput = drawGameOver;
+                    logger.log(p1, "Draw accepted.");
+                } 
+                else{
+                    botRequestedDraw = false;
+                    logger.log(p1, "Draw declined.");
+                }
+            }
 
             while(!moveOutput.first) { //invalid move, asking for draw, king still in check, ....
                 int what = moveOutput.second;
@@ -172,7 +168,6 @@ void playerGame() {
                             getline(cin, input);
                             if(input == drawCondition) { //TODO CHECK THIS
                                 userRequestedDraw = true;
-                                logger.log(p1, " requested draw");
                                 break; //exit from do while
                             }
                             regex_search(input, coordinates, input_filter);
@@ -187,38 +182,90 @@ void playerGame() {
 
                         moveOutput = b.move(start, end, turn, false, false);             
                     }   
-                }    
-            }
-            to_log = "Moving " + (char) start.first + (char) start.second + writeTo + (char) end.first + (char) end.second;
-            logger.log(p1, to_log);
-            if(moveOutput == promotionCondition) {
-                    bool promotionRes = false;
-                    string pedinaDaPromuovere;
-                    do {
-                        cout << "\n\nA pawn can be promoted, select a new piece : ";
-                        getline(cin, pedinaDaPromuovere);
-                        promotionRes = b.promotion(pedinaDaPromuovere.front(), turn).first;
-                        cout << promotionRes << "\n" << pedinaDaPromuovere << "\n";
-                    } while (!promotionRes);
-                        logger.log(p1, "Promoted pawn to " + pedinaDaPromuovere.front());
                 }
-            turn = !turn;
-        }   
+
+
+
+
+
+
+
+
+
+
+
+
+                
+                do {
+                    if(moveOutput == drawGameOver) {
+                        cout << "The game ended with a draw!";
+                        logger.log(console, "Draw, game is ended");
+                        logger.log(console, "Ending log session");
+                        return;
+                    }
+
+                    cout << "\n\nINSERT MOVE : ";
+                    getline(cin, input);
+                    if(input == drawCondition) {
+                        userRequestedDraw = true;
+                        break; //exit from do while
+                    }
+                    regex_search(input, coordinates, input_filter);
+
+                } while(!regex_match(input, input_filter));
+
+
+                if(!userRequestedDraw) {
+                    short *mosse = conversion(coordinates);
+                    start.first = *(mosse + 0);
+                    start.second = *(mosse + 1);
+                    end.first = *(mosse + 2);
+                    end.second = *(mosse + 3);
+
+                    moveOutput = b.move(start, end, turn, false);
+
+                    if(moveOutput == promotionCondition) {
+                        cout << "A pawn can be promoted, select a new piece";
+                        getline(cin, input); //TODO inserire un controllo sull'input
+                        b.promotion(input.at(0), turn);
+                    }
+                } else break;
+            }
+
+
+
+            if(userRequestedDraw == false) {
+                to_log = "Moving " + (char) start.first + (char) start.second + writeTo + (char) end.first +
+                         (char) end.second;
+                logger.log(p1, to_log);
+            } else logger.log(p1, " requested draw");
+
+
+
+
+
+
+
+
+
+
+
+        }
         else {//pc turn
             cout << '\n' << "Last move: " << to_log;
-            if(!userRequestedDraw) {
+            if(userRequestedDraw == false) {
                 botRequestedDraw = bot.requestDraw();
-                if(!botRequestedDraw){
-                    while(moveOutput == invalidMove) {
-                        botMove = bot.generateRandomMove();
-                        start = botMove.first;
-                        end = botMove.second;
-                        moveOutput = b.move(start, end, turn, false, false);
+                if(botRequestedDraw == false){
+                while(moveOutput == invalidMove) {
+                    botMove = bot.generateRandomMove();
+                    start = botMove.first;
+                    end = botMove.second;
+                    moveOutput = b.move(start, end, turn, false);
 
-                        if(moveOutput == promotionCondition){
-                            promotionChar = bot.handlePromotion();
-                            b.promotion(promotionChar, turn);
-                        }
+                    if(moveOutput == promotionCondition){
+                        promotionChar = bot.handlePromotion();
+                        b.promotion(promotionChar, turn);
+                    }
                 }
                     to_log = "Moving " + (char)start.first + (char)start.second + writeTo + (char)end.first + (char)end.second;
                     logger.log(bot.get_name(), to_log);
@@ -313,7 +360,7 @@ void computersGame() {
                             start = botMove.first;
                             end = botMove.second;
 
-                            moveOutput = b.move(start, end, turn, false, false);
+                            moveOutput = b.move(start, end, turn, false);
 
                             if (moveOutput == promotionCondition) {
                                 promotionChar = bot1.handlePromotion();
@@ -351,7 +398,7 @@ void computersGame() {
                             start = botMove.first;
                             end = botMove.second;
 
-                            moveOutput = b.move(start, end, turn, false, false);
+                            moveOutput = b.move(start, end, turn, false);
 
                             if (moveOutput == promotionCondition) {
                                 promotionChar = bot1.handlePromotion();
