@@ -6,6 +6,7 @@
 #define PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_USER_HPP
 
 #include <iostream>
+#include <random>
 #include "player.h"
 #include "../chessman.h"
 #include <list>

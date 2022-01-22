@@ -48,12 +48,20 @@ void playerGame()
     bool botAcceptedDraw = false;
     bool userAccepetedDraw = false;
     bool botRequestedDraw = false;
+    pair<coords, coords> botMove;
 
-    pair <bool, bool> moveOutput;
-    pair <bool,bool> ended = make_pair(false,false);
-    pair <bool, bool> invalidMove = make_pair(false, true);
-    pair <bool, bool> draw = make_pair(true, false);
-    pair <bool, bool> promozione = make_pair(false, false);
+    //all move possibilities
+    pair <bool, int> moveOutput;
+    //executed move
+    pair <bool, int> succesfulMove = make_pair(true, 1);
+    pair <bool, int> promotionCondition = make_pair(true, 2);
+    pair <bool, int> checkMate = make_pair(true, 3);
+    //move failed
+    pair <bool, int> invalidMove = make_pair(false, 1);
+    pair <bool, int> stillInCheck = make_pair(false, 2);
+    pair <bool, int> threeFoldDrawCondition = make_pair(false, 3);
+    pair <bool, int> drawGameOver = make_pair(false, 4);
+    
 
     logger logger;
     regex input_filter("^([a-hA-H]){1}([1-8]){1} ([a-hA-H]){1}([1-8]){1}$");
@@ -87,7 +95,7 @@ void playerGame()
     logger.log(console, "Starting match");
 
     //game start
-    while(moveOutput != ended) {
+    while(moveOutput != checkMate) {
         turn = game.whose_turn();   
         if(game.whose_turn()) { //player turn 
             system("cls");
@@ -99,11 +107,11 @@ void playerGame()
                         cout << bot1.get_name() << " ha richiesto la patta, vuoi accettarla? Y/N";
                         getline(cin, input);
                         if(input == "Y" || input == "y"){
-                            moveOutput = draw;
+                            moveOutput = drawGameOver;
                             logger.log(game.get_player_turn().get_name(), "Accepted the draw");
                         }
                     }
-                    if(moveOutput == draw){
+                    if(moveOutput == drawGameOver){
                         cout << "The game ended with a draw!";
                         logger.log(console, "Draw, game is ended");
                         logger.log(console, "Ending log session");
@@ -127,10 +135,10 @@ void playerGame()
 
                     b.move(start, end, turn);
 
-                    if(moveOutput == promozione){
+                    if(moveOutput == promotionCondition){
                         cout << "A pawn can be promoted, select a new piece";
                         getline(cin, input);
-                        b.promotion(end, turn, input.at(0));
+                        b.promotion(input.at(0), turn);
                     }
                 }
             }
@@ -147,13 +155,14 @@ void playerGame()
                  botRequestedDraw = bot1.requestDraw();
                  if(botRequestedDraw == false){
                  while(moveOutput == invalidMove) {
-                     start = bot1.generateFromCoords();
-                     end = bot1.generateEndCoords(start);
+                     botMove = bot1.generateRandomMove();
+                     start = botMove.first;
+                     end = botMove.second;
                      b.move(start, end, turn);
 
-                     if(moveOutput == promozione){
+                     if(moveOutput == promotionCondition){
                          promotionChar = bot1.handlePromotion();
-                         b.promotion(end, turn, promotionChar);
+                         b.promotion(promotionChar, turn);
                      }
                  }
                      to_log = "Moving " + (char)start.first + (char)start.second + writeTo + (char)end.first + (char)end.second;
@@ -163,7 +172,7 @@ void playerGame()
 
              if(botAcceptedDraw) {
                  logger.log(game.get_player_turn().get_name(), "Accepted the draw");
-                 moveOutput = draw;
+                 moveOutput = drawGameOver;
              }
         }  
     }
@@ -178,11 +187,19 @@ void computersGame() {
     string to_log;
     string writeTo = " to ";
     bool turn;
-    pair<bool, bool> moveOutput;
-    pair<bool, bool> ended = make_pair(false, false);
-    pair<bool, bool> invalidMove = make_pair(false, true);
-    pair<bool, bool> draw = make_pair(true, false);
-    pair<bool, bool> promozione = make_pair(false, false);
+    pair<bool, int> moveOutput;
+
+    //executed move
+    pair <bool, int> succesfulMove = make_pair(true, 1);
+    pair <bool, int> promotionCondition = make_pair(true, 2);
+    pair <bool, int> checkMate = make_pair(true, 3);
+    //move failed
+    pair <bool, int> invalidMove = make_pair(false, 1);
+    pair <bool, int> stillInCheck = make_pair(false, 2);
+    pair <bool, int> threeFoldDrawCondition = make_pair(false, 3);
+    pair <bool, int> drawGameOver = make_pair(false, 4);
+
+    pair<coords, coords> botMove;
 
     logger logger;
     coords start;
@@ -211,15 +228,15 @@ void computersGame() {
     logger.log(console, "Creating match");
     logger.log(console, "Starting match");
 
-    while (moveOutput != ended) {
+    while (moveOutput != checkMate) {
         if ((bot1requestedDraw == bot2acceptedDraw) || (bot2requestedDraw == bot2acceptedDraw)) {
-            moveOutput = draw;
+            moveOutput = drawGameOver;
         }
         turn = game.whose_turn();
         if (turn) {
             system("cls");
             b.printBoard();
-            if (moveOutput == draw) {
+            if (moveOutput == drawGameOver) {
                 cout << "The game ended with a draw!";
                 logger.log(console, "Draw, game is ended");
                 logger.log(console, "Ending log session");
@@ -228,20 +245,23 @@ void computersGame() {
             if (bot2requestedDraw) {
                 bot1acceptedDraw = bot1.handledraw();
                 if (bot2acceptedDraw == bot1requestedDraw) {
-                    moveOutput == draw;
+                    moveOutput == drawGameOver;
                     logger.log(game.get_player_turn().get_name(), "accepted the draw!");
                 } else {
                     bot1requestedDraw = bot1.requestDraw();
                     if (bot1requestedDraw == false) {
                         while (moveOutput == invalidMove) {
-                            start = bot1.generateFromCoords();
-                            end = bot1.generateEndCoords(start);
+
+                            botMove = bot1.generateRandomMove();
+
+                            start = botMove.first;
+                            end = botMove.second;
 
                             moveOutput = b.move(start, end, turn);
 
-                            if (moveOutput == promozione) {
+                            if (moveOutput == promotionCondition) {
                                 promotionChar = bot1.handlePromotion();
-                                b.promotion(end, turn, promotionChar);
+                                b.promotion(promotionChar, turn);
                             }
                         }
 
@@ -261,7 +281,7 @@ void computersGame() {
                 if (bot1requestedDraw) {
                     bot2acceptedDraw = bot2.handledraw();
                     if (bot2acceptedDraw == bot1requestedDraw) {
-                        moveOutput == draw;
+                        moveOutput == drawGameOver;
                         logger.log(game.get_player_turn().get_name(), "accepted the draw!");
                     }
                 } else {
@@ -270,14 +290,16 @@ void computersGame() {
                     if (bot2requestedDraw == false) {
                         while (moveOutput == invalidMove) {
 
-                            start = bot2.generateFromCoords();
-                            end = bot2.generateEndCoords(start);
+                            botMove = bot2.generateRandomMove();
+
+                            start = botMove.first;
+                            end = botMove.second;
 
                             moveOutput = b.move(start, end, turn);
 
-                            if (moveOutput == promozione) {
+                            if (moveOutput == promotionCondition) {
                                 promotionChar = bot1.handlePromotion();
-                                b.promotion(end, turn, promotionChar);
+                                b.promotion(promotionChar, turn);
                             }
 
                         }

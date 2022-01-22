@@ -10,25 +10,13 @@ void bot::set_name(std::vector<std::string>names){
     names.erase(names.begin()+nameindex);
 }
 
-coords bot::generateFromCoords(){
-    if(maiusc){
-        updatedSet = b.getBlackSet();
-    }
-    else{
-        updatedSet = b.getWhiteSet();
-    }
-    indexFrom = rand() % updatedSet.size();
-    start  = updatedSet.at(indexFrom);
-    
-    return start;
-}
-
-coords bot::generateEndCoords(coords start){
-    allMoves = b.getAllMoves(start);
-    indexTo = rand() % allMoves.size();
-    end = allMoves.at(indexTo);
-
-    return end;
+std::pair<coords, coords> bot::generateRandomMove(){
+    std::vector<std::pair<coords, coords>> moves = b.getSetPossibleMoves(maiusc);
+    std::random_device rd;
+    std::mt19937 engine(rd());
+    std::uniform_int_distribution<int> dist(0, moves.size()-1);
+    std::pair<coords, coords> move = moves.at(dist(engine));
+    return move;
 }
 
 bool bot::handledraw(){
@@ -48,9 +36,5 @@ bool bot::requestDraw(){
 }
 
 char bot::handlePromotion(){
-    short randPromotion = rand() % 4;
-    if(maiusc)
-        return blackPromotionSet.at(randPromotion);
-    else
-        return blackPromotionSet.at(randPromotion);
+    return 's';
 }

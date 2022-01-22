@@ -48,9 +48,7 @@ public:
         return name;
     }
 
-    coords generateFromCoords();
-
-    coords generateEndCoords(coords start);
+    std::pair<coords, coords> generateRandomMove();
 
 
     //ritorna il nome del giocatore
