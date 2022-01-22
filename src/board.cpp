@@ -817,20 +817,20 @@ bool board::isDiagonal(const coords& start, const coords& end) const { return ab
 
 //PRINT
 void board::printBoard(void) const {
-    std::cout << "┌───┐ ┌───┬───┬───┬───┬───┬───┬───┬───┐";
+    std::cout << "┌───┐ ┌───┬───┬───┬───┬───┬───┬───┬───┐\n";
     for (unsigned short iRow = 0; iRow < 8; ++iRow)
     {
         std::cout << "│ " << 8 - iRow << " ├─┤";
         for (unsigned short iCol = 0; iCol < 8; ++iCol)
         {
-            std::cout << " " << chessboard[iRow][iCol]->getChar() << " │";
+            std::cout << " " << chessboard[iRow][iCol]->getChar() << " │\n";
         }
-        std::cout << "\n" << (iRow == 7 ? "\n" : "├───┤ ├───┼───┼───┼───┼───┼───┼───┼───┤\n");
+        std::cout << "\n" << (iRow == 7 ? "" : "├───┤ ├───┼───┼───┼───┼───┼───┼───┼───┤\n");
     }
-    std::cout << "└───┘ └─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┘" <<
-              "      ┌─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┐" <<
-              "      │ A │ B │ C │ D │ E │ F │ G │ H │" <<
-              "      └───┴───┴───┴───┴───┴───┴───┴───┘";
+    std::cout << "└───┘ └─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┘\n" <<
+              "      ┌─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┐\n" <<
+              "      │ A │ B │ C │ D │ E │ F │ G │ H │\n" <<
+              "      └───┴───┴───┴───┴───┴───┴───┴───┘\n";
 }
 /*std::string board::to_string(bool fixed_allignment = false) const{
     std::string bb;
