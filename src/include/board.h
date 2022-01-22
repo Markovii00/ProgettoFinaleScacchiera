@@ -11,6 +11,7 @@
 #include <utility>
 #include <string>
 #include <map>
+#include <typeinfo>
 
 typedef std::pair<short, short> coords;
 

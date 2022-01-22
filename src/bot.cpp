@@ -31,6 +31,12 @@ bool bot::requestDraw(){
         return false;
 }
 
-char bot::handlePromotion(){
-    return 's';
+std::string bot::handlePromotion() {
+
+    std::random_device rd;
+    std::mt19937 engine(rd());
+    std::uniform_int_distribution<int> dist(0, promotionSet.size()-1);
+
+
+    return promotionSet.at(dist(engine));
 }

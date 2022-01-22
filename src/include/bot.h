@@ -22,7 +22,7 @@ private:
     short indexFrom;
     short indexTo;
     short randPromotion;
-    std::vector<char>PromotionSet = {'d', 't', 'a', 'c'};
+    std::vector<std::string> promotionSet = {"d", "t", "a", "c"};
 
 public:
 
@@ -37,7 +37,7 @@ public:
 
     bool requestDraw();
 
-    char handlePromotion();
+    std::string handlePromotion();
 
     std::string& get_name() const;
 };

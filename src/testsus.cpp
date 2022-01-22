@@ -41,12 +41,7 @@ int main(){
 
 
     while(true) {
-        b.printBoard();
-        do {
-            cout << "\n\nINSERT MOVE : ";
-            getline(cin, input);
-            regex_search(input, coordinates, input_filter);
-        }while(!regex_match(input, input_filter));
+
 
         short *mosse = conversion(coordinates);
         start.first = *(mosse);

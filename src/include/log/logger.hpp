@@ -13,14 +13,13 @@ const int NORMAL = 1;
 
 class logger {
     std::ofstream log_stream = create_file();
-    const int debug_level;
 
 public:
 
     /*
      * Costruttore, debug level normale o debug, utile solo per markovii
      */
-    explicit logger(int debug_level = NORMAL);
+    explicit logger();
 
     /*
      * Inserisce una nuova riga nel file di log
@@ -38,7 +37,6 @@ public:
     /*
      * per markovii
      */
-    bool debug(const std::string& message);
 };
 
 

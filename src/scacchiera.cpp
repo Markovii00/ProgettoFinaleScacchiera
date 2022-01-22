@@ -2,9 +2,9 @@
  * @author Alessandro Viespoli - 2009659 (alessandro.viespoli@studentiunipd.it)
  */ 
 
-#include "board.cpp"
-#include "include/log/logger.cpp"
-#include "bot.cpp"
+#include "board.h"
+#include "include/log/logger.hpp"
+#include "bot.h"
 #include <iostream>
 #include <cctype>
 #include <chrono>
@@ -48,8 +48,7 @@ void playerGame() {
     pair<coords, coords> botMove;
     logger logger;
     string input;
-    regex input_filter("^([a-hA-H]){1}([1-8]){1} ([a-hA-H]){1}([1-8]){1}$");
-    smatch coordinates;
+
     char promotionChar;
     vector<char> promotionSet{'d', 'a', 't', 'c'};
     
@@ -98,145 +97,290 @@ void playerGame() {
     logger.log(console, "Starting match");
 
     //GAME START
-    while(moveOutput != checkMate) {    //TODO BO MIGLIORABILE   
-        if(turn) { //player turn 
-            system("cls"); //TODO METTERE LA COSA DEL SYSTEM OS FOSAFSJAFSA
+    bool isGameFinished = false;
+    string lastMove;
+
+    while (!isGameFinished) {
+
+        //PLayer turn
+        if (!turn) {
+
             b.printBoard();
+            //cout << (lastMove.empty()) ? "" : "Last move: " + lastMove; //todo last move andrà qua
 
-            if(botRequestedDraw) {
-                logger.log(bot.get_name(), "Asking for a draw...");
-                cout << bot.get_name() << " ha richiesto la patta, vuoi accettarla? [Y/N] : ";
-                cin >> input;
-                if(input == "Y" || input == "y") {
-                    moveOutput = drawGameOver;
-                    logger.log(p1, "Draw accepted.");
-                } 
-                else{
-                    botRequestedDraw = false;
-                    logger.log(p1, "Draw declined.");
-                }
-            }
-
-            cout << "\n\n" << "Last move: " << to_log;    
+            // get player move
+            regex input_filter("^([a-hA-H]){1}([1-8]){1} ([a-hA-H]){1}([1-8]){1}$");
+            smatch coordinates;
+            cout << "\n\nINSERT MOVE : ";
             do {
-                cout << "\n\nINSERT MOVE : ";
                 getline(cin, input);
-                if(input == drawCondition) {
-                    userRequestedDraw = true;
-                    logger.log(p1, " requested draw");
-                    break; //exit from do while
-                }
                 regex_search(input, coordinates, input_filter);
+            }while(!regex_match(input, input_filter));
 
-            } while(!regex_match(input, input_filter));
-
-            short *mosse = conversion(coordinates);
+            short *mosse= conversion(coordinates);
             start.first = *(mosse + 0);
             start.second = *(mosse + 1);
             end.first = *(mosse + 2);
             end.second = *(mosse + 3);
 
-            moveOutput = b.move(start, end, turn, false, false);
-            
 
-            while(!moveOutput.first) { //invalid move, asking for draw, king still in check, ....
-                int what = moveOutput.second;
-                switch (what) {
-                    case 3 : {
-                        logger.log(console, "Threefold draw has been requested");
-                        cout << "Draw for threefold repetition rule, accept it? [Y/N] : ";
-                        cin >> input;
-                        if(input == "Y" || input == "y") {
-                            logger.log(p1, "Draw accepted.");
-                            logger.log(console, "Draw, game is ended");
-                            logger.log(console, "Ending log session");
-                            return;
-                        }
-                        else{
-                            logger.log(p1, "Draw declined."); 
-                            moveOutput = b.move(start, end, turn, false, true);
+            moveOutput = b.move(start, end, turn, false, false);
+
+            if (moveOutput.first) {
+                switch (moveOutput.second) {
+
+                    // CAso 1: mossa eseguita con successo, null'altro accade
+                    case 1 : {
+                        b.printBoard();
+                        logger.log(p1, "Moving \"" + input + "\"");
+                        lastMove = input;
+                        turn = !turn;
+                        break;
+                    }
+
+                        //Caso 2: Mossa eseguita, richiesta una promozione sulla pedina mossa
+                    case 2 : {
+                        logger.log(p1, "Moving \"" + input + "\"");
+                        lastMove = input;
+
+                        pair<bool, bool> promotionRes = make_pair(false, false);
+                        string pedinaDaPromuovere;
+                        do {
+                            getline(cin, pedinaDaPromuovere);
+                            promotionRes = b.promotion(pedinaDaPromuovere.front(), turn);
+                        } while (!promotionRes.first);
+
+                        b.printBoard();
+                        logger.log(p1, "Promoted to \"" + pedinaDaPromuovere + "\"");
+
+                        if (promotionRes.second) {
+                            isGameFinished = true;
+
+
+                            // Logger part
+                            logger.log(p1, "Enemy king in Mate!");
+
+                            // Output Part
+                            cout << "\n Enemy King in Mate!\n";
                         }
                         break;
                     }
 
-                    case 4 : {  
-                        cout << "The game ended with a draw!";
-                        logger.log(console, "Draw, game is ended");
-                        logger.log(console, "Ending log session");
-                        return;
+                        //Caso 3: Enemy king in mate after move, game ends
+                    case 3: {
+                        b.printBoard();
+
+                        isGameFinished = true;
+
+
+                        // Logger part
+                        logger.log(p1, "Enemy king in Mate!");
+
+                        // Output Part
+                        cout << "\n Enemy King in Mate!\n";
+
+                        break;
+                    }
+                }
+            } else {
+                switch (moveOutput.second) {
+
+
+                    case 1 : {
+                        b.printBoard();
+                        cout << "\n\nInvalid move, try again!";
+                        break;
                     }
 
-                    default: { 
+
+                    case 2 : {
+                        b.printBoard();
+                        cout << "\n\nYour king is still in check! Try another move";
+                        break;
+                    }
+
+
+                    case 3 : {
+                        logger.log(console, "Threefold draw has been requested");
+                        cout << "\n\nDraw for threefold repetition rule, accept it? [Y/N] : ";
+                        lastMove = input;
+
                         do {
-                            cout << "\n\nINSERT MOVE : ";
                             getline(cin, input);
-                            if(input == drawCondition) { //TODO CHECK THIS
-                                userRequestedDraw = true;
-                                logger.log(p1, " requested draw");
-                                break; //exit from do while
-                            }
-                            regex_search(input, coordinates, input_filter);
 
-                        } while(!regex_match(input, input_filter));
+                            if (tolower(input.front()) == 'y' || tolower(input.front()) == 'n')
+                                break;
+                        } while (true);
 
-                        short *mosse = conversion(coordinates);
-                        start.first = *(mosse + 0);
-                        start.second = *(mosse + 1);
-                        end.first = *(mosse + 2);
-                        end.second = *(mosse + 3);
+                        if(tolower(input.front()) == 'y') {
+                            logger.log(p1, "Draw accepted.");
+                            logger.log(console, "Draw, game is ended");
+                            logger.log(console, "Ending log session");
 
-                        moveOutput = b.move(start, end, turn, false, false);             
-                    }   
-                }    
-            }
-            to_log = "Moving " + (char) start.first + (char) start.second + writeTo + (char) end.first + (char) end.second;
-            logger.log(p1, to_log);
-            if(moveOutput == promotionCondition) {
-                    bool promotionRes = false;
-                    string pedinaDaPromuovere;
-                    do {
-                        cout << "\n\nA pawn can be promoted, select a new piece : ";
-                        getline(cin, pedinaDaPromuovere);
-                        promotionRes = b.promotion(pedinaDaPromuovere.front(), turn).first;
-                        cout << promotionRes << "\n" << pedinaDaPromuovere << "\n";
-                    } while (!promotionRes);
-                        logger.log(p1, "Promoted pawn to " + pedinaDaPromuovere.front());
-                }
-            turn = !turn;
-        }   
-        else {//pc turn
-            cout << '\n' << "Last move: " << to_log;
-            if(!userRequestedDraw) {
-                botRequestedDraw = bot.requestDraw();
-                if(!botRequestedDraw){
-                    while(moveOutput == invalidMove) {
-                        botMove = bot.generateRandomMove();
-                        start = botMove.first;
-                        end = botMove.second;
-                        moveOutput = b.move(start, end, turn, false, false);
+                            b.printBoard();
+                            cout << "\n\n Draw accepted!";
 
-                        if(moveOutput == promotionCondition){
-                            promotionChar = bot.handlePromotion();
-                            b.promotion(promotionChar, turn);
+                            isGameFinished = true;
+                            break;
                         }
-                }
-                    to_log = "Moving " + (char)start.first + (char)start.second + writeTo + (char)end.first + (char)end.second;
-                    logger.log(bot.get_name(), to_log);
-            }
-            }else botAcceptedDraw=bot.handledraw();
+                        else if(tolower(input.front()) == 'n'){
+                            logger.log(p1, "Draw declined.");
+                            b.move(start, end, turn, false, true);
+                            logger.log(p1, "Moving \"" + input + "\"");
+                            logger.log(p1, "Moved bypassing draw");
 
-            if(botAcceptedDraw) {
-                logger.log(bot.get_name(), "Accepted the draw");
-                moveOutput = drawGameOver;
+                            b.printBoard();
+                            cout << "\n\n Draw declined! Game goes on";
+                            turn = !turn;
+                        }
+                        break;
+                    }
+
+                    case 4: {
+                        b.printBoard();
+
+                        isGameFinished = true;
+
+
+                        // Logger part
+                        logger.log(p1, "Tie forced game end");
+
+                        // Output Part
+                        cout << "\n Tie forced game end!\n";
+
+                        break;
+                    }
+                }
             }
-        }  
+        }
+        else{
+            cout << (lastMove.empty()) ? "" : "Last move: " + lastMove; //todo last mov
+
+            botMove =  bot.generateRandomMove();
+
+            start = botMove.first;
+            end = botMove.second;
+
+            moveOutput = b.move(start, end, turn, false, false);
+
+            if (moveOutput.first) {
+                switch (moveOutput.second) {
+
+                    // CAso 1: mossa eseguita con successo, null'altro accade
+                    case 1 : {
+                        logger.log(bot.get_name(), "Moving \"" + input + "\"");
+                        lastMove = input;
+                        turn = !turn;
+                        break;
+                    }
+
+                        //Caso 2: Mossa eseguita, richiesta una promozione sulla pedina mossa
+                    case 2 : {
+                        logger.log(bot.get_name(), "Moving \"" + input + "\"");
+                        lastMove = input;
+
+                        pair<bool, bool> promotionRes = make_pair(false, false);
+                        string pedinaDaPromuovere = bot.handlePromotion();
+                        promotionRes = b.promotion(pedinaDaPromuovere.front(), turn);
+
+                        logger.log(bot.get_name(), "Promoted to \"" + pedinaDaPromuovere + "\"");
+
+                        if (promotionRes.second) {
+                            isGameFinished = true;
+
+
+                            // Logger part
+                            logger.log(bot.get_name(), "Enemy king in Mate!");
+
+                            // Output Part
+                            cout << "\n Enemy King in Mate!\n";
+
+                            break;
+                        }
+                    }
+
+                        //Caso 3: Enemy king in mate after move, game ends
+                    case 3: {
+                        b.printBoard();
+
+                        isGameFinished = true;
+
+
+                        // Logger part
+                        logger.log(bot.get_name(), "Enemy king in Mate!");
+
+                        // Output Part
+                        cout << "\n Enemy King in Mate!\n";
+
+                        break;
+                    }
+                }
+            } else {
+                switch (moveOutput.second) {
+
+
+                    case 1 : {
+                        cout << "\n\nInvalid move, try again!";
+                        break;
+                    }
+
+
+                    case 2 : {
+                        cout << "\n\nYour king is still in check! Try another move";
+                        break;
+                    }
+
+
+                    case 3 : {
+                        logger.log(console, "Threefold draw has been requested");
+                        lastMove = input;
+
+                        if(bot.handledraw()) {
+                            logger.log(bot.get_name(), "Draw accepted.");
+                            logger.log(console, "Draw, game is ended");
+                            logger.log(console, "Ending log session");
+
+                            b.printBoard();
+                            cout << "\n\n Bot accepted draw accepted!";
+
+                            isGameFinished = true;
+                            break;
+                        }
+                        else {
+                            logger.log(bot.get_name(), "Draw declined.");
+                            b.move(start, end, turn, false, true);
+                            logger.log(bot.get_name(), "Moving \"" + input + "\"");
+                            logger.log(bot.get_name(), "Moved bypassing draw");
+
+                            cout << "\n\n Draw declined! Game goes on";
+                            turn = !turn;
+                        }
+                        break;
+                    }
+
+                    case 4: {
+                        b.printBoard();
+
+                        isGameFinished = true;
+
+
+                        // Logger part
+                        logger.log(bot.get_name(), "Tie forced game end");
+
+                        // Output Part
+                        cout << "\n Tie forced game end!\n";
+
+                        break;
+                    }
+                }
+            }
+        }
     }
+
     logger.log(console, "The game is ended");
     logger.log(console, "Ending log session");
-    return;
-    //METTERE UN IF PER VERIFICARE IL COLORE DELLE PEDINE CHE CHIAMANO IL MOVE PER NON MUOVERE PEZZI AVVERSAR//proponga
 }
-    
+    /*
 void computersGame() {
     board b;
     string to_log;
@@ -374,6 +518,8 @@ void computersGame() {
         return;
     }
 }
+     */
+
 
 int main(int argc, char *argv[]) {
 
@@ -391,7 +537,7 @@ int main(int argc, char *argv[]) {
             "|  |     |   __   | |   __|      \\   \\        \\   \\ \n" << 
             "|  `----.|  |  |  | |  |____ .----)   |   .----)   |    \n" << 
             " \\______||__|  |__| |_______||_______/    |_______/    \n" <<
-            "           Starting the game, please wait....             ";
+            "           Starting the game, please wait....           \n\n";
 
 
             
@@ -401,7 +547,7 @@ int main(int argc, char *argv[]) {
         if(enter == "cc")
         {
             system("cls");
-            computersGame();
+            //computersGame();
             start = true;
         }    
         else if(enter == "pc")

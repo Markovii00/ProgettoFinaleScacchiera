@@ -11,7 +11,7 @@
 #include "include/board.h"
 
 //KEY METHODS IN SCACCHIERA.CPP AND BOT MANAGEMENT
-std::pair<bool,int> board::move(coords& start, coords& end, bool whoseturn, bool attemptMove = false, bool bypassDraftAsk) {
+std::pair<bool,int> board::move(coords& start, coords& end, bool whoseturn, bool attemptMove = false, bool bypassDraftAsk = false) {
     char fromPieceId = chessboard[start.first][start.second]->getChar();
     bool fromPieceColor = chessboard[start.first][start.second]->getSet();
 
@@ -28,6 +28,23 @@ std::pair<bool,int> board::move(coords& start, coords& end, bool whoseturn, bool
             }
         }
     }
+    /*
+void board::printBoard(void) const {
+    std::cout << "┌───┐ ┌───┬───┬───┬───┬───┬───┬───┬───┐";
+    for (unsigned short iRow = 0; iRow < 8; ++iRow)
+    {
+        std::cout << "│ " << 8 - iRow << " ├─┤";
+        for (unsigned short iCol = 0; iCol < 8; ++iCol)
+        {
+                std::cout << " " << chessboard[iRow][iCol]->getChar() << " │";
+        }
+        std::cout << "\n" << (iRow == 7 ? "\n" : "├───┤ ├───┼───┼───┼───┼───┼───┼───┼───┤\n");
+    }
+    std::cout << "└───┘ └─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┘" <<
+                 "      ┌─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┐" <<
+                 "      │ A │ B │ C │ D │ E │ F │ G │ H │" <<
+                 "      └───┴───┴───┴───┴───┴───┴───┴───┘";
+} */
 
     if(illegalMove(start, end, fromPieceId, fromPieceColor, whoseturn)) {
         return std::make_pair(false,1);
@@ -91,7 +108,7 @@ std::vector<std::pair<coords, coords>> board::getSetPossibleMoves(bool setColor)
 
                 std::pair<bool, coords> castlingVar = isCastling(piece, movePosition);
                 if(!illegalMove(piece, movePosition, fromPieceId, fromPieceColor, setColor) || isEnpassant(piece, movePosition).first || castlingVar.first) {
-                    std::pair<bool, int> res = move(piece, movePosition, setColor, true);
+                    std::pair<bool, int> res = move(piece, movePosition, setColor, true, false);
                     if (res.first && (res.second == 1 || res.second == 2)) {
                         //std::cout << "[" << piece.first << piece.second << "] -> [" << movePosition.first << movePosition.second << "]\n";
                         possibleMoves.emplace_back(piece, movePosition);
@@ -109,7 +126,7 @@ std::vector<std::pair<coords, coords>> board::getSetPossibleMoves(bool setColor)
 
                 std::pair<bool, coords> castlingVar = isCastling(piece, movePosition);
                 if(!illegalMove(piece, movePosition, fromPieceId, fromPieceColor, setColor) || isEnpassant(piece, movePosition).first || castlingVar.first) {
-                    std::pair<bool, int> res = move(piece, movePosition, setColor, true);
+                    std::pair<bool, int> res = move(piece, movePosition, setColor, true, false);
                     if (res.first && (res.second == 1 || res.second == 2)) {
                         //std::cout << "[" << piece.first << piece.second << "] -> [" << movePosition.first << movePosition.second << "]\n";
                         possibleMoves.emplace_back(piece, movePosition);
@@ -811,6 +828,7 @@ bool board::isDiagonal(const coords& start, const coords& end) const { return ab
 
 //PRINT
 void board::printBoard(void) const {
+    std::cout << "\n";
     for (unsigned short iRow = 0; iRow < 8; ++iRow)
     {
         std::cout << 8 - iRow << "   ";
@@ -820,7 +838,7 @@ void board::printBoard(void) const {
         }
         std::cout << "\n" << (iRow == 7 ? "\n" : "     -------------------------------\n");
     }
-    std::cout << "      A   B   C   D   E   F   G   H";
+    std::cout << "      A   B   C   D   E   F   G   H\n";
 }
 /*std::string board::to_string(bool fixed_allignment = false) const{
     std::string bb;
