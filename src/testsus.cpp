@@ -69,7 +69,7 @@ int main(){
         }
     }
 
-    /*vector<short> promotion_rand{'d', 'a', 't', 'c'};
+    vector<short> promotion_rand{'d', 'a', 't', 'c'};
     bool game = false;
     while (!game) {
         b.printBoard();
@@ -142,6 +142,6 @@ int main(){
                 }
             }
         }
-    }*/
+    }
     return 0;
 }
