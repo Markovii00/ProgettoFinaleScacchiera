@@ -823,7 +823,7 @@ void board::printBoard(void) const {
         std::cout << "│ " << 8 - iRow << " ├─┤";
         for (unsigned short iCol = 0; iCol < 8; ++iCol)
         {
-            std::cout << " " << chessboard[iRow][iCol]->getChar() << " │\n";
+            std::cout << " " << chessboard[iRow][iCol]->getChar() << " │";
         }
         std::cout << "\n" << (iRow == 7 ? "" : "├───┤ ├───┼───┼───┼───┼───┼───┼───┼───┤\n");
     }
