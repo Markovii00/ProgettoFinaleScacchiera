@@ -7,7 +7,7 @@
 #define PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_LOGGER_HPP
 
 #include <fstream>
-#include "logtoolkit.cpp"
+#include "logtoolkit.h"
 
 const int DEBUG = 0;
 const int NORMAL = 1;
@@ -35,9 +35,6 @@ public:
      */
     bool log(const std::string& who = "console", const std::string& _msg = "Null log");
 
-    /*
-     * per markovii
-     */
 };
 
 

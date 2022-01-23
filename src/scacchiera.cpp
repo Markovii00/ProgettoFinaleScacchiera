@@ -2,16 +2,12 @@
  * @author Francesco Colla - 2007968 (francesco.colla.2@studenti.unipd.it)
  */
 
-#include "board.h"
-#include "include/log/logger.hpp"
-#include "bot.h"
-#include <iostream>
+#include "include/board.h"
+#include "include/log/logger.h"
+#include "include/bot.h"
 #include <cctype>
-#include <chrono>
 #include <thread>
-#include <string>
-#include <algorithm>
-#include <regex>
+
 
 using namespace std;
 string const console = "console";

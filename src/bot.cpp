@@ -1,7 +1,7 @@
 /**
  * @author Francesco Colla - 2007968 (francesco.colla.2@studenti.unipd.it)
  */
-#include "bot.h"
+#include "include/bot.h"
 
 bot::bot(std::string &n, bool set, board &bVar) : b(bVar), maiusc(set), name(n) {}
 

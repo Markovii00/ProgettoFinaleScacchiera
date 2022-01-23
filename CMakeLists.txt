@@ -18,28 +18,27 @@ add_library(chessman
 	src/chessman.cpp)
                 
 add_library(logger
-	src/include/log/logger.h
-        src/include/log/logger.cpp
-        src/include/log/logtoolkit.cpp)
+		src/include/log/logger.h
+		src/include/log/logger.cpp
+        src/include/log/logtoolkit.h)
         
 add_library(bot
-	src/include/bot.h
-        src/bot.cpp)
+		src/include/bot.h
+		src/bot.cpp)
         
 add_executable(scacchiera
-	src/scacchiera.cpp)
+		src/scacchiera.cpp)
 
 add_executable(replay
-               src/replay.cpp)
+		src/replay.cpp)
 	
 target_link_libraries(scacchiera
-	logger
-	board
-	chessman
-        bot)
+		              logger
+		              board
+		              chessman
+        			  bot)
 
 target_link_libraries(replay
-	replayInclude
-	board
-	chessman
-        bot)
+		              board
+		              chessman
+		              bot)
