@@ -166,7 +166,7 @@ void playerGame() {
 
     string botname = randomName();
 
-    bot bot(botname, true, b);
+    bot bot(botname, turn, b);
 
     logger.log(console, "Initializing player 1 \"" + p1 + "\"");
     logger.log(console, "Initializing player 2 \"" + bot.get_name() + "\"");
