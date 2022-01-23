@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
     clear_term();
 
 
-    deque<string> moves = get_moves(log_file);
+    deque<pair<string, string>> moves = get_moves(log_file);
     deque<string> promotions = get_promotion(log_file);
     deque<bool> tie_answ = get_tie_answers(log_file);
 
@@ -59,18 +59,17 @@ int main(int argc, char *argv[]) {
     bool turn = false;
     while (!end_of_replay) {
 
-        string move = moves.front();
+        string move = moves.front().second;
+        string player = moves.front().first;
 
 
         coords start;
         start.first = 8-(move.at(1) - '0');
-        start.second = toupper(move.at(0)-65);
+        start.second = toupper(move.at(0))-65;
 
         coords end;
         end.first = 8-(move.at(4)-'0');
-        end.second = tolower(move.at(3)-65);
-
-        cout << start.first << "  " << start.second << " " << end.first <<" " << end.second;
+        end.second = toupper(move.at(3))-65;
 
         pair<bool, int> move_return = b.move(start, end,turn, false, false);
 
@@ -81,6 +80,7 @@ int main(int argc, char *argv[]) {
                     moves.pop_front();
 
                     clear_term();
+                    cout << "--- " << player << "--- \n";
                     b.printBoard();
                     cout << "\nMove executed: " << move << "\n";
                     turn = !turn;
@@ -94,6 +94,7 @@ int main(int argc, char *argv[]) {
 
                     if (promotion_res.first) {
                         clear_term();
+                        cout << "--- " << player << "--- \n";
                         b.printBoard();
                         cout << "\nMove executed: " << move << " with promotion in " << promotions.front() <<"\n";
                         promotions.pop_front();
@@ -114,6 +115,7 @@ int main(int argc, char *argv[]) {
                     moves.pop_front();
 
                     clear_term();
+                    cout << "--- " << player << "--- \n";
                     b.printBoard();
                     cout << "\nMove executed: " << move << " putted enemy in mate, game ends here" <<"\n";
                     end_of_replay = true;
@@ -140,6 +142,7 @@ int main(int argc, char *argv[]) {
                 case 3 : {
                     if (tie_answ.front()) {
                         clear_term();
+                        cout << "--- " << player << "--- \n";
                         b.printBoard();
 
                         cout << "\n\nAttempted Move:" << move;
@@ -149,6 +152,7 @@ int main(int argc, char *argv[]) {
                     } else {
                         b.move(start, end, turn, false, true);
                         clear_term();
+                        cout << "--- " << player << "--- \n";
                         b.printBoard();
                         cout << "\n\nExecuted Move:" << move;
                         cout << "\nThreefold tie declined, game goes on";
@@ -161,6 +165,7 @@ int main(int argc, char *argv[]) {
 
                 case 4 : {
                     clear_term();
+                    cout << "--- " << player << "--- \n";
                     b.printBoard();
                     cout << "\n\nGame ends by a tie for pieces";
                     end_of_replay = true;
@@ -169,6 +174,7 @@ int main(int argc, char *argv[]) {
 
                 case 5 : {
                     clear_term();
+                    cout << "--- " << player << "--- \n";
                     b.printBoard();
                     cout << "\n\nGame ends by a tie for stalled game";
                     end_of_replay = true;
@@ -177,6 +183,7 @@ int main(int argc, char *argv[]) {
 
                 case 6 : {
                     clear_term();
+                    cout << "--- " << player << "--- \n";
                     b.printBoard();
                     cout << "\n\nGame ends by a tie for 50 move rule";
                     end_of_replay = true;

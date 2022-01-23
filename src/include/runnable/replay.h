@@ -33,19 +33,22 @@ std::string get_player(std::fstream& file, int player_num) {
     return "";
 }
 
-std::deque<std::string> get_moves(std::fstream& file) {
+std::deque<std::pair<std::string, std::string>> get_moves(std::fstream& file) {
 
     std::regex contains_id("Moving ");
     std::regex rex("\"(.*?)\"");
+    std::regex name("- (.*?) -");
 
-    std::deque<std::string> moves;
+    std::deque<std::pair<std::string, std::string>> moves;
 
     std::string line;
     std::smatch match_found;
+    std::smatch name_player;
     while (std::getline(file, line)) {
         if (std::regex_search(line, contains_id)) {
             std::regex_search(line,match_found, rex);
-            moves.push_back(match_found[1]);
+            std::regex_search(line,name_player, name);
+            moves.emplace_back(name_player[1], match_found[1]);
         }
     }
     file.clear();

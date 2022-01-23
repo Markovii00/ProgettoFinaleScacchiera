@@ -16,5 +16,4 @@ add_executable(Progetto_Finale_Scacchiera_Elettronica
         src/board.cpp
         src/bot.cpp
         src/chessman.cpp
-        src/include/runnable/replay.h
-        src/replay.cpp)
+        src/scacchiera.cpp)
