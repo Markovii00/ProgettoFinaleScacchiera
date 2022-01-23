@@ -157,9 +157,11 @@ void playerGame() {
     bool set_moving = false;
     if(starter(engine) == 1) {
         turn = false; //bot will make first move
+        cout << "The bot will start!";
     }
     else {
         turn = true; //player will make first move
+        cout << "You will start!";
     }
 
     string botname = randomName();
@@ -771,13 +773,11 @@ int main(int argc, char *argv[]) {
     enter = argv[1];
     if(enter == "cc")
     {
-        system("clear");
         computersGame();
         start = true;
     }
     else if(enter == "pc")
     {
-        system("clear");
         playerGame();
         start = true;
     }
