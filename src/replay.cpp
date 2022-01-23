@@ -47,7 +47,7 @@ void video_stampa(fstream& log_file) {
         string move = moves.front().second;
         string player = moves.front().first;
 
-        //Converts coordinates from a human format to array matrix format
+        //Convert coordinates from a human format to array matrix format
         coords start;
         start.first = 8-(move.at(1) - '0');
         start.second = toupper(move.at(0))-65;

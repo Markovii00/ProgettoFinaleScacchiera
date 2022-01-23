@@ -26,7 +26,8 @@ public:
      * @param end final destination
      * @param whoseturn true if is the Black turn, otherwise is White turn
      * @param attemptMove   generally false, except when used in method getSetPossibleMoves
-     * @return first parameter : true -> move executed. Second parameter in combo with true state : 
+     * @param bypassDraftAsk   generally false, except when used to skip Threefold draft condition
+     * @return first parameter : true -> move executed. Second parameter in combo with true state :
      *                              # 1 nothing is required
      *                              # 2 promotion is required
      *                              # 3 CheckMate, game is over
@@ -34,7 +35,9 @@ public:
      *                              # 1 the inserted move is not valid
      *                              # 2 king is still under check, after the attempted move
      *                              # 3 ask for draw, only when the threefold repetion rule occurs
-     *                              # 4 the game is over for draw
+     *                              # 4 the game is over for pieces number draw
+     *                              # 5 the game is over for stalled game
+     *                              # 6 the game is over for moveRule50 draw
      */
     std::pair<bool, int> move(coords &start, coords &end, bool whoseturn, bool attemptMove, bool bypassDraftAsk);
 
@@ -52,7 +55,7 @@ public:
      * @return first parameter: true  -> promotion executed with success
      *                          false -> promotion not done: invalid argument or promotion not asked
      *
-     *         second parameter: true  -> enemy has moves left, the game will resume
+     *         second parameter: true  -> enemy king not in mate, the game will resume
      *                           false -> enemy king in mate, game ends
      */
     std::pair<bool, bool> promotion(short promotionChess, bool pawnColor);
