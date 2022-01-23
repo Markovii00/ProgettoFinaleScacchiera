@@ -115,16 +115,15 @@ void clear_output() {
 }
 
 //Convert input regex in matrix coordinates
-short* conversion(smatch& m)
+vector<short> conversion(smatch& m)
 {
     short fromCol = toupper(m.str(1)[0]) - 65;
     short fromRow = 8 - stoi(m.str(2));
     short toCol = toupper(m.str(3)[0]) - 65;
     short toRow = 8 - stoi(m.str(4));
 
-    short ret[4] = {fromRow, fromCol, toRow, toCol};
-    short *array = &ret[0];
-    return array;
+    vector<short> ret{fromRow, fromCol, toRow, toCol};
+    return ret;
 }
 
 //handles all player vs pc game
@@ -206,11 +205,11 @@ void playerGame() {
             }while(!regex_match(input, input_filter));
 
             if(!requestDraw) {
-                short *moves= conversion(coordinates);
-                start.first = *(moves + 0);
-                start.second = *(moves + 1);
-                end.first = *(moves + 2);
-                end.second = *(moves + 3);
+                vector<short> moves = conversion(coordinates);
+                start.first = moves.at(0);
+                start.second = moves.at(1);
+                end.first = moves.at(2);
+                end.second = moves.at(3);
 
                 //tries to execute the move and outputs a condition to handle the result see board.h
                 moveOutput = b.move(start, end, set_moving, false, false);
