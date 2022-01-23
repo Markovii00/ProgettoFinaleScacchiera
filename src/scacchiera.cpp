@@ -388,7 +388,7 @@ void playerGame() {
             start = botMove.first;
             end = botMove.second;
 
-            moveOutput = b.move(start, end, turn, false, false);
+            moveOutput = b.move(start, end, set_moving, false, false);
 
             if (moveOutput.first) {
                 switch (moveOutput.second) {
