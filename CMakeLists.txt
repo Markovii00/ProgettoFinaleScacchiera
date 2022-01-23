@@ -24,7 +24,7 @@ add_library(replayInclude
 add_library(logger
 	src/include/log/logger.h
         src/include/log/logger.cpp
-        src/include/log/loggertoolkit.cpp)
+        src/include/log/logtoolkit.cpp)
         
 add_library(bot
 	src/include/bot.h
