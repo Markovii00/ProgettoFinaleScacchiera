@@ -701,10 +701,11 @@ void computersGame(int max) { //handles bot vs bot  games
                         cout << "\nLast move: " << lastMove << "\n";
 
                     lastMove = conv_readable(botMove);
-                    logger.log(moving_bot.get_name(), "Promoting a pawn to \"" + promotionPiece + "\"");
 
                     cout << "\n\n Promoting to " << promotionPiece << " a pawn from " << moving_bot.get_name() << "'s set";
+
                     logger.log(moving_bot.get_name(), "Moving \"" + conv_readable(botMove) + "\"");
+                    logger.log(moving_bot.get_name(), "Promoting a pawn to \"" + promotionPiece + "\"");
 
                     if (!promotionOutput.second) {
                         cout << "\n Promotion putted " << enemy_bot.get_name() << "'s king in mate!\nGame Over!\n";
