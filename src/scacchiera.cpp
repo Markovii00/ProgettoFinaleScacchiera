@@ -157,11 +157,11 @@ void playerGame() {
     bool set_moving = false;
     if(starter(engine) == 1) {
         turn = false; //bot will make first move
-        cout << "The bot will start!";
+        cout << "\nThe bot will start!\n";
     }
     else {
         turn = true; //player will make first move
-        cout << "You will start!";
+        cout << "\nYou will start!\n";
     }
 
     string botname = randomName();
