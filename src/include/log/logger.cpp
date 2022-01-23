@@ -11,6 +11,7 @@ bool logger::log(const std::string& who, const std::string& _msg) {
     try {
         log_stream << string_build;
     } catch (std::exception& e) {
+        std::cout << "welp";
         return false;
     }
     return true;

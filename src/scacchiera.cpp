@@ -150,19 +150,17 @@ void playerGame() {
     cin >> p1;
     cin.ignore();
 
-    int starter = rand() % 2;
+    std::random_device rd;
+    std::mt19937 engine(rd());
+    std::uniform_int_distribution<int> starter(0, 1);
+
     bool set_moving = false;
-    if(starter == 1) {
+    if(starter(engine) == 1) {
         turn = false; //bot will make first move
     }
     else {
         turn = true; //player will make first move
     }
-
-
-
-
-    turn = false;
 
     string botname = randomName();
 
@@ -225,7 +223,7 @@ void playerGame() {
                         cout << "\n\nChose a chessman for your promotion -> ";
                         do {
                             getline(cin, pedinaDaPromuovere);
-                            promotionRes = b.promotion(pedinaDaPromuovere.front(), turn);
+                            promotionRes = b.promotion(pedinaDaPromuovere.front(), set_moving);
                         } while (!promotionRes.first);
 
                         logger.log(p1 , "Promoting a pawn to \"" + pedinaDaPromuovere + "\"");
@@ -315,7 +313,7 @@ void playerGame() {
                         else if(tolower(input.front()) == 'n'){
                             logger.log(p1, "Draw declined.");
 
-                            b.move(start, end, turn, false, true);
+                            b.move(start, end, set_moving, false, true);
                             logger.log(p1, "Moving \"" + input + "\"");
                             logger.log(p1, "Moved bypassing draw");
 
@@ -741,7 +739,7 @@ void computersGame() {
             }
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(150));
     }
 }
 
