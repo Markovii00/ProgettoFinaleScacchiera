@@ -7,38 +7,12 @@
 #include <iostream>
 #include <fstream>
 #include <regex>
-#include <match/player.hpp>
 #include <list>
-#include <match/match.hpp>
 
 /*
- * Recupera l'id della sessione, per identificare una partita
- *
+ * Recupera il nome del player 1 e 2
  */
-std::string get_log_number(std::fstream& file) {
 
-    std::regex contains_id("Log session number");
-    std::regex id("[0-9]{6}");
-
-    std::string line;
-    std::smatch match_found;
-    while (std::getline(file, line)) {
-        if (std::regex_search(line, contains_id)) {
-            std::regex_search(line,match_found, id);
-            file.clear();
-            file.seekg(0);
-            return match_found[0];
-        }
-    }
-    file.clear();
-    file.seekg(0);
-    return "";
-}
-
-/*
- * recupera dal fstrem il nome del giocatore 1 o 2
- *
- */
 std::string get_player(std::fstream& file, int player_num) {
 
     std::regex contains_id("Initializing player " + std::to_string(player_num));
@@ -59,26 +33,82 @@ std::string get_player(std::fstream& file, int player_num) {
     return "";
 }
 
-/*
- * dato un fstream, un player e una lista, inserisce all'interno della lista le mosse fatte da un giocatore
- * secondo i log
- *
- */
-void get_player_moves(std::fstream& file, player& p, std::list<std::string>& moves) {
-    std::string rgx{"- "+ p.get_name() +" - Moving "};
-    std::regex player_move_row(rgx);
-    std::regex player_move("\"(.*?)\"");
+std::deque<std::string> get_moves(std::fstream& file) {
+
+    std::regex contains_id("Moving ");
+    std::regex rex("\"(.*?)\"");
+
+    std::deque<std::string> moves;
 
     std::string line;
-    std::smatch s;
+    std::smatch match_found;
     while (std::getline(file, line)) {
-        if (std::regex_search(line, player_move_row)) {
-            std::regex_search(line,s, player_move);
-            moves.push_back(s[1]);
+        if (std::regex_search(line, contains_id)) {
+            std::regex_search(line,match_found, rex);
+            moves.push_back(match_found[1]);
         }
     }
     file.clear();
     file.seekg(0);
+    return moves;
+}
+
+std::deque<std::string> get_promotion(std::fstream& file) {
+
+    std::regex contains_id("Promoting a pawn to ");
+    std::regex rex("\"(.*?)\"");
+
+    std::deque<std::string> promotions;
+
+    std::string line;
+    std::smatch match_found;
+    while (std::getline(file, line)) {
+        if (std::regex_search(line, contains_id)) {
+            std::regex_search(line,match_found, rex);
+            promotions.push_back(match_found[1]);
+        }
+    }
+    file.clear();
+    file.seekg(0);
+    return promotions;
+}
+
+std::deque<bool> get_tie_answers(std::fstream& file) {
+
+    std::regex contains_id("threefold");
+    std::regex accepted("accepted");
+    std::regex declined("declined");
+
+    std::deque<bool> tie_answ;
+
+    std::string line;
+    while (std::getline(file, line)) {
+        if (std::regex_search(line, contains_id)) {
+            if (std::regex_search(line, accepted))
+                tie_answ.push_back(true);
+            else if (std::regex_search(line, declined))
+                tie_answ.push_back(false);
+        }
+    }
+    file.clear();
+    file.seekg(0);
+    return tie_answ;
+}
+
+bool game_ended_correctly(std::fstream& file) {
+    std::regex end_reached("Game ended");
+
+    std::string line;
+    while (std::getline(file, line)) {
+        if (std::regex_search(line, end_reached)) {
+            file.clear();
+            file.seekg(0);
+            return true;
+        }
+    }
+    file.clear();
+    file.seekg(0);
+    return false;
 }
 
 

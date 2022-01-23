@@ -544,7 +544,7 @@ void playerGame() {
         }
     }
 
-    logger.log(console, "The game is ended");
+    logger.log(console, "Game ended");
     logger.log(console, "Ending log session");
 }
 
@@ -610,7 +610,6 @@ void computersGame() {
                         cout << "\nLast move: " << lastMove << "\n";
 
                     lastMove = conv_readable(botMove);
-                    logstream.log(moving_bot.get_name(), "Moving \"" + lastMove + "\"");
                     logstream.log(moving_bot.get_name(), "Promoting a pawn to \"" + promotionPiece + "\"");
 
                     cout << "\n\n Promoting to " << promotionPiece << " a pawn from " << moving_bot.get_name() << "'s set";
@@ -743,6 +742,8 @@ void computersGame() {
 
         std::this_thread::sleep_for(std::chrono::milliseconds(150));
     }
+    logstream.log(console, "Game ended");
+    logstream.log(console, "Ending log session");
 }
 
 
@@ -756,7 +757,6 @@ int main(int argc, char *argv[]) {
     }
 
     srand(time(NULL));
-    bool start = false;
     string enter;
     cout << "  ______  __    __   _______      _______.     _______. \n" <<
          " /      ||  |  |  | |   ____|    /       |    /       | \n" <<
@@ -774,12 +774,10 @@ int main(int argc, char *argv[]) {
     if(enter == "cc")
     {
         computersGame();
-        start = true;
     }
     else if(enter == "pc")
     {
         playerGame();
-        start = true;
     }
     else cout << "Invalid selection for [" << enter << "], please provide a valid argument.\n";
 

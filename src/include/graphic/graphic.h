@@ -7,8 +7,6 @@
 
 #include <iostream>
 #include <regex>
-#include <match.hpp>
-#include <player.hpp>
 #include <fstream>
 
 const std::string MATCH_ID{"\\{match-id\\}"};
@@ -66,7 +64,7 @@ inline std::string datetime() {
  * Implementazione del "motore" grafico per la visualizzazine del replay.
  *
  */
-
+/*
 std::string& scan_variable(match& m) {
 
     player& p1 = m.get_player(1);
@@ -109,4 +107,6 @@ void clean_cout(std::string& str) {
 void replay_print(match& m) {
     clean_cout(scan_variable(m));
 }
+
+*/
 #endif //PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_GRAPHIC_H
