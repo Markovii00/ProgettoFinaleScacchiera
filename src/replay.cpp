@@ -3,13 +3,13 @@
 */
 
 
-#include "include/board.h"
+#include "../include/board.h"
 
 #include <iostream>
 #include <thread>
 #include <list>
-#include "include/log/logtoolkit.h"
-#include "include/replay.h"
+#include "../include/log/logtoolkit.h"
+#include "../include/replay.h"
 #include <regex>
 
 using namespace std;

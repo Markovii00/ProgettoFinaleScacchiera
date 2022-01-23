@@ -8,7 +8,7 @@
 #include <utility>
 #include <string>
 #include <cctype>
-#include "include/board.h"
+#include "../include/board.h"
 
 //KEY METHODS IN SCACCHIERA.CPP AND BOT MANAGEMENT
 std::pair<bool,int> board::move(coords& start, coords& end, bool whoseturn, bool attemptMove = false, bool bypassDraftAsk = false) {

@@ -2,8 +2,8 @@
  * @author Francesco Colla - 2007968 (francesco.colla.2@studenti.unipd.it)
  */
 
-#include "include/board.h"
-#include "include/log/logger.h"
+#include "../include/board.h"
+#include "../include/log/logger.h"
 #include "include/bot.h"
 #include <cctype>
 #include <thread>

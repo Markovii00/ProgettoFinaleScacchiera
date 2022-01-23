@@ -3,7 +3,7 @@
  */
 
 #include <iostream>
-#include "include/chessman.h"
+#include "../include/chessman.h"
 
 chessman::chessman(char p, coords pos, bool side) : piece{p}, position{pos}, set{side} { first_move = false; }
 
