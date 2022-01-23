@@ -4,7 +4,7 @@
 
 #include "../include/board.h"
 #include "../include/log/logger.h"
-#include "include/bot.h"
+#include "../include/bot.h"
 #include <cctype>
 #include <thread>
 
