@@ -18,13 +18,13 @@ add_library(chessman
 	src/chessman.cpp)
         
 add_library(replayInclude
-	src/replay.h)
+	src/include/replay.h)
 	
                 
 add_library(logger
 	src/include/log/logger.h
         src/include/log/logger.cpp
-        src/include/log/loggertoolkit.h)
+        src/include/log/logtoolkit.cpp)
         
 add_library(bot
 	src/include/bot.h
