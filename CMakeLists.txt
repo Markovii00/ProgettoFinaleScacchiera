@@ -9,7 +9,8 @@ set(CMAKE_CXX_FLAGS_RELEASE, "-02")
 project(replay)
 project(scacchiera)
 
-include_directories(src
+include_directories(Progetto-Finale-Scacchiera-Elettronica
+		    src
                     include
                     log)
 
