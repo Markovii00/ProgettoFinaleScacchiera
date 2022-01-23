@@ -1,20 +1,52 @@
-cmake_minimum_required(VERSION 3.21)
-project(Progetto_Finale_Scacchiera_Elettronica)
+cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
+if (NOT CMAKE_BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE release)
+endif()
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_FLAGS, "-02")
+set(CMAKE_CXX_FLAGS_RELEASE, "-02")
 
-include_directories(src/include)
-include_directories(src/include/log)
+project(replay)
+project(scacchiera)
 
-add_executable(Progetto_Finale_Scacchiera_Elettronica
-        src/include/log/logger.cpp
-        src/include/log/logger.hpp
-        src/include/log/logtoolkit.hpp
-        src/include/board.h
-        src/include/bot.h
-        src/include/chessman.h
-        src/board.cpp
-        src/bot.cpp
-        src/chessman.cpp
-        src/include/replay.h
-        src/replay.cpp)
+include_directories(src
+                    include
+                    log)
+
+add_library(board
+	    board.h
+	    board.cpp)
+	
+add_library(chessman
+	chessman.h
+	chessman.cpp)
+        
+add_library(replay
+	replay.h)
+	
+                
+add_library(logger
+	logger.h
+        logger.cpp
+        loggertoolkit.h)
+        
+add_library(bot
+	bot.h
+        bot.cpp)
+        
+add_executable(scacchiera
+	scacchiera.cpp)
+
+add_executable(replay
+               replay.cpp)
+	
+target_link_libraries(scacchiera
+	logger
+	board
+	chessman
+        bot)
+
+target_link_libraries(replay
+	board
+	chessman
+        bot)
