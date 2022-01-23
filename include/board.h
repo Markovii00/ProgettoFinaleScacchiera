@@ -21,7 +21,7 @@ public:
     ~board(void);
 
     /**
-     * @brief Apply the inserted move to the board, checking the rules of chess and valid input for a chess board
+     * @brief Check all possible errors, conditions and rules of the chess game, then apply the move
      * @param start selected position in board
      * @param end final destination
      * @param whoseturn true if is the Black turn, otherwise is White turn

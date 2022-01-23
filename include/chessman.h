@@ -19,11 +19,25 @@ class chessman {
     bool set;
 
     public:
+
+     /**
+     * @param p character of the chessman
+     * @param pos position of the chessman
+     * @param set true for black set, false for white set
+     */
     chessman(char p, coords pos, bool set);
     ~chessman();
 
-    //check if the move can be done by a specific chessman
+     /**
+     * @brief Check whether the inserted move is specific for a piece's set of moves
+     * @param start selected position in board
+     * @param end final destination
+     */
     virtual bool isLegalMove(const coords& start, const coords& end) const = 0;
+
+    /**
+     * @return all the reachable coordinates based on the actual position of the chessman
+     */
     virtual std::vector<coords> possibleMoves(void) const = 0;
 
     char getChar(void) const;
@@ -38,6 +52,8 @@ class chessman {
     chessman(const chessman &other) = delete;
     chessman &operator=(const chessman &other) = delete;
 };
+
+//Down here there are all the chessman subclasses
 
 class knight : public chessman {
     public:
