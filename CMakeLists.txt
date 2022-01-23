@@ -9,37 +9,32 @@ set(CMAKE_CXX_FLAGS_RELEASE, "-02")
 project(replay)
 project(scacchiera)
 
-include_directories(Progetto-Finale-Scacchiera-Elettronica
-		    src
-                    include
-                    log)
-
 add_library(board
-	    board.h
-	    board.cpp)
+	    src/include/board.h
+	    src/board.cpp)
 	
 add_library(chessman
-	chessman.h
-	chessman.cpp)
+	src/include/chessman.h
+	src/chessman.cpp)
         
 add_library(replayInclude
-	replay.h)
+	src/replay.h)
 	
                 
 add_library(logger
-	logger.h
-        logger.cpp
-        loggertoolkit.h)
+	src/include/log/logger.h
+        src/include/log/logger.cpp
+        src/include/log/loggertoolkit.h)
         
 add_library(bot
-	bot.h
-        bot.cpp)
+	src/include/bot.h
+        src/bot.cpp)
         
 add_executable(scacchiera
-	scacchiera.cpp)
+	src/scacchiera.cpp)
 
 add_executable(replay
-               replay.cpp)
+               src/replay.cpp)
 	
 target_link_libraries(scacchiera
 	logger
@@ -47,7 +42,8 @@ target_link_libraries(scacchiera
 	chessman
         bot)
 
-target_link_libraries(replayInclude
+target_link_libraries(replay
+	replayInclude
 	board
 	chessman
         bot)
