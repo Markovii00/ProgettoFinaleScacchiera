@@ -21,7 +21,7 @@ add_library(chessman
 	chessman.h
 	chessman.cpp)
         
-add_library(replay
+add_library(replayInclude
 	replay.h)
 	
                 
@@ -46,7 +46,7 @@ target_link_libraries(scacchiera
 	chessman
         bot)
 
-target_link_libraries(replay
+target_link_libraries(replayInclude
 	board
 	chessman
         bot)
