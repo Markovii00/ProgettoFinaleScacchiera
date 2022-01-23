@@ -10,7 +10,7 @@
 #include <regex>
 #include <list>
 
-
+//gets player from a file
 std::string get_player(std::fstream& file, int player_num) {
 
     std::regex contains_id("Initializing player " + std::to_string(player_num));
@@ -31,6 +31,7 @@ std::string get_player(std::fstream& file, int player_num) {
     return "";
 }
 
+//gets move from a file stream
 std::deque<std::pair<std::string, std::string>> get_moves(std::fstream& file) {
 
     std::regex contains_id("Moving ");
@@ -54,6 +55,7 @@ std::deque<std::pair<std::string, std::string>> get_moves(std::fstream& file) {
     return moves;
 }
 
+//Gets all the promotions made during the game
 std::deque<std::string> get_promotion(std::fstream& file) {
 
     std::regex contains_id("Promoting a pawn to ");
@@ -74,6 +76,7 @@ std::deque<std::string> get_promotion(std::fstream& file) {
     return promotions;
 }
 
+//Gets all tie (ONLY THREEFOLD) in witch is required a force in board::move, a tie between two players is simply treated as end of a log, is useful only for a complete debug;
 std::deque<bool> get_tie_answers(std::fstream& file) {
 
     std::regex contains_id("threefold");
@@ -96,25 +99,7 @@ std::deque<bool> get_tie_answers(std::fstream& file) {
     return tie_answ;
 }
 
-bool get_asked_draw(std::fstream& file) {
 
-    std::regex accepted("accepted draw");
-    std::regex contains_asked_draw("requested draw");
-
-    std::string line;
-    while (std::getline(file, line)) {
-        if (std::regex_search(line, contains_asked_draw)) {
-            if (std::regex_search(line, accepted)) {
-                file.clear();
-                file.seekg(0);
-                return true;
-            }
-        }
-    }
-    file.clear();
-    file.seekg(0);
-    return false;
-}
 
 bool game_ended_correctly(std::fstream& file) {
     std::regex end_reached("Game ended");

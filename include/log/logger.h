@@ -16,22 +16,17 @@ class logger {
     std::ofstream log_stream = create_file();
 
 public:
-
-    /*
-     * Costruttore, debug level normale o debug, utile solo per markovii
-     */
+    /**
+    * @brief just an empty constructor, nothing happens here
+    */
     explicit logger();
 
-    /*
-     * Inserisce una nuova riga nel file di log
-     *
-     *      who rappresenta il contenuto tra i trattini --
-     *      console nel caso di creazione eventi partita
-     *
-     *      SOLO ED ESCLUSIVAMENTE PER LE AZIONI DEI GIOCATORI USARE IL NOME DEI GIOCATORI!!!!!!
-     *      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     *      !!!!                     BASARSI SUL FILE LOG DI ESEMPIO                        !!!!
-     *      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    /**
+     * @brief Inserts a new line on the log file
+     * @param who indicates who has done an action , console for system debugging
+     * @param _msg message to put in your log file
+     * @return true -> Log file updated with success!
+     *         false -> An error has occurred, log file not updated!
      */
     bool log(const std::string& who = "console", const std::string& _msg = "Null log");
 

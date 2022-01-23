@@ -12,10 +12,12 @@
 #include <random>
 #include <fstream>
 
+//Gets timestamp from system
 inline int unix_time() {
     return time(nullptr);
 }
 
+//Converts your timestamp to human-friendly date
 inline std::string get_hour_time() {
     const auto rawtime = (const time_t)unix_time();
 
@@ -31,6 +33,7 @@ inline std::string get_hour_time() {
     return stdBuffer;
 }
 
+// Method that creates a name for the play log file
 inline std::string create_log_name() {
     const auto rawtime = (const time_t)unix_time();
 
@@ -45,6 +48,7 @@ inline std::string create_log_name() {
     return stdBuffer;
 }
 
+//Creates a unique name for a log cou on file
 inline std::string create_replay_output_name() {
 
     std::random_device rd;
@@ -53,6 +57,8 @@ inline std::string create_replay_output_name() {
 
     return "Replay_"+ std::to_string(rand_name(engine))+".txt";
 }
+
+// Creates log file
 
 inline std::ofstream create_file() {
     std::ofstream test;
