@@ -17,7 +17,7 @@ using namespace std;
 string const console = "console";
 
 string randomName(){
-    vector<string> names = {"AMOGUS", "Baymax", "MarkoviiIsAFurry", "BakaBot", "Wall-E", "MapBot", "OwOBot", "SUSBot", "Bixby", "Cortana", "Alexa"};
+    vector<string> names = {"AMOGUS", "Baymax", "MarkoviiIsAFurry", "BakaBot", "Wall-E", "MapBot", "SUSBot", "Bixby", "Cortana", "Alexa"};
     short namesLenght = names.size();
     short nameindex = rand() % namesLenght;
     std::string nameToSet = names.at(nameindex);
@@ -156,17 +156,17 @@ void playerGame() {
 
     bool set_moving = false;
     if(starter(engine) == 1) {
-        turn = false; //bot will make first move
+        turn = true; //bot will make first move
         cout << "\nThe bot will start!\n";
     }
     else {
-        turn = true; //player will make first move
+        turn = false; //player will make first move
         cout << "\nYou will start!\n";
     }
 
     string botname = randomName();
 
-    bot bot(botname, turn, b);
+    bot bot(botname,!turn, b);
 
     logger.log(console, "Initializing player 1 \"" + p1 + "\"");
     logger.log(console, "Initializing player 2 \"" + bot.get_name() + "\"");
