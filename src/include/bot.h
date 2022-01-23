@@ -1,3 +1,6 @@
+/**
+ * @author Francesco Colla - 2007968 (francesco.colla.2@studenti.unipd.it)
+ */
 #ifndef BOT_H
 #define BOT_H
 

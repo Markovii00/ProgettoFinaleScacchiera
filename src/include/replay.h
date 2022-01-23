@@ -1,6 +1,7 @@
-//
-// Created by Tomma on 12/21/2021.
-//
+/**
+* @author Tommaso Gabrieli - 2007967 (tommaso.gabrieli.1@studenti.unipd.it)
+*/
+
 
 #ifndef PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_REPLAY_H
 #define PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_REPLAY_H

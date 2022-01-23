@@ -1,6 +1,6 @@
-//
-// Created by Tommaso Gabrieli on 21/12/21.
-//
+/**
+* @author Tommaso Gabrieli - 2007967 (tommaso.gabrieli.1@studenti.unipd.it)
+*/
 
 #include "logger.hpp"
 

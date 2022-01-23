@@ -1,6 +1,7 @@
-//
-// Created by Tomma on 12/18/2021.
-//
+/**
+* @author Tommaso Gabrieli - 2007967 (tommaso.gabrieli.1@studenti.unipd.it)
+*/
+
 
 #include "replay.h"
 #include "include/board.h"
