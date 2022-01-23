@@ -11,7 +11,7 @@
 
 class bot {
 private:
-    std::string& name;
+    std::string name;
     board& b;
     bool maiusc;
 
@@ -40,6 +40,8 @@ public:
     std::string handlePromotion();
 
     std::string& get_name() const;
+
+    bool get_set() const;
 };
 
 #endif

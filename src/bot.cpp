@@ -5,6 +5,7 @@ bot::bot(std::string &n, bool set, board &bVar) : b(bVar), maiusc(set), name(n) 
 bot::~bot() {}
 
 std::string& bot::get_name() const { return name; }
+bool bot::get_set() const { return maiusc; }
 
 std::pair<coords, coords> bot::generateRandomMove(){
     std::vector<std::pair<coords, coords>> moves = b.getSetPossibleMoves(maiusc);
