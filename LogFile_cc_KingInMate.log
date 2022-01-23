@@ -1,0 +1,16 @@
+[19:49:10] - console - Welcome
+[19:49:10] - console - Starting new log session
+[19:49:10] - console - Initializing player 1 "BakaBot"
+[19:49:10] - console - Initializing player 2 "Alexa"
+[19:49:10] - BakaBot - Moving "H2 H3"
+[19:49:10] - Alexa - Moving "C7 C5"
+[19:49:10] - BakaBot - Moving "F2 F4"
+[19:49:11] - Alexa - Moving "E7 E6"
+[19:49:11] - BakaBot - Moving "F4 F5"
+[19:49:11] - Alexa - Moving "D8 H4"
+[19:49:11] - BakaBot - Moving "G2 G3"
+[19:49:11] - Alexa - Moving "H4 G3"
+[19:49:11] - Alexa - Enemy king in Mate
+[19:49:11] - console - Ending game...
+[19:49:12] - console - Game ended
+[19:49:12] - console - Ending log session
