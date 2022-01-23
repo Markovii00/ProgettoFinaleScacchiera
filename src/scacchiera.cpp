@@ -193,7 +193,6 @@ void playerGame() {
 
 
             moveOutput = b.move(start, end, turn, false, false);
-            system("clear");
             if (moveOutput.first) {
                 switch (moveOutput.second) {
 
@@ -212,6 +211,7 @@ void playerGame() {
 
                         pair<bool, bool> promotionRes = make_pair(false, false);
                         string pedinaDaPromuovere;
+                        cout << "\n\nChose a chessman for your promotion : ";
                         do {
                             getline(cin, pedinaDaPromuovere);
                             promotionRes = b.promotion(pedinaDaPromuovere.front(), turn);
@@ -257,6 +257,7 @@ void playerGame() {
 
 
                     case 1 : {
+                        system("clear");
                         cout << "\n\nInvalid move, try again!\n";
                         std::this_thread::sleep_for(std::chrono::milliseconds(1500));
                         break;
@@ -264,6 +265,7 @@ void playerGame() {
 
 
                     case 2 : {
+                        system("clear");
                         cout << "\n\nYour king is still in check! Try another move";
                         std::this_thread::sleep_for(std::chrono::milliseconds(1500));
                         break;
@@ -674,10 +676,10 @@ void computersGame() {
                             if (!lastMove.empty()) {
                                 cout << "\nLast Move: " << lastMove;
                             }
-                            cout << "\n\n"<<bot1.get_name()<<"accepted Threefold draw!";
+                            cout << "\n\n"<<bot1.get_name()<<"accepted Threefold draw!\n";
 
                             isGameFinished = true;
-                            break;
+
                         }
                         else {
                             logger.log(bot1.get_name(), "Draw declined.");
@@ -875,7 +877,7 @@ void computersGame() {
                             logger.log(console, "Ending log session");
                             system("clear");
                             b.printBoard();
-                            cout << "\n\n "<<bot2.get_name()<<" accepted Threefold draw!";
+                            cout << "\n\n "<<bot2.get_name()<<" accepted Threefold draw!\n";
 
                             isGameFinished = true;
                             break;
