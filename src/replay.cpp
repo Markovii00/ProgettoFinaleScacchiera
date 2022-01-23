@@ -9,6 +9,7 @@
 #include <thread>
 #include <list>
 #include "include/log/logtoolkit.h"
+#include "include/replay.h"
 #include <regex>
 
 using namespace std;
