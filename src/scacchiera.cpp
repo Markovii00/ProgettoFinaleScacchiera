@@ -146,14 +146,21 @@ void playerGame() {
     logger.log(console, "Starting new log session");
 
     string p1;
-    cout << "Enter a username : ";
+    cout << "\n\n\nEnter a username : ";
     cin >> p1;
     cin.ignore();
 
-    /*int starter = rand() % 2;
-    if(starter = 1) turn = false; //bot will make first move
-    else turn = true; //player will make first move
-     */
+    int starter = rand() % 2;
+    bool set_moving = false;
+    if(starter == 1) {
+        turn = false; //bot will make first move
+    }
+    else {
+        turn = true; //player will make first move
+    }
+
+
+
 
     turn = false;
 
@@ -173,12 +180,10 @@ void playerGame() {
     while (!isGameFinished) {
         //PLayer turn
         if (!turn) {
-            system("clear");
+            clear_output();
             b.printBoard();
-
-            if (!lastMove.empty()) {
+            if (!lastMove.empty())
                 cout << "\nLast Move: " << lastMove;
-            }
 
             // get player move
             regex input_filter("^([a-hA-H]){1}([1-8]){1} ([a-hA-H]){1}([1-8]){1}$");
@@ -196,14 +201,16 @@ void playerGame() {
             end.second = *(mosse + 3);
 
 
-            moveOutput = b.move(start, end, turn, false, false);
+            moveOutput = b.move(start, end, set_moving, false, false);
+
             if (moveOutput.first) {
                 switch (moveOutput.second) {
 
-                    // CAso 1: mossa eseguita con successo, null'altro accade
+                    // Caso 1: mossa eseguita con successo, null'altro accade
                     case 1 : {
                         logger.log(p1, "Moving \"" + input + "\"");
                         lastMove = input;
+                        set_moving = !set_moving;
                         turn = !turn;
                         break;
                     }
@@ -213,46 +220,50 @@ void playerGame() {
                         logger.log(p1, "Moving \"" + input + "\"");
                         lastMove = input;
 
-                        pair<bool, bool> promotionRes = make_pair(false, false);
+                        pair<bool, bool> promotionRes;
                         string pedinaDaPromuovere;
-                        cout << "\n\nChose a chessman for your promotion : ";
+                        cout << "\n\nChose a chessman for your promotion -> ";
                         do {
                             getline(cin, pedinaDaPromuovere);
                             promotionRes = b.promotion(pedinaDaPromuovere.front(), turn);
                         } while (!promotionRes.first);
 
-                        logger.log(p1, "Promoted to \"" + pedinaDaPromuovere + "\"");
+                        logger.log(p1 , "Promoting a pawn to \"" + pedinaDaPromuovere + "\"");
+                        cout << "\n\n Promoting to " << pedinaDaPromuovere << "\n";
 
                         if (!promotionRes.second) {
-                            system("clear");
-                            isGameFinished = true;
+                            clear_output();
                             b.printBoard();
+                            if (!lastMove.empty())
+                                cout << "\nLast Move: " << lastMove;
 
-
+                            isGameFinished = true;
 
                             // Logger part
-                            logger.log(p1, bot.get_name() + " king in Mate!");
+                            logger.log(p1, bot.get_name() + " king in Mate");
+
 
                             // Output Part
-                            cout << "\n" << bot.get_name() << " king in Mate!\nGame over!";
+                            cout << "\n Promotion putted " << bot.get_name() << "'s king in mate!\nGame Over!";
                         }
+                        lastMove = input;
+                        turn = !turn;
+                        set_moving = !set_moving;
                         break;
                     }
 
                         //Caso 3: Enemy king in mate after move, game ends
                     case 3: {
-                        system("clear");
+                        clear_output();
                         b.printBoard();
+                        if (!lastMove.empty())
+                            cout << "\nLast Move: " << lastMove;
 
+                        logger.log(p1, "Moving \"" + input + "\"");
+
+                        cout << "\n\nYou putted " << bot.get_name() << "'s king in mate!\nGame Over!";
                         isGameFinished = true;
-
-
-                        // Logger part
-                        logger.log(p1, bot.get_name() + " king in Mate!");
-
-                        // Output Part
-                        cout << "\n" << bot.get_name() << " king in Mate!\n";
-
+                        logger.log(p1, "Enemy king in Mate!");
                         break;
                     }
                 }
@@ -261,7 +272,7 @@ void playerGame() {
 
 
                     case 1 : {
-                        system("clear");
+                        clear_output();
                         cout << "\n\nInvalid move, try again!\n";
                         std::this_thread::sleep_for(std::chrono::milliseconds(1500));
                         break;
@@ -269,7 +280,7 @@ void playerGame() {
 
 
                     case 2 : {
-                        system("clear");
+                        clear_output();
                         cout << "\n\nYour king is still in check! Try another move";
                         std::this_thread::sleep_for(std::chrono::milliseconds(1500));
                         break;
@@ -279,8 +290,6 @@ void playerGame() {
                     case 3 : {
                         logger.log(console, "\nThreefold draw has been requested");
                         cout << "\n\nDraw for threefold repetition rule, accept it? [Y/N] : ";
-                        lastMove = input;
-
                         do {
                             getline(cin, input);
 
@@ -290,72 +299,85 @@ void playerGame() {
 
                         if(tolower(input.front()) == 'y') {
                             logger.log(p1, "Draw accepted.");
-                            logger.log(console, "Draw, game is ended");
-                            logger.log(console, "Ending log session");
+                            logger.log(console, "Ending game...");
 
-                            cout << "\n\n Draw accepted!";
+                            clear_output();
+                            b.printBoard();
+                            if (!lastMove.empty())
+                                cout << "\nLast Move: " << lastMove;
+
+                            cout << "\n\nDraw accepted!\nGame Over!";
 
                             isGameFinished = true;
+
                             break;
                         }
                         else if(tolower(input.front()) == 'n'){
                             logger.log(p1, "Draw declined.");
+
                             b.move(start, end, turn, false, true);
                             logger.log(p1, "Moving \"" + input + "\"");
                             logger.log(p1, "Moved bypassing draw");
 
-                            system("clear");
+                            clear_output();
                             b.printBoard();
+                            if (!lastMove.empty())
+                                cout << "\nLast Move: " << lastMove;
+
                             cout << "\n\n Draw declined! Game goes on";
+                            lastMove = input;
                             turn = !turn;
+                            set_moving = !set_moving;
                         }
                         break;
                     }
 
                     case 4: {
-                        system("clear");
+                        clear_output();
                         b.printBoard();
+                        if (!lastMove.empty())
+                            cout << "\nLast Move: " << lastMove;
 
                         isGameFinished = true;
 
-
                         // Logger part
-                        logger.log(p1, "Tie forced for chessman number, game over");
+                        logger.log(p1, "Tie forced due to chessman number, ending game...");
 
                         // Output Part
-                        cout << "\n Tie forced for chessman numer, game end!\n";
+                        cout << "\n Tie forced for chessman number!\nGame Over!\n";
 
                         break;
                     }
 
                     case 5: {
-                        system("clear");
+                        clear_output();
                         b.printBoard();
+                        if (!lastMove.empty())
+                            cout << "\nLast Move: " << lastMove;
 
                         isGameFinished = true;
 
 
                         // Logger part
-                        logger.log(p1, "Tie forced for stalled game, game over");
+                        logger.log(p1, "Tie forced for stalled game, ending game...");
 
                         // Output Part
-                        cout << "\nTie forced for stalled game\nGame Over\"\n";
+                        cout << "\nTie forced for stalled game\nGame Over!";
 
                         break;
                     }
 
                     case 6: {
-                        system("clear");
+                        clear_output();
                         b.printBoard();
+                        if (!lastMove.empty())
+                            cout << "\nLast Move: " << lastMove;
 
                         isGameFinished = true;
 
+                        logger.log(p1, "Tie forced for 50 moves rule, ending game...");
 
-                        // Logger part
-                        logger.log(p1, "Tie forced for 50 moves rule, game over");
-
-                        // Output Part
-                        cout << "\nTie forced for 50 move rule\nGame Over\"\n";
+                        cout << "\nTie forced for 50 move rule\nGame Over!\n";
 
                         break;
                     }
@@ -375,144 +397,145 @@ void playerGame() {
 
                     // Caso 1: mossa eseguita con successo, null'altro accade
                     case 1 : {
-                        logger.log(bot.get_name(), "Moving \"" + input + "\"");
+                        logger.log(bot.get_name(), "Moving \"" + conv_readable(botMove) + "\"");
                         lastMove = conv_readable(botMove);
+
                         turn = !turn;
+                        set_moving = !set_moving;
                         break;
                     }
 
                         //Caso 2: Mossa eseguita, richiesta una promozione sulla pedina mossa
                     case 2 : {
-                        logger.log(bot.get_name(), "Moving \"" + input + "\"");
+                        logger.log(bot.get_name(), "Moving \"" + conv_readable(botMove) + "\"");
                         lastMove = conv_readable(botMove);
 
-                        pair<bool, bool> promotionRes = make_pair(false, false);
+                        pair<bool, bool> promotionRes;
                         string pedinaDaPromuovere = bot.handlePromotion();
                         promotionRes = b.promotion(pedinaDaPromuovere.front(), turn);
 
-                        logger.log(bot.get_name(), "Promoted to \"" + pedinaDaPromuovere + "\"");
+                        logger.log(bot.get_name(), "Promoting a pawn to \"" + pedinaDaPromuovere + "\"");
 
                         if (!promotionRes.second) {
                             isGameFinished = true;
 
-                            system("clear");
+                            clear_output();
                             b.printBoard();
+                            if (!lastMove.empty())
+                                cout << "\nLast move: " << lastMove << "\n";
+
+                            cout << "\n"<<bot.get_name()<<" promotion putted your king in mate!\nGame Over!";
                             // Logger part
-                            logger.log(bot.get_name(), p1 + " king in Mate!");
-
-                            // Output Part
-                            cout << "\n"<<p1<<" King in Mate!\n";
-
+                            logger.log(bot.get_name(), "Enemy king in Mate");
+                            logger.log(bot.get_name(), "Ending game...");
                             break;
                         }
+
+                        turn = !turn;
+                        set_moving = !set_moving;
                     }
 
                         //Caso 3: Enemy king in mate after move, game ends
                     case 3: {
-                        system("clear");
+                        clear_output();
                         b.printBoard();
+                        if (!lastMove.empty())
+                            cout << "\nLast move: " << lastMove << "\n";
 
                         isGameFinished = true;
 
 
                         // Logger part
-                        logger.log(bot.get_name(), p1 + " king in Mate!");
+                        logger.log(bot.get_name(), "Enemy king in Mate");
+                        logger.log(bot.get_name(), "Ending game...");
 
                         // Output Part
-                        cout << "\n"<<p1<<" King in Mate!\n";
+                        cout << "\n"<<bot.get_name()<<" put your king in mate!\nGame Over!";
 
                         break;
                     }
                 }
-            } else {
+            }
+            else {
                 switch (moveOutput.second) {
 
-
-                    case 1 : {
-                        cout << "\n\nInvalid move, try again!";
-                        break;
-                    }
-
-
-                    case 2 : {
-                        cout << "\n\nYour king is still in check! Try another move";
-                        break;
-                    }
-
-
                     case 3 : {
+
                         logger.log(console, "Threefold draw has been requested");
-                        lastMove = conv_readable(botMove);
 
                         if(bot.handledraw()) {
                             logger.log(bot.get_name(), "Draw accepted.");
-                            logger.log(console, "Draw, game is ended");
-                            logger.log(console, "Ending log session");
+                            logger.log(console, "Ending game...");
 
-                            system("clear");
+                            clear_output();
                             b.printBoard();
-                            cout << "\n\nThreefold draw has been requested and bot accepted draw!";
+                            if (!lastMove.empty())
+                                cout << "\nLast Move: " << lastMove;
+
+                            cout << "A Threefold Draw was asked to " << bot.get_name() << " and was accepted!\nGame Over";
 
                             isGameFinished = true;
-                            break;
                         }
                         else {
                             logger.log(bot.get_name(), "Draw declined.");
-                            b.move(start, end, turn, false, true);
-                            logger.log(bot.get_name(), "Moving \"" + input + "\"");
+                            b.move(botMove.first, botMove.second, set_moving, false, true);
+
+
+                            lastMove = conv_readable(botMove);
+
+                            logger.log(bot.get_name(), "Moving \"" + lastMove + "\"");
                             logger.log(bot.get_name(), "Moved bypassing draw");
-                            system("clear");
-                            b.printBoard();
-                            cout << "\n\n Threefold draw has been requested and botdeclined, game goes on";
+
+                            cout << "\nA Threefold Draw was asked to "<< bot.get_name()<<" and was declined! Game resumed!\n\n";
                             turn = !turn;
+                            set_moving = !set_moving;
                         }
                         break;
                     }
 
                     case 4: {
-                        system("clear");
+                        clear_output();
                         b.printBoard();
+                        if (!lastMove.empty())
+                            cout << "\nLast Move: " << lastMove;
 
                         isGameFinished = true;
 
 
                         // Logger part
-                        logger.log(bot.get_name(), "Tie forced for chessman number, game over");
+                        logger.log(bot.get_name(), "Tie forced due to chessman number, ending game...");
 
                         // Output Part
-                        cout << "\n Tie forced for chessman numer, game end!\n";
-
+                        cout << "\n Tie forced for chessman number!\nGame Over!\n";
                         break;
                     }
 
                     case 5: {
-                        system("clear");
+                        clear_output();
                         b.printBoard();
+                        if (!lastMove.empty())
+                            cout << "\nLast Move: " << lastMove;
 
                         isGameFinished = true;
 
-
-                        // Logger part
-                        logger.log(bot.get_name(), "Tie forced for stalled game, game over");
+                        logger.log(bot.get_name(), "Tie forced for stalled game, ending game...");
 
                         // Output Part
-                        cout << "\nTie forced for stalled game\nGame Over\"\n";
-
+                        cout << "\nTie forced for stalled game\nGame Over!";
                         break;
                     }
 
                     case 6: {
-                        system("clear");
+                        clear_output();
                         b.printBoard();
+                        if (!lastMove.empty())
+                            cout << "\nLast Move: " << lastMove;
 
                         isGameFinished = true;
 
+                        logger.log(bot.get_name(), "Tie forced for 50 moves rule, ending game...");
 
-                        // Logger part
-                        logger.log(bot.get_name(), "Tie forced for 50 moves rule, game over");
-
-                        // Output Part
-                        cout << "\nTie forced for 50 move rule\nGame Over\"\n";
+                        cout << "\nTie forced for 50 move rule\nGame Over!\n";
 
                         break;
                     }
@@ -530,6 +553,8 @@ void computersGame() {
     bool turn = false;
 
     logger logstream;
+    logstream.log(console, "Welcome");
+    logstream.log(console, "Starting new log session");
 
     string bot1name = randomName();
     bot bot1(bot1name, false, b);
@@ -554,20 +579,22 @@ void computersGame() {
 
         pair<bool, int> moveOutput = b.move(botMove.first, botMove.second, turn, false, false);
 
-        cout << "\n --- "<<moving_bot.get_name()<<"'s turn ---\n";
         if (moveOutput.first) {
             switch (moveOutput.second) {
 
                 //case 1, move ok, nothing to report
                 case 1: {
                     clear_output();
+                    cout << "\n --- "<<moving_bot.get_name()<<"'s turn ---\n";
                     b.printBoard();
                     if (!lastMove.empty())
                         cout << "\nLast move: " << lastMove << "\n";
 
                     turn = !turn;
-
                     lastMove = conv_readable(botMove);
+
+                    logstream.log(moving_bot.get_name(), "Moving \"" + lastMove + "\"");
+
                     break;
                 }
 
@@ -577,6 +604,7 @@ void computersGame() {
 
 
                     clear_output();
+                    cout << "\n --- "<<moving_bot.get_name()<<"'s turn ---\n";
                     b.printBoard();
                     if (!lastMove.empty())
                         cout << "\nLast move: " << lastMove << "\n";
@@ -586,9 +614,12 @@ void computersGame() {
                     logstream.log(moving_bot.get_name(), "Promoting a pawn to \"" + promotionPiece + "\"");
 
                     cout << "\n\n Promoting to " << promotionPiece << " a pawn from " << moving_bot.get_name() << "'s set";
+                    logstream.log(moving_bot.get_name(), "Moving \"" + conv_readable(botMove) + "\"");
 
                     if (!promotionOutput.second) {
                         cout << "\n Promotion putted " << enemy_bot.get_name() << "'s king in mate!\nGame Over!";
+                        logstream.log(moving_bot.get_name(), "Enemy king in Mate");
+                        logstream.log(console, "Ending game...");
                         isGameEnded = true;
                     }
 
@@ -598,12 +629,14 @@ void computersGame() {
 
                 case 3 : {
                     clear_output();
+                    cout << "\n --- "<<moving_bot.get_name()<<"'s turn ---\n";
                     b.printBoard();
                     if (!lastMove.empty())
                         cout << "\nLast move: " << lastMove << "\n";
 
                     cout << "\n\n" << moving_bot.get_name() <<" putted " << moving_bot.get_name() << "'s king in mate!\nGame Over!";
 
+                    logstream.log(moving_bot.get_name(), "Moving \"" + conv_readable(botMove) + "\"");
                     logstream.log(moving_bot.get_name(), "Enemy king in Mate");
                     logstream.log(console, "Ending game...");
 
@@ -616,6 +649,7 @@ void computersGame() {
 
                 case 3 : {
                     clear_output();
+                    cout << "\n --- "<<moving_bot.get_name()<<"'s turn ---\n";
                     b.printBoard();
 
                     if (!lastMove.empty())
@@ -638,6 +672,7 @@ void computersGame() {
                         b.move(botMove.first, botMove.second, turn, false, true);
 
                         clear_output();
+                        cout << "\n --- "<<moving_bot.get_name()<<"'s turn ---\n";
                         b.printBoard();
 
                         if (!lastMove.empty())
@@ -656,6 +691,7 @@ void computersGame() {
 
                 case 4: {
                     clear_output();
+                    cout << "\n --- "<<moving_bot.get_name()<<"'s turn ---\n";
                     b.printBoard();
                     if (!lastMove.empty())
                         cout << "\nLast Move: " << lastMove;
@@ -673,6 +709,7 @@ void computersGame() {
 
                 case 5: {
                     clear_output();
+                    cout << "\n --- "<<moving_bot.get_name()<<"'s turn ---\n";
                     b.printBoard();
                     if (!lastMove.empty())
                         cout << "\nLast Move: " << lastMove;
@@ -688,6 +725,7 @@ void computersGame() {
 
                 case 6: {
                     clear_output();
+                    cout << "\n --- "<<moving_bot.get_name()<<"'s turn ---\n";
                     b.printBoard();
                     if (!lastMove.empty())
                         cout << "\nLast Move: " << lastMove;
