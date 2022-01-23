@@ -114,5 +114,22 @@ bool game_ended_correctly(std::fstream& file) {
     return false;
 }
 
+bool is_valid_log_file(std::fstream& file) {
+    std::regex contains_log("\\[[0-9]{2}:[0-9]{2}:[0-9]{2}\\] - (.*?) - ");
+
+    std::string line;
+    while (std::getline(file, line)) {
+        if (std::regex_search(line, contains_log)) {
+            file.clear();
+            file.seekg(0);
+            std::cout << 1;
+            return true;
+        }
+    }
+    file.clear();
+    file.seekg(0);
+    return false;
+}
+
 
 #endif //PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_REPLAY_H

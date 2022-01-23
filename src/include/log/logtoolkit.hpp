@@ -51,11 +51,19 @@ inline std::string create_log_name() {
     char buffer [40];
 
     dt = localtime(&rawtime);
-    // use any strftime format spec here
-    strftime(timestr, sizeof(timestr), "LogFile_%d-%m-%Y_%H:%M:%S.txt", dt);
+    strftime(timestr, sizeof(timestr), "LogFile_%d-%m-%Y_%H:%M:%S.log", dt);
     sprintf(buffer,"%s", timestr);
     std::string stdBuffer(buffer);
     return stdBuffer;
+}
+
+inline std::string create_replay_output_name() {
+
+    std::random_device rd;
+    std::mt19937 engine(rd());
+    std::uniform_int_distribution<int> rand_name(1234567, 999999999);
+
+    return "Replay_"+ std::to_string(rand_name(engine))+".txt";
 }
 
 inline std::ofstream create_file() {
@@ -63,20 +71,5 @@ inline std::ofstream create_file() {
     test.open(create_log_name());
     return test;
 }
-
-inline std::string generate_log_id() {
-    std::string s; //six spaces
-    std::random_device rd;
-    std::mt19937 engine(rd());
-    std::uniform_int_distribution<int> dist(0, 9);
-
-    for (int i = 0; i < 6; ++i) {
-        s += std::to_string(dist(engine));
-    }
-
-    return s;
-}
-
-
 
 #endif //PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_LOGTOOLKIT_HPP

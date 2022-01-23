@@ -52,8 +52,8 @@ public:
      * @return first parameter: true  -> promotion executed with success
      *                          false -> promotion not done: invalid argument or promotion not asked
      *
-     *         second parameter: true  -> enemy king in mate, game ends
-     *                           false -> enemy has moves left, the game will resume
+     *         second parameter: true  -> enemy has moves left, the game will resume
+     *                           false -> enemy king in mate, game ends
      */
     std::pair<bool, bool> promotion(short promotionChess, bool pawnColor);
 
@@ -71,6 +71,11 @@ public:
      * @return a vector of all the black pieces coordinates
      */
     std::vector<coords> getBlackSet(void) const;
+
+    /**
+    * @return board as a string
+    */
+    std::string to_string() const;
 
 private:
     chessman* chessboard[8][8];
@@ -125,7 +130,10 @@ private:
     bool contains(const bool& requestColor) const;
 
     template<typename Type>
-    int howManyAlive(const bool& requestColor) const;   
+    int howManyAlive(const bool& requestColor) const;
+
+    std::string to_string(bool fixed_allignment) const;
+
 };
 
 //Helper function

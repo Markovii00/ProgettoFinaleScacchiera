@@ -825,32 +825,27 @@ void board::printBoard(void) const {
               "      │ A │ B │ C │ D │ E │ F │ G │ H │\n" <<
               "      └───┴───┴───┴───┴───┴───┴───┴───┘\n";
 }
-/*std::string board::to_string(bool fixed_allignment = false) const{
+std::string board::to_string() const{
     std::string bb;
+
     for (unsigned short iRow = 0; iRow < 8; ++iRow)
-    {
-        bb += (fixed_allignment ? "\t\t\t       " : "");
-        bb += std::to_string(8 - iRow) + "    ";
+    {;
+        bb += "  ";
+        bb += std::to_string((8 - iRow));
+        bb += "    ";
         for (unsigned short iCol = 0; iCol < 8; ++iCol)
         {
-            if (chessboard[iRow][iCol] not_eq nullptr)
-            {   bb += " ";
-                bb += ((chessboard[iRow][iCol]->getChar()));
-                bb += ((iCol == 7 ? "": " |"));
-            }
-            else
-            {
-                bb += (iCol == 7 ? "": "   |");
-            }
+            bb += " ";
+            bb += chessboard[iRow][iCol]->getChar();
+            bb += (iCol == 7) ? "" : " |";
         }
-        bb += ((fixed_allignment ? "\n\t\t\t       " : "\n"));
-        bb += (iRow == 7 ? "\n" : "     -------------------------------\n");
+        bb += "\n";
+        bb += (iRow == 7 ? "" : "      --------------------------------\n");
     }
-    bb += (fixed_allignment ? "\n\t\t\t       " : "\n");
-    bb += "      A   B   C   D   E   F   G   H";
-
+    bb += "                                       \n";
+    bb += "        A   B   C   D   E   F   G   H  \n";
     return bb;
-}*/
+}
 std::string board::boardToString(void) const {
     std::string ret = "";
     for(unsigned short i = 0; i < 64; i++) {
