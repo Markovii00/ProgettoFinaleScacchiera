@@ -65,7 +65,6 @@ std::pair<bool,int> board::move(coords& start, coords& end, bool whoseturn, bool
         undoMove(start, end, fromPieceColor, typeOfMove, pieceAtEnd, old_moveRule50, old_lastMovedCoords, old_hasMovedBefore);
     
     if(isPromotion(end, fromPieceColor) && !attemptMove) {
-        std::cout << "Inserire in che pedina promuovere il pedone!";
         toBePromoted = end;
         needPromotion = true;
         return std::make_pair(true, 2);
@@ -73,7 +72,6 @@ std::pair<bool,int> board::move(coords& start, coords& end, bool whoseturn, bool
         
     if (!attemptMove) {
         if (kingInMate(!whoseturn, search<king>(!whoseturn))) {
-            std::cout << "Scacco matto!\n";
             return std::make_pair(true, 3);
         }
     }
@@ -88,7 +86,6 @@ std::vector<std::pair<coords, coords>> board::getSetPossibleMoves(bool setColor)
             std::vector<coords> allMovesOfChessman = chessboard[piece.first][piece.second]->possibleMoves();
 
             for (coords movePosition : allMovesOfChessman) {
-                //std::cout << "[" << piece.first << piece.second << "] -> [" << movePosition.first << movePosition.second << "]\n";
                 char fromPieceId = chessboard[piece.first][piece.second]->getChar();
                 bool fromPieceColor = chessboard[piece.first][piece.second]->getSet();
 
@@ -96,7 +93,6 @@ std::vector<std::pair<coords, coords>> board::getSetPossibleMoves(bool setColor)
                 if(!illegalMove(piece, movePosition, fromPieceId, fromPieceColor, setColor) || isEnpassant(piece, movePosition).first || castlingVar.first) {
                     std::pair<bool, int> res = move(piece, movePosition, setColor, true, false);
                     if (res.first && (res.second == 1 || res.second == 2)) {
-                        //std::cout << "[" << piece.first << piece.second << "] -> [" << movePosition.first << movePosition.second << "]\n";
                         possibleMoves.emplace_back(piece, movePosition);
                     }
                 }
@@ -106,7 +102,6 @@ std::vector<std::pair<coords, coords>> board::getSetPossibleMoves(bool setColor)
         for (coords piece : whiteSet) {
             std::vector<coords> allMovesOfChessman = chessboard[piece.first][piece.second]->possibleMoves();
             for (coords movePosition : allMovesOfChessman) {
-                //std::cout << "[" << piece.first << piece.second << "] -> [" << movePosition.first << movePosition.second << "]\n";
                 char fromPieceId = chessboard[piece.first][piece.second]->getChar();
                 bool fromPieceColor = chessboard[piece.first][piece.second]->getSet();
 
@@ -114,7 +109,6 @@ std::vector<std::pair<coords, coords>> board::getSetPossibleMoves(bool setColor)
                 if(!illegalMove(piece, movePosition, fromPieceId, fromPieceColor, setColor) || isEnpassant(piece, movePosition).first || castlingVar.first) {
                     std::pair<bool, int> res = move(piece, movePosition, setColor, true, false);
                     if (res.first && (res.second == 1 || res.second == 2)) {
-                        //std::cout << "[" << piece.first << piece.second << "] -> [" << movePosition.first << movePosition.second << "]\n";
                         possibleMoves.emplace_back(piece, movePosition);
                     }
 
@@ -334,7 +328,6 @@ std::pair<bool, bool> board::promotion(short promotionChess, bool pawnColor) {
     }
 
     if (getSetPossibleMoves(!pawnColor).empty()) {
-        std::cout << "Scacco matto!\n";
         return std::make_pair(hasDonePromotion, false);
     } else
         return std::make_pair(hasDonePromotion, true);
@@ -862,7 +855,6 @@ std::string board::boardToString(void) const {
     std::string ret = "";
     for(unsigned short i = 0; i < 64; i++) {
         if (chessboard[i/8][i%8] == nullptr) {
-            std::cout << "null";
             ret += ' ';
         } else
             ret += chessboard[i/8][i%8]->getChar();
