@@ -13,6 +13,144 @@
 
 using namespace std;
 
+string get_player(fstream& file, int player_num) {
+
+    regex contains_id("Initializing player " + to_string(player_num));
+    regex rex("\"(.*?)\"");
+
+    string line;
+    smatch match_found;
+    while (getline(file, line)) {
+        if (regex_search(line, contains_id)) {
+            regex_search(line,match_found, rex);
+            file.clear();
+            file.seekg(0);
+            return match_found[1];
+        }
+    }
+    file.clear();
+    file.seekg(0);
+    return "";
+}
+
+deque<pair<string, string>> get_moves(fstream& file) {
+
+    regex contains_id("Moving ");
+    regex rex("\"(.*?)\"");
+    regex name("- (.*?) -");
+
+    deque<pair<string, string>> moves;
+
+    string line;
+    smatch match_found;
+    smatch name_player;
+    while (getline(file, line)) {
+        if (regex_search(line, contains_id)) {
+            regex_search(line,match_found, rex);
+            regex_search(line,name_player, name);
+            moves.emplace_back(name_player[1], match_found[1]);
+        }
+    }
+    file.clear();
+    file.seekg(0);
+    return moves;
+}
+
+deque<string> get_promotion(fstream& file) {
+
+    regex contains_id("Promoting a pawn to ");
+    regex rex("\"(.*?)\"");
+
+    deque<string> promotions;
+
+    string line;
+    smatch match_found;
+    while (getline(file, line)) {
+        if (regex_search(line, contains_id)) {
+            regex_search(line,match_found, rex);
+            promotions.push_back(match_found[1]);
+        }
+    }
+    file.clear();
+    file.seekg(0);
+    return promotions;
+}
+
+deque<bool> get_tie_answers(fstream& file) {
+
+    regex contains_id("threefold");
+    regex accepted("accepted");
+    regex declined("declined");
+
+    deque<bool> tie_answ;
+
+    string line;
+    while (getline(file, line)) {
+        if (regex_search(line, contains_id)) {
+            if (regex_search(line, accepted))
+                tie_answ.push_back(true);
+            else if (regex_search(line, declined))
+                tie_answ.push_back(false);
+        }
+    }
+    file.clear();
+    file.seekg(0);
+    return tie_answ;
+}
+
+bool get_asked_draw(fstream& file) {
+
+    regex accepted("accepted draw");
+    regex contains_asked_draw("requested draw");
+
+    string line;
+    while (getline(file, line)) {
+        if (regex_search(line, contains_asked_draw)) {
+            if (regex_search(line, accepted)) {
+                file.clear();
+                file.seekg(0);
+                return true;
+            }
+        }
+    }
+    file.clear();
+    file.seekg(0);
+    return false;
+}
+
+bool game_ended_correctly(fstream& file) {
+    regex end_reached("Game ended");
+
+    string line;
+    while (getline(file, line)) {
+        if (regex_search(line, end_reached)) {
+            file.clear();
+            file.seekg(0);
+            return true;
+        }
+    }
+    file.clear();
+    file.seekg(0);
+    return false;
+}
+
+bool is_valid_log_file(fstream& file) {
+    regex contains_log("\\[[0-9]{2}:[0-9]{2}:[0-9]{2}\\] - (.*?) - ");
+
+    string line;
+    while (getline(file, line)) {
+        if (regex_search(line, contains_log)) {
+            file.clear();
+            file.seekg(0);
+            return true;
+        }
+    }
+    file.clear();
+    file.seekg(0);
+    return false;
+}
+
+
 void clear_term() {
     system("clear");
 }
@@ -167,7 +305,7 @@ void video_stampa(fstream& log_file) {
                 }
             }
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+        this_thread::sleep_for(chrono::milliseconds(2000));
     }
 
 }
@@ -365,7 +503,7 @@ int main(int argc, char *argv[]) {
         cout << "Game was interrupted in an illegal way, replay could not be trustworthy!\n";
     cout << "Starting replay....\n";
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(3500));
+    this_thread::sleep_for(chrono::milliseconds(3500));
     clear_term();
 
     if (strcmp(argv[1], "v") == 0)
