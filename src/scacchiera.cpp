@@ -649,7 +649,7 @@ void computersGame(int max) { //handles bot vs bot  games
     while (!isGameEnded) {
         //handles the max number of moves to be executed and counts the nunber of moves
         if(currMoves == maxMoves){
-            cout << "\nThe setted max number of moves has been reached, the game if forcefully terminated!\n";
+            cout << "\nThe setted max number of moves has been reached, the game is forcefully terminated!\n";
             logger.log(console, "Max moves reached");
             isGameEnded = true;
             break;
