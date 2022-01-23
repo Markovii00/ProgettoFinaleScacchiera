@@ -1,3 +1,6 @@
+/**
+ * @author Francesco Colla - 2007968 (francesco.colla.2@studenti.unipd.it)
+ */
 #include "bot.h"
 
 bot::bot(std::string &n, bool set, board &bVar) : b(bVar), maiusc(set), name(n) {}
@@ -17,19 +20,19 @@ std::pair<coords, coords> bot::generateRandomMove(){
 }
 
 bool bot::handledraw(){
-    short randchoice = rand() % 100 + 1;
-    if(randchoice < 25)
-        return true;
-    else
-        return false;
+    std::random_device rd;
+    std::mt19937 engine(rd());
+    std::uniform_int_distribution<int> dist(1, 100);
+
+    return dist(engine) < 7;
 }
 
 bool bot::requestDraw(){
-    short randchoice = rand() % 100 + 1;
-    if(randchoice < 5)
-        return true;
-    else
-        return false;
+    std::random_device rd;
+    std::mt19937 engine(rd());
+    std::uniform_int_distribution<int> dist(1, 100);
+
+    return dist(engine) < 2;
 }
 
 std::string bot::handlePromotion() {
