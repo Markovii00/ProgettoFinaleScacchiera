@@ -39,7 +39,7 @@ public:
 
     std::string handlePromotion();
 
-    std::string& get_name() const;
+    std::string get_name() const;
 
     bool get_set() const;
 };
