@@ -16,10 +16,6 @@ add_library(board
 add_library(chessman
 	src/include/chessman.h
 	src/chessman.cpp)
-        
-add_library(replayInclude
-	src/include/replay.h)
-	
                 
 add_library(logger
 	src/include/log/logger.h
