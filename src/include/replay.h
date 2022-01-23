@@ -98,6 +98,26 @@ std::deque<bool> get_tie_answers(std::fstream& file) {
     return tie_answ;
 }
 
+bool get_asked_draw(std::fstream& file) {
+
+    std::regex accepted("accepted draw");
+    std::regex contains_asked_draw("requested draw");
+
+    std::string line;
+    while (std::getline(file, line)) {
+        if (std::regex_search(line, contains_asked_draw)) {
+            if (std::regex_search(line, accepted)) {
+                file.clear();
+                file.seekg(0);
+                return true;
+            }
+        }
+    }
+    file.clear();
+    file.seekg(0);
+    return false;
+}
+
 bool game_ended_correctly(std::fstream& file) {
     std::regex end_reached("Game ended");
 
@@ -122,7 +142,6 @@ bool is_valid_log_file(std::fstream& file) {
         if (std::regex_search(line, contains_log)) {
             file.clear();
             file.seekg(0);
-            std::cout << 1;
             return true;
         }
     }

@@ -28,7 +28,11 @@ void video_stampa(fstream& log_file) {
     while (!end_of_replay) {
 
         if (moves.empty()) {
-            cout << "\nNo more moves found, dropping replay session...\n";
+            if (get_asked_draw(log_file)) {
+                cout << "\nA draw was accepted, dropping replay session...\n";
+            }else if (!is_valid_log_file(log_file)) {
+                cout << "\nNo more moves found, dropping replay session...\n";
+            }
             break;
         }
 
@@ -182,7 +186,13 @@ void file_stampa(fstream& log_file) {
     while (!end_of_replay) {
 
         if (moves.empty()) {
-            cout << "\nNo more moves found, dropping replay session...\n";
+            if (get_asked_draw(log_file)) {
+                cout << "\nA draw was accepted, dropping replay session...\n";
+                file_output << "\nA draw was accepted, dropping replay session...\n";
+            }else if (!is_valid_log_file(log_file)) {
+                cout << "\nNo more moves found, dropping replay session...\n";
+                file_output << "\nNo more moves found, dropping replay session...\n";
+            }
             break;
         }
 

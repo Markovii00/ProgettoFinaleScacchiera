@@ -10,7 +10,7 @@
 #include <random>
 
 inline int unix_time() {
-    return time(NULL);
+    return time(nullptr);
 }
 
 inline std::string get_hour_time() {
@@ -23,21 +23,6 @@ inline std::string get_hour_time() {
     dt = localtime(&rawtime);
     // use any strftime format spec here
     strftime(timestr, sizeof(timestr), "%H:%M:%S", dt);
-    sprintf(buffer,"%s", timestr);
-    std::string stdBuffer(buffer);
-    return stdBuffer;
-}
-
-inline std::string get_date() {
-    const auto rawtime = (const time_t)unix_time();
-
-    struct tm * dt;
-    char timestr[30];
-    char buffer [30];
-
-    dt = localtime(&rawtime);
-    // use any strftime format spec here
-    strftime(timestr, sizeof(timestr), "%d/%m/%Y - %H:%M:%S", dt);
     sprintf(buffer,"%s", timestr);
     std::string stdBuffer(buffer);
     return stdBuffer;
