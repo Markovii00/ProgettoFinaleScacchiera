@@ -7,7 +7,7 @@
 #define PROGETTO_FINALE_SCACCHIERA_ELETTRONICA_LOGGER_HPP
 
 #include <fstream>
-#include "logtoolkit.hpp"
+#include "logtoolkit.cpp"
 
 const int DEBUG = 0;
 const int NORMAL = 1;

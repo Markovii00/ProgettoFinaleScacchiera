@@ -9,7 +9,7 @@
 #include <iostream>
 #include <thread>
 #include <list>
-#include <logtoolkit.hpp>
+#include <logtoolkit.cpp>
 
 using namespace std;
 
