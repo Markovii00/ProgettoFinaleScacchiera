@@ -826,7 +826,7 @@ void computersGame(int max) { //handles bot vs bot  games
             }
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     }
     logger.log(console, "Game ended");
     logger.log(console, "Ending log session");

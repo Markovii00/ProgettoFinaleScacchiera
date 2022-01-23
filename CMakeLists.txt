@@ -12,7 +12,6 @@ set(CMAKE_CXX_FLAGS, "-02")
 set(CMAKE_CXX_FLAGS_DEBUG, "-02")
 set(CMAKE_CXX_FLAGS_RELEASE, "-02")
 
-
 include_directories(include)
 include_directories(include/log)
 
